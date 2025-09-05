@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
+local UtilService = require(ServerScriptService.Modules.UtilService)
 local bridge = BridgeNet2.ReferenceBridge("ElevatorService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -50,6 +51,8 @@ function BaseService:Allocate(player: Player)
 	end
 
 	allocating = false
+	BaseService:AddPlayerName(player)
+	BaseService:UpdatePlayerCCU(player)
 
 	return true
 end
@@ -72,6 +75,13 @@ function BaseService:GetBase(player: Player)
 	end
 end
 
+function BaseService:InitFloors(player: Player)
+	local floor = PlayerDataHandler:Get(player, "floors")
+	for i = 1, floor, 1 do
+		BaseService:GiveMoreFloor(player, 1)
+	end
+end
+
 function BaseService:GiveMoreFloor(player: Player, amount)
 	local base = BaseService:GetBase(player)
 	local newFloor = ReplicatedStorage.Model.FloorModule:Clone()
@@ -88,6 +98,20 @@ function BaseService:GiveMoreFloor(player: Player, amount)
 
 		player:SetAttribute("FLOOR", player:GetAttribute("FLOOR") + 1)
 	end
+end
+
+function BaseService:AddPlayerName(player: Player)
+	local base = BaseService:GetBase(player)
+	local billboard = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.OwnerBillboard.NameBillboard
+	billboard.SurfaceGui.PlayerName.Text = player.Name .. "'s Game Studio"
+end
+
+function BaseService:UpdatePlayerCCU(player: Player)
+	local totalCCU = PlayerDataHandler:Get(player, "totalCCU")
+	local base = BaseService:GetBase(player)
+	local billboard = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.CCUBilboard.Billboard
+	billboard.SurfaceGui.PlayerName.Text = UtilService:FormatNumberToSuffixes(totalCCU) .. " CCU"
+	player:SetAttribute("CCU", totalCCU)
 end
 
 return BaseService

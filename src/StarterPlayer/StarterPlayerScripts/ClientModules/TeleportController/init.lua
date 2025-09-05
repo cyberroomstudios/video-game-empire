@@ -29,4 +29,32 @@ function TeleportController:ToSell()
 	end
 end
 
+function TeleportController:ToNextFloor()
+	local character = player.Character
+	if character and character:FindFirstChild("HumanoidRootPart") then
+		character.HumanoidRootPart.CFrame = CFrame.new(
+			character.HumanoidRootPart.CFrame.X,
+			character.HumanoidRootPart.CFrame.Y + 26,
+			character.HumanoidRootPart.CFrame.Z
+		)
+		local currentFloor = player:GetAttribute("CURRENT_FLOOR") or 0
+
+		player:SetAttribute("CURRENT_FLOOR", currentFloor + 1)
+	end
+end
+
+function TeleportController:ToPreviousFloor()
+	local character = player.Character
+	if character and character:FindFirstChild("HumanoidRootPart") then
+		character.HumanoidRootPart.CFrame = CFrame.new(
+			character.HumanoidRootPart.CFrame.X,
+			character.HumanoidRootPart.CFrame.Y - 26,
+			character.HumanoidRootPart.CFrame.Z
+		)
+		local currentFloor = player:GetAttribute("CURRENT_FLOOR")
+
+		player:SetAttribute("CURRENT_FLOOR", currentFloor - 1)
+	end
+end
+
 return TeleportController

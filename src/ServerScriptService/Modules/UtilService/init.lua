@@ -55,4 +55,20 @@ function UtilService:GetPositionHeightReference(player: Player, floorNumber: num
 	end
 end
 
+function UtilService:FormatNumberToSuffixes(n)
+	local suffixes = { "", "K", "M", "B", "T", "Q" } -- pode adicionar mais se quiser
+	local i = 1
+
+	while n >= 1000 and i < #suffixes do
+		n = n / 1000
+		i = i + 1
+	end
+
+	-- Limita para 1 casa decimal e remove .0 se for inteiro
+	local formatted = string.format("%.1f", n)
+	formatted = formatted:gsub("%.0$", "")
+
+	return formatted .. suffixes[i]
+end
+
 return UtilService

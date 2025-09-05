@@ -231,4 +231,13 @@ function DevService:BuyDev(player: Player, devName: string)
 	return true
 end
 
+function DevService:DeleteDevInMap(player: Player, devId: number)
+	for _, value in game.Workspace.Runtime[player.UserId]:GetChildren() do
+		if value:GetAttribute("DEV") and value:GetAttribute("ID") == devId then
+			value:Destroy()
+		end
+	end
+end
+
+
 return DevService

@@ -1,20 +1,14 @@
---[[ DEFINIÇÕES
-    
-	
-	
-	
-]]
 local Rebirths = table.freeze({
 	[1] = {
 		Requirements = {
 			{
 				Type = "MONEY",
-				Amount = 0,
+				Amount = 10,
 			},
 
 			{
-				Type = "GAMES",
-				Amount = 0,
+				Type = "CCU",
+				Amount = 100,
 			},
 		},
 		Awards = {
@@ -22,11 +16,17 @@ local Rebirths = table.freeze({
 			{
 				Type = "FLOOR",
 				Amount = 1,
+				GUI = {
+					Label = "+1 Floor",
+				},
 			},
 
 			{
 				Type = "MONEY",
 				Amount = 1000,
+				GUI = {
+					Label = "1000 Money",
+				},
 			},
 		},
 	},
@@ -35,38 +35,12 @@ local Rebirths = table.freeze({
 		Requirements = {
 			{
 				Type = "MONEY",
-				Amount = 100,
+				Amount = 20,
 			},
 
 			{
-				Type = "GAMES",
-				Amount = 10,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[3] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 0,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 0,
+				Type = "CCU",
+				Amount = 200,
 			},
 		},
 		Awards = {
@@ -74,219 +48,17 @@ local Rebirths = table.freeze({
 			{
 				Type = "FLOOR",
 				Amount = 1,
+				GUI = {
+					Label = "+1 Floor",
+				},
 			},
 
 			{
 				Type = "MONEY",
 				Amount = 1000,
-			},
-		},
-	},
-
-	[4] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[5] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[6] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[7] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[8] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[9] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[10] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
-			},
-		},
-	},
-
-	[11] = {
-		Requirements = {
-			{
-				Type = "MONEY",
-				Amount = 10000,
-			},
-
-			{
-				Type = "GAMES",
-				Amount = 1,
-			},
-		},
-		Awards = {
-
-			{
-				Type = "FLOOR",
-				Amount = 1,
-			},
-
-			{
-				Type = "MONEY",
-				Amount = 1000,
+				GUI = {
+					Label = "1000 Money",
+				},
 			},
 		},
 	},

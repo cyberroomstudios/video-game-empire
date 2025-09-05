@@ -46,6 +46,10 @@ function StartGameService:InitBridgeListener()
 			BaseService:Allocate(player)
 			StartGameService:NotifyLoadingStep(player, "Alocando Player")
 
+			-- Cria outros andares
+			BaseService:InitFloors(player)
+			StartGameService:NotifyLoadingStep(player, "Criando Andares ")
+
 			-- Inicializa os trabalhadores do jogador na base
 			DevService:InitBaseFromPlayer(player)
 			StartGameService:NotifyLoadingStep(player, "Criando Programadores do jogador")

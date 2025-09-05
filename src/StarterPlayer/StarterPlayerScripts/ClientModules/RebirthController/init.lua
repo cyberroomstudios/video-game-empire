@@ -12,9 +12,18 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 local Players = game:GetService("Players")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
+local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
+local Devs = require(ReplicatedStorage.Enums.Devs)
 
 local screen
 local getRebirthButton
+local mainRebirth
+local loadingRebirth
+
+-- Informações da Tela
+local rebirthReward
+local moneyTarget
+local ccuTarget
 
 function RebirthController:Init()
 	RebirthController:CreateReferences()
@@ -25,10 +34,82 @@ function RebirthController:CreateReferences()
 	-- Botões referentes aos Teleports
 	screen = UIReferences:GetReference("REBIRTH_SCREEN")
 	getRebirthButton = UIReferences:GetReference("GET_REBIRTH_BUTTON")
+	mainRebirth = UIReferences:GetReference("MAIN_REBIRTH")
+	loadingRebirth = UIReferences:GetReference("LOADING_REBIRTH")
+
+	rebirthReward = UIReferences:GetReference("REBIRTH_REWARDS")
+	moneyTarget = UIReferences:GetReference("MONEY_TARGET")
+	ccuTarget = UIReferences:GetReference("CCU_TARGET")
 end
 
 function RebirthController:Open()
+	loadingRebirth.Visible = true
+	mainRebirth.Visible = false
+
 	screen.Visible = not screen.Visible
+	RebirthController:BuildScreen()
+
+	loadingRebirth.Visible = false
+	mainRebirth.Visible = true
+end
+
+function RebirthController:BuildScreen()
+	local result = bridge:InvokeServerAsync({
+		[actionIdentifier] = "GetInfoRebirth",
+	})
+
+	local targetMoneyValue = 0
+	local targetCCUValue = 0
+
+	local awards = result.Awards
+
+	-- Limpa Os Itens
+	for _, value in rebirthReward:GetChildren() do
+		if value.Name == "NewItem" then
+			value:Destroy()
+		end
+	end
+
+	for _, award in awards do
+		local newItem = rebirthReward.Item:Clone()
+		newItem.Name = "NewItem"
+		newItem.Visible = true
+		newItem.ItemName.TextLabel.Text = award.GUI.Label
+		newItem.Parent = rebirthReward
+	end
+
+	local requirements = result.Requirements
+
+	for _, requirement in requirements do
+		if requirement.Type == "MONEY" then
+			targetMoneyValue = requirement.Amount
+		end
+
+		if requirement.Type == "CCU" then
+			targetCCUValue = requirement.Amount
+		end
+	end
+
+	local currentMoneyValeu = Players.LocalPlayer:GetAttribute("MONEY")
+	local currentCCUValue = Players.LocalPlayer:GetAttribute("CCU")
+
+	moneyTarget.Quantity.Text = string.format(
+		"MONEY: %s / %s",
+		ClientUtil:FormatToUSD(currentMoneyValeu),
+		ClientUtil:FormatToUSD(targetMoneyValue)
+	)
+
+	ccuTarget.Quantity.Text = string.format(
+		"CCU: %s / %s",
+		ClientUtil:FormatNumberToSuffixes(currentCCUValue),
+		ClientUtil:FormatNumberToSuffixes(targetCCUValue)
+	)
+
+	local moneyProgress = math.clamp(currentMoneyValeu / targetMoneyValue, 0, 1)
+	local ccuProgress = math.clamp(currentCCUValue / targetCCUValue, 0, 1)
+
+	moneyTarget.Progress.Size = UDim2.new(moneyProgress, 0, 1, 0)
+	ccuTarget.Progress.Size = UDim2.new(ccuProgress, 0, 1, 0)
 end
 
 function RebirthController:InitButtonListerns()
@@ -36,9 +117,11 @@ function RebirthController:InitButtonListerns()
 	getRebirthButton.MouseButton1Click:Connect(function()
 		if canClick then
 			canClick = false
+			screen.Visible = false
 			local result = bridge:InvokeServerAsync({
 				[actionIdentifier] = "GetRebirth",
 			})
+
 			canClick = true
 		end
 	end)

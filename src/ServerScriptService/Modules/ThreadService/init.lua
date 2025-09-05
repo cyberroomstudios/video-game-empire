@@ -6,6 +6,7 @@ local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataH
 local UtilService = require(ServerScriptService.Modules.UtilService)
 local Devs = require(ReplicatedStorage.Enums.Devs)
 local Games = require(ReplicatedStorage.Enums.Games)
+local BaseService = require(ServerScriptService.Modules.BaseService)
 
 local playerGames = {}
 
@@ -84,6 +85,13 @@ function ThreadService:GetGameFromPlayerAndDev(player: Player, devId: number)
 	end
 end
 
+function ThreadService:UpdateTotalCCU(player: Player, ccu: number)
+	PlayerDataHandler:Update(player, "totalCCU", function(current)
+		return current + ccu
+	end)
+
+	BaseService:UpdatePlayerCCU(player)
+end
 -- Cria uma thread, responsavel por rodar os trabalhadores para cada jogador
 function ThreadService:CreateDevThread(player: Player)
 	task.spawn(function()
@@ -163,6 +171,7 @@ function ThreadService:CreateDevThread(player: Player)
 						end
 
 						local gameName, playerAmount = ThreadService:CreateGame(player, model.Name)
+						ThreadService:UpdateTotalCCU(player, playerAmount)
 
 						local storedGamesFromPlayerWorker = playerGames[player.UserId][worker.Id]
 						storedGamesFromPlayerWorker[gameName] = (storedGamesFromPlayerWorker[gameName] or 0)

@@ -97,8 +97,7 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 	end
 
 	-- Define altura base
-	local fixedY = workspace:GetAttribute("DEV_Y_POSITION") + 0.5
-	
+	local fixedY = workspace:GetAttribute("DEV_Y_POSITION") + 0.3
 
 	-- Aplica rotação inicial
 	if player:GetAttribute("ROTATE_PREVIEW") then
@@ -159,7 +158,7 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 		local targetPosition = getMousePosition()
 		if targetPosition then
 			local floor = player:GetAttribute("FLOOR") or 1
-			local yAxis = fixedY + (floor - 1) * 17.379
+			local yAxis = fixedY
 
 			-- Definição do tamanho da grade (1 stud, pode mudar se quiser)
 
@@ -178,7 +177,7 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 
 			-- Verifica se a hitbox está dentro da área base, incluindo partes com CanCollide = false
 			local isInsideBase = PreviewPCController:IsPartInside(clonedModel["Primary"], base.WorkArea.WorkArea)
-			print(isInsideBase)
+
 			if isInsideBase and #PreviewPCController:GetModelTouchingParts(clonedModel["Primary"]) == 0 then
 				player:SetAttribute("CAN_SET", true)
 				clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanSet.Value

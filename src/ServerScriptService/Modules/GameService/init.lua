@@ -56,7 +56,21 @@ function GameService:GiveGame(player: Player, gameName: string, amountPlayer: nu
 		return current
 	end)
 
+	GameService:AddGameIndex(player, gameName)
 	ToolService:GiveGameTool(player, gameName, amountPlayer)
+end
+
+function GameService:AddGameIndex(player: Player, gameName: string)
+	PlayerDataHandler:Update(player, "index", function(current)
+		for _, value in current do
+			if value == gameName then
+				return current
+			end
+		end
+
+		table.insert(current, gameName)
+		return current
+	end)
 end
 
 function GameService:GetGamesFromPlayer(player: Player)

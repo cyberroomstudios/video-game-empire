@@ -17,6 +17,7 @@ local Players = game:GetService("Players")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local TeleportController = require(Players.LocalPlayer.PlayerScripts.ClientModules.TeleportController)
 local RebirthController = require(Players.LocalPlayer.PlayerScripts.ClientModules.RebirthController)
+local IndexController = require(Players.LocalPlayer.PlayerScripts.ClientModules.IndexController)
 
 local player = Players.LocalPlayer
 
@@ -26,6 +27,7 @@ local myStudioButton
 local sellButton
 
 -- Botões da Esquerda
+local indexButton
 local rebirthButton
 
 function HudController:Init()
@@ -39,7 +41,7 @@ function HudController:CreateReferences()
 	workesButton = UIReferences:GetReference("WORKERS_BUTTON")
 	myStudioButton = UIReferences:GetReference("MY_STUDIO_BUTTON")
 	sellButton = UIReferences:GetReference("SELL_BUTTON")
-
+	indexButton = UIReferences:GetReference("INDEX_BUTTON_HUD")
 	rebirthButton = UIReferences:GetReference("REBIRTH_BUTTON_HUD")
 end
 
@@ -58,6 +60,10 @@ function HudController:InitButtonListerns()
 
 	rebirthButton.MouseButton1Click:Connect(function()
 		RebirthController:Open()
+	end)
+
+	indexButton.MouseButton1Click:Connect(function()
+		IndexController:Open()
 	end)
 end
 

@@ -86,13 +86,23 @@ function ElevatorController:InitCheckElevatorUI()
 		else
 			elevatorScreen.Visible = false
 		end
+
+		local character = player.Character
+		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+		local yPos = humanoidRootPart.Position.Y
+		if yPos < 20 then
+			player:SetAttribute("CURRENT_FLOOR", 0)
+		end
 	end)
 end
 
 function ElevatorController:ChangeElevatorButtonColors(base)
 	local currentFloor = player:GetAttribute("CURRENT_FLOOR") or 0
+	local character = player.Character
+	local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+	local yPos = humanoidRootPart.Position.Y
 
-	if currentFloor == 0 then
+	if currentFloor == 0 or yPos < 20 then
 		elevatorDown.BackgroundTransparency = 0.5
 		elevatorDown.Interactable = false
 

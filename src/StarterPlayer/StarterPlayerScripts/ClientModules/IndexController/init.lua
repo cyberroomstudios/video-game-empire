@@ -1,0 +1,85 @@
+local IndexController = {}
+
+-- Init Bridg Net
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Utility = ReplicatedStorage.Utility
+local BridgeNet2 = require(Utility.BridgeNet2)
+local bridge = BridgeNet2.ReferenceBridge("IndexService")
+local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
+local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
+local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
+-- End Bridg Net
+
+local Players = game:GetService("Players")
+
+local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
+local Games = require(ReplicatedStorage.Enums.Games)
+
+local indexScreen
+local scrollingIndex
+local loadingIndex
+
+function IndexController:Init()
+	IndexController:CreateReferences()
+end
+
+function IndexController:Open()
+	indexScreen.Visible = not indexScreen.Visible
+	IndexController:BuildScreen()
+end
+
+function IndexController:CreateReferences()
+	-- Botões referentes aos Teleports
+	indexScreen = UIReferences:GetReference("INDEX_SCREEN")
+	scrollingIndex = UIReferences:GetReference("SCROLLING_INDEX")
+	loadingIndex = UIReferences:GetReference("LOADING_INDEX")
+end
+
+function IndexController:BuildScreen()
+	loadingIndex.Visible = true
+	scrollingIndex.Visible = false
+
+	local function hasItem(list, item)
+		for _, value in list do
+			if value == item then
+				return true
+			end
+		end
+
+		return false
+	end
+	local result = bridge:InvokeServerAsync({
+		[actionIdentifier] = "GetIndex",
+	})
+
+	print(result)
+	for _, value in scrollingIndex:GetChildren() do
+		if value:GetAttribute("IS_GAME") then
+			value:Destroy()
+		end
+	end
+
+	for _, gameInfo in Games do
+		local newItem = scrollingIndex:FindFirstChild("Item"):Clone()
+		if hasItem(result, gameInfo.Name) then
+			local viewPort = ReplicatedStorage.GUI.ViewPorts.Games[gameInfo.Name]:Clone()
+			viewPort.Size = newItem.Icon.Size
+			viewPort.Position = newItem.Icon.Position
+			viewPort.AnchorPoint = newItem.Icon.AnchorPoint
+			viewPort.Parent = newItem
+
+			newItem.Icon:Destroy()
+
+			newItem.Info.Genre.Text = gameInfo.GUI.Name
+		end
+
+		newItem.LayoutOrder = gameInfo.GUI.Order
+		newItem:SetAttribute("IS_GAME", true)
+		newItem.Parent = scrollingIndex
+	end
+
+	loadingIndex.Visible = false
+	scrollingIndex.Visible = true
+end
+
+return IndexController

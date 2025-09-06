@@ -84,10 +84,11 @@ end
 
 function BaseService:GiveMoreFloor(player: Player, amount)
 	local base = BaseService:GetBase(player)
-	local newFloor = ReplicatedStorage.Model.FloorModule:Clone()
 
 	for i = 1, amount do
-		newFloor.Parent = base.Parent
+		local newFloor = ReplicatedStorage.Model.FloorModule:Clone()
+
+		newFloor.Name = "FLOOR_" .. player:GetAttribute("FLOOR") or 1
 		local newY = 6.15 + player:GetAttribute("FLOOR") * positionYFloor
 
 		newFloor:SetPrimaryPartCFrame(
@@ -97,6 +98,7 @@ function BaseService:GiveMoreFloor(player: Player, amount)
 		base:SetAttribute("FLOOR", (base:GetAttribute("FLOOR") or 0) + 1)
 
 		player:SetAttribute("FLOOR", player:GetAttribute("FLOOR") + 1)
+		newFloor.Parent = base.mapa
 	end
 end
 

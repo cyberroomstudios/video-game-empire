@@ -90,7 +90,7 @@ function ElevatorController:InitCheckElevatorUI()
 		local character = player.Character
 		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 		local yPos = humanoidRootPart.Position.Y
-		if yPos < 20 then
+		if yPos < 15 then
 			player:SetAttribute("CURRENT_FLOOR", 0)
 		end
 	end)

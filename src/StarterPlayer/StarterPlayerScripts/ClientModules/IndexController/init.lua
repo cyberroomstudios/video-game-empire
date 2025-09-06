@@ -17,28 +17,33 @@ local Games = require(ReplicatedStorage.Enums.Games)
 
 local indexScreen
 local scrollingIndex
-local loadingIndex
 
 function IndexController:Init()
 	IndexController:CreateReferences()
 end
 
 function IndexController:Open()
-	indexScreen.Visible = not indexScreen.Visible
+	scrollingIndex.Visible = false
+	indexScreen.Visible = true
 	IndexController:BuildScreen()
+	scrollingIndex.Visible = true
+end
+
+function IndexController:Close()
+	indexScreen.Visible = false
+end
+
+function IndexController:GetScreen()
+	return indexScreen
 end
 
 function IndexController:CreateReferences()
 	-- Botões referentes aos Teleports
 	indexScreen = UIReferences:GetReference("INDEX_SCREEN")
 	scrollingIndex = UIReferences:GetReference("SCROLLING_INDEX")
-	loadingIndex = UIReferences:GetReference("LOADING_INDEX")
 end
 
 function IndexController:BuildScreen()
-	loadingIndex.Visible = true
-	scrollingIndex.Visible = false
-
 	local function hasItem(list, item)
 		for _, value in list do
 			if value == item then
@@ -52,7 +57,6 @@ function IndexController:BuildScreen()
 		[actionIdentifier] = "GetIndex",
 	})
 
-	print(result)
 	for _, value in scrollingIndex:GetChildren() do
 		if value:GetAttribute("IS_GAME") then
 			value:Destroy()
@@ -77,9 +81,6 @@ function IndexController:BuildScreen()
 		newItem:SetAttribute("IS_GAME", true)
 		newItem.Parent = scrollingIndex
 	end
-
-	loadingIndex.Visible = false
-	scrollingIndex.Visible = true
 end
 
 return IndexController

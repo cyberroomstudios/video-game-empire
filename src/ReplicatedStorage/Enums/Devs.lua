@@ -2,7 +2,7 @@ local Devs = table.freeze({
 
 	["1_DevIntern"] = {
 		Name = "1_DevIntern",
-		TimeToProduceGame = 20,
+		TimeToProduceGame = 5,
 		CapacityOfGamesProduced = 10,
 		Price = 100,
 		Rarity = "COMMON",
@@ -29,7 +29,7 @@ local Devs = table.freeze({
 
 	["2_JuniorDev"] = {
 		Name = "2_JuniorDev",
-		TimeToProduceGame = 20,
+		TimeToProduceGame = 5,
 		CapacityOfGamesProduced = 10,
 		Price = 10,
 		Rarity = "COMMON",

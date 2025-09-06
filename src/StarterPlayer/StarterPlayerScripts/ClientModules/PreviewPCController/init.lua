@@ -157,10 +157,13 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 
 		local targetPosition = getMousePosition()
 		if targetPosition then
-			local floor = player:GetAttribute("FLOOR") or 1
+			local floor = player:GetAttribute("CURRENT_FLOOR") or 0
+
 			local yAxis = fixedY
 
-			-- Definição do tamanho da grade (1 stud, pode mudar se quiser)
+			if floor > 0 then
+				yAxis = base.mapa["FLOOR_" .. floor].Floor.Carpet.Part.Position.Y + 3
+			end
 
 			-- Posição ajustada para andar na grade
 			local snappedX = snapToGrid(targetPosition.X, gridSize)

@@ -18,6 +18,8 @@ local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences
 local TeleportController = require(Players.LocalPlayer.PlayerScripts.ClientModules.TeleportController)
 local RebirthController = require(Players.LocalPlayer.PlayerScripts.ClientModules.RebirthController)
 local IndexController = require(Players.LocalPlayer.PlayerScripts.ClientModules.IndexController)
+local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
+local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
 
 local player = Players.LocalPlayer
 
@@ -27,13 +29,18 @@ local myStudioButton
 local sellButton
 
 -- Botões da Esquerda
+local shopButton
 local indexButton
 local rebirthButton
+
+-- Botões da Direta
+local autoCollectButton
 
 function HudController:Init()
 	HudController:CreateReferences()
 	HudController:InitButtonListerns()
 	HudController:InitUserInputService()
+	HudController:InitButtonEffects()
 end
 
 function HudController:CreateReferences()
@@ -41,8 +48,10 @@ function HudController:CreateReferences()
 	workesButton = UIReferences:GetReference("WORKERS_BUTTON")
 	myStudioButton = UIReferences:GetReference("MY_STUDIO_BUTTON")
 	sellButton = UIReferences:GetReference("SELL_BUTTON")
+	shopButton = UIReferences:GetReference("SHOP_HUD")
 	indexButton = UIReferences:GetReference("INDEX_BUTTON_HUD")
 	rebirthButton = UIReferences:GetReference("REBIRTH_BUTTON_HUD")
+	autoCollectButton = UIReferences:GetReference("AUTO_COLLECT_BUTTON")
 end
 
 function HudController:InitButtonListerns()
@@ -52,18 +61,87 @@ function HudController:InitButtonListerns()
 
 	myStudioButton.MouseButton1Click:Connect(function()
 		TeleportController:ToBase()
+		UIStateManager:Close("WORKERS")
+		UIStateManager:Close("SELL")
 	end)
 
 	sellButton.MouseButton1Click:Connect(function()
 		TeleportController:ToSell()
+		--UIStateManager:Open("SELL")
 	end)
 
 	rebirthButton.MouseButton1Click:Connect(function()
-		RebirthController:Open()
+		UIStateManager:Open("REBIRTH")
 	end)
 
 	indexButton.MouseButton1Click:Connect(function()
-		IndexController:Open()
+		UIStateManager:Open("INDEX")
+	end)
+
+	autoCollectButton.MouseButton1Click:Connect(function()
+		if Players.LocalPlayer:GetAttribute("HAS_AUTO_COLLECT") then
+			AutoCollectScreenController:ActiveOrInactive()
+			return
+		end
+		UIStateManager:Open("AUTO_COLLECT")
+	end)
+end
+
+function HudController:InitButtonEffects()
+	shopButton.MouseEnter:Connect(function()
+		shopButton.UIScale.Scale = 1.1
+	end)
+
+	shopButton.MouseLeave:Connect(function()
+		shopButton.UIScale.Scale = 1
+	end)
+
+	indexButton.MouseEnter:Connect(function()
+		indexButton.UIScale.Scale = 1.1
+	end)
+
+	indexButton.MouseLeave:Connect(function()
+		indexButton.UIScale.Scale = 1
+	end)
+
+	rebirthButton.MouseEnter:Connect(function()
+		rebirthButton.UIScale.Scale = 1.1
+	end)
+
+	rebirthButton.MouseLeave:Connect(function()
+		rebirthButton.UIScale.Scale = 1
+	end)
+
+	workesButton.MouseEnter:Connect(function()
+		workesButton.UIScale.Scale = 1.1
+	end)
+
+	workesButton.MouseLeave:Connect(function()
+		workesButton.UIScale.Scale = 1
+	end)
+
+	myStudioButton.MouseEnter:Connect(function()
+		myStudioButton.UIScale.Scale = 1.1
+	end)
+
+	myStudioButton.MouseLeave:Connect(function()
+		myStudioButton.UIScale.Scale = 1
+	end)
+
+	sellButton.MouseEnter:Connect(function()
+		sellButton.UIScale.Scale = 1.1
+	end)
+
+	sellButton.MouseLeave:Connect(function()
+		sellButton.UIScale.Scale = 1
+	end)
+
+	autoCollectButton.MouseEnter:Connect(function()
+		autoCollectButton.UIScale.Scale = 1.1
+	end)
+
+	autoCollectButton.MouseLeave:Connect(function()
+		autoCollectButton.UIScale.Scale = 1
 	end)
 end
 
@@ -96,6 +174,7 @@ function HudController:InitUserInputService()
 						data = {
 							CFrame = workspace.Preview.PrimaryPart.CFrame,
 							Dev = toolName,
+							Floor = player:GetAttribute("CURRENT_FLOOR"),
 						},
 					})
 					return

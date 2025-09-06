@@ -134,6 +134,10 @@ function DevService:SetDevInMap(player: Player, devId: number, devName: string, 
 
 		local yPosition = workspace:GetAttribute("DEV_Y_POSITION")
 
+		if floor > 0 then
+			yPosition = base.mapa["FLOOR_" .. floor].Floor.Carpet.Part.Position.Y + 3
+		end
+
 		-- Calcula a altura da base da PrimaryPart
 		local primaryPart = model.PrimaryPart
 		local halfHeight = primaryPart.Size.Y / 2
@@ -182,14 +186,17 @@ end
 
 function DevService:GetGamesFromDev(player: Player, devId: number)
 	local games = ThreadService:GetGameFromPlayerAndDev(player, devId)
-	local model = DevService:GetModel(player, devId)
 
-	for gameName, amount in games do
-		GameService:GiveGame(player, gameName, amount)
-		model:SetAttribute("STORED_GAME_" .. gameName, 0)
+	if games then
+		local model = DevService:GetModel(player, devId)
+
+		for gameName, amount in games do
+			GameService:GiveGame(player, gameName, amount)
+			model:SetAttribute("STORED_GAME_" .. gameName, 0)
+		end
+
+		return games
 	end
-
-	return games
 end
 
 function DevService:GetModel(player: Player, devId: number)
@@ -215,7 +222,6 @@ function DevService:BuyDev(player: Player, devName: string)
 	local hasStock = StockService:HasStock(player, devName)
 
 	if not hasStock then
-		print("Sem Stock")
 		return false
 	end
 
@@ -238,6 +244,5 @@ function DevService:DeleteDevInMap(player: Player, devId: number)
 		end
 	end
 end
-
 
 return DevService

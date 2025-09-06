@@ -21,6 +21,7 @@ local Workspace = game:GetService("Workspace")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 local Devs = require(ReplicatedStorage.Enums.Devs)
+local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
 local player = Players.LocalPlayer
 
 local screen
@@ -50,31 +51,21 @@ function HireAgencyScreenController:Close()
 	screen.Visible = false
 end
 
+function HireAgencyScreenController:GetScreen()
+	return screen
+end
+
 function HireAgencyScreenController:ConfigureProximity()
 	local proximityPart = ClientUtil:WaitForDescendants(workspace, "Map", "HireAgency", "Agency", "ProximityPart")
 	local proximityPrompt = proximityPart.ProximityPrompt
-	local blur = Instance.new("BlurEffect")
-	blur.Size = 0
-	blur.Parent = Lighting
-
-	local Camera = workspace.CurrentCamera
 
 	proximityPrompt.PromptShown:Connect(function()
-		HireAgencyScreenController:Open()
-		TweenService:Create(blur, TweenInfo.new(0.5), { Size = 24 }):Play()
-
-		-- Diminui o PoV (zoom out dá sensação de foco no menu)
-		TweenService:Create(Camera, TweenInfo.new(0.5), { FieldOfView = 50 }):Play()
+		print("Caiu aqui")
+		UIStateManager:Open("WORKERS")
 	end)
 
 	proximityPrompt.PromptHidden:Connect(function()
-		TweenService:Create(blur, TweenInfo.new(0.5), { Size = 0 }):Play()
-
-		-- Volta o PoV padrão (normalmente é 70)
-		TweenService:Create(Camera, TweenInfo.new(0.5), { FieldOfView = 70 }):Play()
-
-		task.wait(0.5)
-		HireAgencyScreenController:Close()
+		UIStateManager:Close("WORKERS")
 	end)
 end
 

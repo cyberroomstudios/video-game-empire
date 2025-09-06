@@ -22,13 +22,18 @@ function MapService:InitBridgeListener()
 		if data[actionIdentifier] == "SetDev" then
 			local cFrame = data.data.CFrame
 			local dev = data.data.Dev
+			local floor = data.data.Floor
 
-			MapService:SetDevToMap(player, cFrame, dev)
+			if floor > player:GetAttribute("FLOOR") then
+				return
+			end
+
+			MapService:SetDevToMap(player, cFrame, dev, floor)
 		end
 	end
 end
 
-function MapService:SetDevToMap(player: Player, CFrame: CFrame, devName: string)
+function MapService:SetDevToMap(player: Player, CFrame: CFrame, devName: string, floor: number)
 	local devFolder = ReplicatedStorage.Model.Devs
 
 	if CFrame and devName and devFolder:FindFirstChild(devName) then
@@ -61,7 +66,7 @@ function MapService:SetDevToMap(player: Player, CFrame: CFrame, devName: string)
 		end
 
 		devClone:Destroy()
-		
+
 		-- Consume um dev da base do jogador
 		DevService:ConsumeDev(player, devName)
 
@@ -69,10 +74,10 @@ function MapService:SetDevToMap(player: Player, CFrame: CFrame, devName: string)
 		ToolService:ConsumeDevTool(player, devName)
 
 		-- Salva na base de dados do jogador
-		local devId = DevService:SaveDevInDataHandler(player, devName, CFrame, 1)
+		local devId = DevService:SaveDevInDataHandler(player, devName, CFrame, floor)
 
 		-- Seta no mapa
-		DevService:SetDevInMap(player, devId, devName, CFrame, 1)
+		DevService:SetDevInMap(player, devId, devName, CFrame, floor)
 	end
 end
 
@@ -101,6 +106,5 @@ function MapService:IsPartInside(partA, partB)
 	-- Verifica se os limites de A estão dentro dos limites de B (apenas X e Z)
 	return (minA.X >= minB.X and maxA.X <= maxB.X and minA.Y >= minB.Y and maxA.Y <= maxB.Y)
 end
-
 
 return MapService

@@ -16,6 +16,7 @@ local DevService = require(ServerScriptService.Modules.DevService)
 local ThreadService = require(ServerScriptService.Modules.ThreadService)
 local StockService = require(ServerScriptService.Modules.StockService)
 local ToolService = require(ServerScriptService.Modules.ToolService)
+local AutoCollectService = require(ServerScriptService.Modules.AutoCollectService)
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -37,6 +38,9 @@ function StartGameService:InitBridgeListener()
 			end
 
 			playerInitializer[player] = true
+
+			AutoCollectService:AddAutoCollectPlaytime(player)
+			StartGameService:NotifyLoadingStep(player, "Registrando Login")
 
 			-- Cria uma pasta com os objetos do jogador
 			StartGameService:CreatePlayerFolder(player)
@@ -108,6 +112,9 @@ function StartGameService:InitPlayerAtributes(player: Player)
 	-- Inicializando o Dinheiro
 	local money = PlayerDataHandler:Get(player, "money")
 	player:SetAttribute("MONEY", money)
+
+	local hasAutoCollect = PlayerDataHandler:Get(player, "hasAutoCollect")
+	player:SetAttribute("HAS_AUTO_COLLECT", hasAutoCollect)
 end
 
 return StartGameService

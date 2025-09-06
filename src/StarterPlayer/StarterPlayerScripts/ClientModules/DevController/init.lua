@@ -132,6 +132,12 @@ function DevController:UpdateDevInformations(model: Model)
 
 		local billboard = screenGui:WaitForChild("DEV_PROGRESS_" .. model:GetAttribute("ID"))
 
+		for _, value in billboard.Content.Unlocked:GetChildren() do
+			if value:GetAttribute("IS_GAME") then
+				value:Destroy()
+			end
+		end
+
 		while model:GetAttribute("UPDATE_INFORMATION") do
 			local developingText = billboard.Content.ProgressBar.Developing.Title.TextLabel
 
@@ -182,6 +188,16 @@ function DevController:UpdateDevInformations(model: Model)
 
 			local attributes = model:GetAttributes()
 
+			-- REMOVE itens que não existem mais ou cujo valor é 0
+			for _, child in pairs(billboard.Content.Unlocked:GetChildren()) do
+				if child:GetAttribute("IS_GAME") then
+					local attrName = "STORED_GAME_" .. child.Name
+					if not attributes[attrName] or attributes[attrName] <= 0 then
+						child:Destroy()
+					end
+				end
+			end
+
 			for name, value in attributes do
 				if string.find(name, "STORED_GAME_") and value > 0 then
 					local gameName = string.gsub(name, "STORED_GAME_", "")
@@ -203,6 +219,7 @@ function DevController:UpdateDevInformations(model: Model)
 					item.GameCCU.Text = ClientUtil:FormatNumberToSuffixes(value) .. " CCU"
 				end
 			end
+
 			-- Espera antes de atualizar de novo
 			task.wait(0.1)
 		end

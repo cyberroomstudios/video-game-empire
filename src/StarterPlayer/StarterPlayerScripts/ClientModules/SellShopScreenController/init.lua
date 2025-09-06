@@ -13,10 +13,10 @@ local Players = game:GetService("Players")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
+local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
 
 local screen
 local scrollingGames
-local loadingGames
 local totalPriceAllGames
 local sellAllGames
 
@@ -30,7 +30,6 @@ function SellShopScreenController:CreateReferences()
 	-- Botões referentes aos Teleports
 	screen = UIReferences:GetReference("SELL_SHOP_SCREEN")
 	scrollingGames = UIReferences:GetReference("SCROLLING_GAMES")
-	loadingGames = UIReferences:GetReference("LOADING_GAMES")
 	totalPriceAllGames = UIReferences:GetReference("TOTAL_PRICE_ALL_GAMES")
 	sellAllGames = UIReferences:GetReference("SELL_ALL_GAMES")
 end
@@ -57,10 +56,8 @@ end
 
 function SellShopScreenController:Open()
 	screen.Visible = true
-	loadingGames.Visible = true
 	scrollingGames.Visible = false
 	SellShopScreenController:BuildScreen()
-	loadingGames.Visible = false
 	scrollingGames.Visible = true
 end
 
@@ -68,16 +65,21 @@ function SellShopScreenController:Close()
 	screen.Visible = false
 end
 
+
+function SellShopScreenController:GetScreen()
+	return screen
+end
+
 function SellShopScreenController:ConfigureProximity()
 	local proximityPart = ClientUtil:WaitForDescendants(workspace, "Map", "SellShop", "SellShop", "ProximityPart")
 	local proximityPrompt = proximityPart.ProximityPrompt
 
 	proximityPrompt.PromptShown:Connect(function()
-		SellShopScreenController:Open()
+		UIStateManager:Open("SELL")
 	end)
 
 	proximityPrompt.PromptHidden:Connect(function()
-		SellShopScreenController:Close()
+		UIStateManager:Close("SELL")
 	end)
 end
 

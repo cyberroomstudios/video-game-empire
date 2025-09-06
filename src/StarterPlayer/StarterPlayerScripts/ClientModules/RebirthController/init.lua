@@ -18,7 +18,6 @@ local Devs = require(ReplicatedStorage.Enums.Devs)
 local screen
 local getRebirthButton
 local mainRebirth
-local loadingRebirth
 
 -- Informações da Tela
 local rebirthReward
@@ -35,7 +34,6 @@ function RebirthController:CreateReferences()
 	screen = UIReferences:GetReference("REBIRTH_SCREEN")
 	getRebirthButton = UIReferences:GetReference("GET_REBIRTH_BUTTON")
 	mainRebirth = UIReferences:GetReference("MAIN_REBIRTH")
-	loadingRebirth = UIReferences:GetReference("LOADING_REBIRTH")
 
 	rebirthReward = UIReferences:GetReference("REBIRTH_REWARDS")
 	moneyTarget = UIReferences:GetReference("MONEY_TARGET")
@@ -43,14 +41,18 @@ function RebirthController:CreateReferences()
 end
 
 function RebirthController:Open()
-	loadingRebirth.Visible = true
 	mainRebirth.Visible = false
-
-	screen.Visible = not screen.Visible
+	screen.Visible = true
 	RebirthController:BuildScreen()
-
-	loadingRebirth.Visible = false
 	mainRebirth.Visible = true
+end
+
+function RebirthController:Close()
+	screen.Visible = false
+end
+
+function RebirthController:GetScreen()
+	return screen
 end
 
 function RebirthController:BuildScreen()

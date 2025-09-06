@@ -1,0 +1,47 @@
+local AutoSellService = {}
+
+-- Init Bridg Net
+local ServerScriptService = game:GetService("ServerScriptService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Utility = ReplicatedStorage.Utility
+local BridgeNet2 = require(Utility.BridgeNet2)
+local GameService = require(ServerScriptService.Modules.GameService)
+local bridge = BridgeNet2.ReferenceBridge("AutoSellService")
+local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
+local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
+local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
+-- End Bridg Net
+function AutoSellService:Init()
+	AutoSellService:InitBridgeListener()
+end
+
+function AutoSellService:InitBridgeListener()
+	bridge.OnServerInvoke = function(player, data)
+		if data[actionIdentifier] == "ActiveAutoSell" then
+			return AutoSellService:ActiveAutoSell(player)
+		end
+
+		if data[actionIdentifier] == "InactiveAutoCollect" then
+			return AutoSellService:InactiveAutoSell(player)
+		end
+	end
+end
+
+function AutoSellService:ActiveAutoSell(player: Player)
+	player:SetAttribute("ACTIVE_AUTO_COLLECT", true)
+	task.spawn(function()
+		while player and player.Parent and player:GetAttribute("ACTIVE_AUTO_COLLECT") do
+			if not player:GetAttribute("COLLETING") then
+				GameService:SellAllGame(player)
+			end
+
+			task.wait(3)
+		end
+	end)
+end
+
+function AutoSellService:InactiveAutoSell(player: Player)
+	player:SetAttribute("ACTIVE_AUTO_COLLECT", false)
+end
+
+return AutoSellService

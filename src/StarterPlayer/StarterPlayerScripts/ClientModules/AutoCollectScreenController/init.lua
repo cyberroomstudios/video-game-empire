@@ -24,8 +24,7 @@ function AutoCollectScreenController:Init()
 end
 
 function AutoCollectScreenController:CreateReferences()
-	-- Botões referentes aos Teleports
-	autoCollectButton = UIReferences:GetReference("AUTO_COLLECT_BUTTON")
+	autoCollectButton = UIReferences:GetReference("AUTO_COLLECT_BUTTON_HUD")
 	autoCollectScreen = UIReferences:GetReference("AUTO_COLLECT_SCREEN")
 	mainAutoCollect = UIReferences:GetReference("MAIN_AUTO_COLLECT")
 	leftPlaytime = UIReferences:GetReference("LEFT_PLAYTIME")
@@ -39,11 +38,13 @@ end
 function AutoCollectScreenController:ActiveOrInactive()
 	if autoCollectButton.Info.BackgroundColor3 == autoCollectButton.Info.ActiveColor.Value then
 		autoCollectButton.Info.BackgroundColor3 = autoCollectButton.Info.InactiveColor.Value
+
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "InactiveAutoCollect",
 		})
 	else
 		autoCollectButton.Info.BackgroundColor3 = autoCollectButton.Info.ActiveColor.Value
+
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "ActiveAutoCollect",
 		})
@@ -74,7 +75,7 @@ function AutoCollectScreenController:BuildScreen()
 
 	autoCollectScreen.Visible = false
 	workspace.CurrentCamera.Blur.Size = 0
-	
+
 	local result = bridge:InvokeServerAsync({
 		[actionIdentifier] = "ActiveAutoCollect",
 	})

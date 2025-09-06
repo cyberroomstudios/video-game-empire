@@ -20,6 +20,7 @@ local RebirthController = require(Players.LocalPlayer.PlayerScripts.ClientModule
 local IndexController = require(Players.LocalPlayer.PlayerScripts.ClientModules.IndexController)
 local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
 local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
+local AutoSellController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoSellController)
 
 local player = Players.LocalPlayer
 
@@ -35,6 +36,7 @@ local rebirthButton
 
 -- Botões da Direta
 local autoCollectButton
+local autoSellButton
 
 function HudController:Init()
 	HudController:CreateReferences()
@@ -51,7 +53,8 @@ function HudController:CreateReferences()
 	shopButton = UIReferences:GetReference("SHOP_HUD")
 	indexButton = UIReferences:GetReference("INDEX_BUTTON_HUD")
 	rebirthButton = UIReferences:GetReference("REBIRTH_BUTTON_HUD")
-	autoCollectButton = UIReferences:GetReference("AUTO_COLLECT_BUTTON")
+	autoCollectButton = UIReferences:GetReference("AUTO_COLLECT_BUTTON_HUD")
+	autoSellButton = UIReferences:GetReference("AUTO_SELL_BUTTON")
 end
 
 function HudController:InitButtonListerns()
@@ -84,6 +87,10 @@ function HudController:InitButtonListerns()
 			return
 		end
 		UIStateManager:Open("AUTO_COLLECT")
+	end)
+
+	autoSellButton.MouseButton1Click:Connect(function()
+		AutoSellController:ActiveOrInactive()
 	end)
 end
 

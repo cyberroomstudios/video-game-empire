@@ -102,6 +102,7 @@ function GameService:GetGamePrice(amountPlayers: number)
 end
 
 function GameService:SellGame(player: Player, gameName: string)
+	player:SetAttribute("SELLING", true)
 	local games = PlayerDataHandler:Get(player, "games")
 	local hasGame = false
 	local price = 0
@@ -124,9 +125,11 @@ function GameService:SellGame(player: Player, gameName: string)
 		-- Da o Dinheiro pro Jogadore
 		MoneyService:GiveMoney(player, price)
 	end
+	player:SetAttribute("SELLING", false)
 end
 
 function GameService:SellAllGame(player: Player)
+	player:SetAttribute("SELLING", true)
 	local games = PlayerDataHandler:Get(player, "games")
 	local totalPrice = 0
 	for _, value in games do
@@ -140,6 +143,8 @@ function GameService:SellAllGame(player: Player)
 
 	-- Da o Dinheiro pro Jogadore
 	MoneyService:GiveMoney(player, totalPrice)
+
+	player:SetAttribute("SELLING", false)
 end
 
 return GameService

@@ -188,6 +188,7 @@ function DevService:GetGamesFromDev(player: Player, devId: number)
 	local games = ThreadService:GetGameFromPlayerAndDev(player, devId)
 
 	if games then
+		player:SetAttribute("COLLETING", true)
 		local model = DevService:GetModel(player, devId)
 
 		for gameName, amount in games do
@@ -195,6 +196,7 @@ function DevService:GetGamesFromDev(player: Player, devId: number)
 			model:SetAttribute("STORED_GAME_" .. gameName, 0)
 		end
 
+		player:SetAttribute("COLLETING", false)
 		return games
 	end
 end

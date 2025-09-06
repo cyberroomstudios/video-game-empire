@@ -86,19 +86,21 @@ end
 
 function AutoCollectService:ActiveAutoCollectThread(player: Player)
 	task.spawn(function()
-		while player:GetAttribute("ACTIVED_AUTO_COLLECT") do
-			local collect = false
-			local devs = PlayerDataHandler:Get(player, "workers")
-			for _, dev in devs do
-				local games = DevService:GetGamesFromDev(player, dev.Id)
+		while player and player.Parent and player:GetAttribute("ACTIVED_AUTO_COLLECT") do
+			if not player:GetAttribute("SELLING") then
+				local collect = false
+				local devs = PlayerDataHandler:Get(player, "workers")
+				for _, dev in devs do
+					local games = DevService:GetGamesFromDev(player, dev.Id)
 
-				if games then
-					collect = true
+					if games then
+						collect = true
+					end
 				end
-			end
 
-			if collect then
-				GameNotificationService:SendSuccessNotification(player, "Game Collect")
+				if collect then
+					GameNotificationService:SendSuccessNotification(player, "Game Collect")
+				end
 			end
 
 			task.wait(3)

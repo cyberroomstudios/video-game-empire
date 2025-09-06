@@ -78,7 +78,8 @@ function ToolService:GiveGameTool(player: Player, gameName: string, amountPlayer
 
 	-- Se não encontrar nenhum, cria uma nova tool
 	if not tool then
-		local newToll = ServerStorage.Tools.Games:FindFirstChild(gameName)
+	
+		local newToll = ServerStorage.Tools.Games:FindFirstChild(gameName):Clone()
 		newToll:SetAttribute("ORIGINAL_NAME", gameName)
 		newToll:SetAttribute("PLAYER_AMOUNT", amountPlayer)
 		newToll:SetAttribute("TOOL_TYPE", "GAME")

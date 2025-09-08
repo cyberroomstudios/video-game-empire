@@ -1,11 +1,27 @@
+local ToolService = {}
+
+-- Init Bridg Net
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Utility = ReplicatedStorage.Utility
+local BridgeNet2 = require(Utility.BridgeNet2)
+local bridge = BridgeNet2.ReferenceBridge("BackpackService")
+local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
+local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
+local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
+-- End Bridg Net
+
 local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 
 local UtilService = require(ServerScriptService.Modules.UtilService)
 
-local ToolService = {}
-
 function ToolService:Init() end
+
+function ToolService:UpdateBackpack(player: Player)
+	bridge:Fire(player, {
+		[actionIdentifier] = "UpdateBackpack",
+	})
+end
 
 -- Da uma nova tool de Desenvolvedor ao jogador
 function ToolService:GiveDevTool(player: Player, toolName: string)
@@ -42,12 +58,13 @@ function ToolService:GiveDevTool(player: Player, toolName: string)
 
 		newToll.Name = UtilService:formatCamelCase(toolName)
 		newToll.Parent = player.Backpack
-
+		ToolService:UpdateBackpack(player)
 		return newToll
 	end
 
 	tool:SetAttribute("AMOUNT", amountTool + 1)
 	tool.Name = UtilService:formatCamelCase(toolName) .. "(" .. amountTool + 1 .. ")"
+	ToolService:UpdateBackpack(player)
 end
 
 -- Da uma nova tool de jogo ao desenvolvedor ao jogador
@@ -78,7 +95,6 @@ function ToolService:GiveGameTool(player: Player, gameName: string, amountPlayer
 
 	-- Se não encontrar nenhum, cria uma nova tool
 	if not tool then
-	
 		local newToll = ServerStorage.Tools.Games:FindFirstChild(gameName):Clone()
 		newToll:SetAttribute("ORIGINAL_NAME", gameName)
 		newToll:SetAttribute("PLAYER_AMOUNT", amountPlayer)
@@ -87,12 +103,13 @@ function ToolService:GiveGameTool(player: Player, gameName: string, amountPlayer
 		newToll.Name = UtilService:formatCamelCase(gameName) .. " " .. (playerAmountTool + (amountPlayer or 0))
 
 		newToll.Parent = player.Backpack
-
+		ToolService:UpdateBackpack(player)
 		return newToll
 	end
 
 	tool:SetAttribute("PLAYER_AMOUNT", playerAmountTool + amountPlayer)
 	tool.Name = UtilService:formatCamelCase(gameName) .. " " .. (playerAmountTool + (amountPlayer or 0))
+	ToolService:UpdateBackpack(player)
 end
 
 function ToolService:ConsumeDevTool(player: Player, toolName: string)
@@ -123,12 +140,13 @@ function ToolService:ConsumeDevTool(player: Player, toolName: string)
 	if tool and amountTool then
 		if amountTool == 1 then
 			tool:Destroy()
-
+			ToolService:UpdateBackpack(player)
 			return
 		end
 
 		tool:SetAttribute("AMOUNT", amountTool - 1)
 		tool.Name = UtilService:formatCamelCase(toolName)
+		ToolService:UpdateBackpack(player)
 	end
 end
 
@@ -136,6 +154,7 @@ function ToolService:ConsumeGameTool(player: Player, gameName: string)
 	for _, item in player:FindFirstChildOfClass("Backpack"):GetChildren() do
 		if item:IsA("Tool") and item:GetAttribute("ORIGINAL_NAME") == gameName then
 			item:Destroy()
+			ToolService:UpdateBackpack(player)
 			return
 		end
 	end
@@ -148,6 +167,8 @@ function ToolService:ConsumeGameTool(player: Player, gameName: string)
 			end
 		end
 	end
+
+	ToolService:UpdateBackpack(player)
 end
 
 function ToolService:ConsumeAllGameTool(player: Player)
@@ -165,6 +186,8 @@ function ToolService:ConsumeAllGameTool(player: Player)
 			end
 		end
 	end
+
+	ToolService:UpdateBackpack(player)
 end
 
 return ToolService

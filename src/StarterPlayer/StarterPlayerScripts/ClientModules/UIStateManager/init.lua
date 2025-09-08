@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
 local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
+local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 
 local screens = {}
 local loadedModules = false
@@ -14,9 +15,16 @@ blur.Size = 0
 blur.Parent = camera
 
 local currentScreen = ""
+local backpackButtons
 
 function UIStateManager:Init()
+	UIStateManager:CreateReferences()
 	UIStateManager:ConfigureCloseButton()
+	UIStateManager:InitBackpackButtons()
+end
+
+function UIStateManager:CreateReferences()
+	backpackButtons = UIReferences:GetReference("BACKPACK_BUTTONS")
 end
 
 function UIStateManager:LoadModules()
@@ -29,6 +37,7 @@ function UIStateManager:LoadModules()
 		local SellShopScreenController = require(clientModules.SellShopScreenController)
 		local RebirthController = require(clientModules.RebirthController)
 		local AutoCollectScreenController = require(clientModules.AutoCollectScreenController)
+		local BackpackController = require(clientModules.BackpackController)
 
 		screens = {
 			["WORKERS"] = HireAgencyScreenController,
@@ -36,6 +45,7 @@ function UIStateManager:LoadModules()
 			["INDEX"] = IndexController,
 			["REBIRTH"] = RebirthController,
 			["AUTO_COLLECT"] = AutoCollectScreenController,
+			["BACKPACK_EXPAND"] = BackpackController,
 		}
 	end
 end
@@ -67,33 +77,52 @@ function UIStateManager:Close(screenName: string)
 end
 
 function UIStateManager:ApplyTween(screen: Frame)
-	-- Tamanhos para o efeito
-
-	-- Sizes for the effect
 	local originalSize = screen.Size
-	local smallSize = UDim2.new(originalSize.X.Scale * 0.3, 0, originalSize.Y.Scale * 0.3, 0)
-	local bigSize = UDim2.new(originalSize.X.Scale * 1.1, 0, originalSize.Y.Scale * 1.1, 0)
-
-	-- Tween settings
 	local tweenInfo = TweenInfo.new(
-		0.3, -- Duration
+		0.3, -- duração
 		Enum.EasingStyle.Quad,
 		Enum.EasingDirection.Out
 	)
 
-	-- Start small
+	if screen.Name == "Expand" then
+		print("Entrou aqui")
+		local tweenInfo = TweenInfo.new(
+			0.1, -- duração
+			Enum.EasingStyle.Quad,
+			Enum.EasingDirection.Out
+		)
+		-- Apenas cresce no eixo Y
+		local startSize = UDim2.new(originalSize.X.Scale, 0, originalSize.Y.Scale * 0.3, 0)
+		local endSize = UDim2.new(originalSize.X.Scale, 0, originalSize.Y.Scale * 1.1, 0)
+
+		screen.Size = startSize
+
+		local growTween = TweenService:Create(screen, tweenInfo, { Size = endSize })
+		local normalTween = TweenService:Create(screen, tweenInfo, { Size = originalSize })
+
+		growTween:Play()
+		growTween.Completed:Connect(function()
+			normalTween:Play()
+		end)
+
+		return -- importante: para não executar o tween padrão
+	end
+
+	-- Tween padrão para outras telas
+	local smallSize = UDim2.new(originalSize.X.Scale * 0.3, 0, originalSize.Y.Scale * 0.3, 0)
+	local bigSize = UDim2.new(originalSize.X.Scale * 1.1, 0, originalSize.Y.Scale * 1.1, 0)
+
 	screen.Size = smallSize
 
-	-- Create the tweens
 	local growTween = TweenService:Create(screen, tweenInfo, { Size = bigSize })
 	local normalTween = TweenService:Create(screen, tweenInfo, { Size = originalSize })
 
-	-- Play in sequence
 	growTween:Play()
 	growTween.Completed:Connect(function()
 		normalTween:Play()
 	end)
 end
+
 function UIStateManager:AddBluer()
 	blur.Size = 24
 end
@@ -109,6 +138,20 @@ function UIStateManager:ConfigureCloseButton()
 		button.MouseButton1Click:Connect(function()
 			UIStateManager:Close(button:GetAttribute("Screen"))
 		end)
+	end
+end
+
+function UIStateManager:InitBackpackButtons()
+	for _, value in backpackButtons:GetChildren() do
+		if value:IsA("TextButton") then
+			value.MouseButton1Click:Connect(function()
+				print(value.Name)
+
+				if value.Name == "7" then
+					UIStateManager:Open("BACKPACK_EXPAND")
+				end
+			end)
+		end
 	end
 end
 

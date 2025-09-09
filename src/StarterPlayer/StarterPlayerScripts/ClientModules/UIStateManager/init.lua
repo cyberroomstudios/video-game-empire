@@ -143,10 +143,8 @@ end
 
 function UIStateManager:InitBackpackButtons()
 	for _, value in backpackButtons:GetChildren() do
-		if value:IsA("TextButton") then
+		if value:IsA("TextButton") and value.Name == "7" then
 			value.MouseButton1Click:Connect(function()
-				print(value.Name)
-
 				if value.Name == "7" then
 					UIStateManager:Open("BACKPACK_EXPAND")
 				end

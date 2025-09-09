@@ -60,7 +60,6 @@ function HireAgencyScreenController:ConfigureProximity()
 	local proximityPrompt = proximityPart.ProximityPrompt
 
 	proximityPrompt.PromptShown:Connect(function()
-		print("Caiu aqui")
 		UIStateManager:Open("WORKERS")
 	end)
 

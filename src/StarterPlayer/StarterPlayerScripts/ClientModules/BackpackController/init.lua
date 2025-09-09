@@ -14,6 +14,7 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 
@@ -50,6 +51,15 @@ function BackpackController:CreateReferences()
 end
 
 function BackpackController:InitButtonListerns()
+	local keyToIndex = {
+		[Enum.KeyCode.One] = 1,
+		[Enum.KeyCode.Two] = 2,
+		[Enum.KeyCode.Three] = 3,
+		[Enum.KeyCode.Four] = 4,
+		[Enum.KeyCode.Five] = 5,
+		[Enum.KeyCode.Six] = 6,
+	}
+
 	for i = 1, MAX_SLOTS - 1 do
 		local slot = backpackButtons[i]
 		slot.MouseButton1Click:Connect(function()
@@ -68,6 +78,16 @@ function BackpackController:InitButtonListerns()
 	showGamesBackpackButton.MouseButton1Click:Connect(function()
 		workersFrame.Visible = false
 		gamesFrame.Visible = true
+	end)
+
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		local index = keyToIndex[input.KeyCode]
+		if index and not gameProcessed then
+			local tool = tools[index]
+			if tool then
+				player.Character.Humanoid:EquipTool(tool)
+			end
+		end
 	end)
 end
 function BackpackController:InitBridgeListener()
@@ -306,6 +326,7 @@ end
 function BackpackController:Open()
 	backpackExpand.Visible = true
 end
+
 function BackpackController:Open2()
 	backpackExpand.Visible = true
 

@@ -7,6 +7,7 @@ local UtilService = require(ServerScriptService.Modules.UtilService)
 local Devs = require(ReplicatedStorage.Enums.Devs)
 local Games = require(ReplicatedStorage.Enums.Games)
 local BaseService = require(ServerScriptService.Modules.BaseService)
+local StorageService = require(ServerScriptService.Modules.StorageService)
 
 local playerGames = {}
 
@@ -115,18 +116,35 @@ function ThreadService:CreateDevThread(player: Player)
 					-- Representa a quantidade de jogos que podem ser produzidos no máximo
 					local capacityOfGamesProduced = model:GetAttribute("CAPACITY_OF_GAMES_PRODUCED")
 
+					local gameName, playerAmount = ThreadService:CreateGame(player, model.Name)
+
 					-- Significa que não tem mais espaço de produção
 					if numberOfGamesStored >= capacityOfGamesProduced then
 						-- Verifica se tem Storage com espaço disponivel
 						model:SetAttribute("MAXIMUM_CAPACITY_REACHED", true)
-						local hasStorage = false
+						local currentUsedStorage, limitedStorage = StorageService:GetCurrentUsedAndLimited(player)
 
-						if not hasStorage then
+						-- Calcula o espaço restante
+						local spaceLeft = limitedStorage - currentUsedStorage
+
+						-- Se ultrapassar, ajusta playerAmount para apenas o que cabe
+						if playerAmount > spaceLeft then
+							playerAmount = spaceLeft
+						end
+
+						local hasAvailableSpaceInStorage = StorageService:HasAvailableSpace(player, playerAmount)
+
+						if not hasAvailableSpaceInStorage or playerAmount < 0 then
 							-- Pausa a animação
 							--	WorkerService:PlayOrPauseWorkerAnimation(model.Rig, false)
 							--	model.ExclamationBillboardGui.Enabled = true
+							model:SetAttribute("CURRENT_GAME_TIME", 0)
+							model:SetAttribute("CURRENT_PERCENT_PRODUCED", 0)
+
 							continue
 						end
+
+						StorageService:AddGame(player, gameName, playerAmount)
 					end
 
 					--	model.ExclamationBillboardGui.Enabled = false
@@ -158,8 +176,6 @@ function ThreadService:CreateDevThread(player: Player)
 						-- Zera o Contador do jogo Atual
 						model:SetAttribute("CURRENT_GAME_TIME", 0)
 						model:SetAttribute("CURRENT_PERCENT_PRODUCED", 100)
-
-						local gameName, playerAmount = ThreadService:CreateGame(player, model.Name)
 
 						-- Calcula o espaço restante
 						local spaceLeft = capacityOfGamesProduced - numberOfGamesStored

@@ -33,6 +33,11 @@ function MoneyService:HasMoney(player: Player, amount: number)
 	local currentMoney = PlayerDataHandler:Get(player, "money")
 
 	return amount <= currentMoney
-	
+end
+
+function MoneyService:GiveInitialMoney(player: Player)
+	if PlayerDataHandler:Get(player, "totalPlaytime") == 0 then
+		MoneyService:GiveMoney(player, 100)
+	end
 end
 return MoneyService

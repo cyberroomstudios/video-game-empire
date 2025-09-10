@@ -79,4 +79,45 @@ function StorageService:InitStorage(player: Player)
 	local storageLimit = PlayerDataHandler:Get(player, "storageLimited")
 	storage:SetAttribute("LIMITED", storageLimit)
 end
+
+function StorageService:HasAvailableSpace(player: Player, amount: number)
+	local storage = UtilService:WaitForDescendants(
+		workspace,
+		"Map",
+		"BaseMaps",
+		player:GetAttribute("BASE"),
+		"mapa",
+		"ModuleBuilding",
+		"Mainbuilding",
+		"FloorBase",
+		"Storage",
+		"Part"
+	)
+
+	local limited = storage:GetAttribute("LIMITED")
+	local currentUsed = storage:GetAttribute("CURRENT_USED") or 0
+
+	return currentUsed + amount <= limited
+end
+
+function StorageService:GetCurrentUsedAndLimited(player: Player)
+	local storage = UtilService:WaitForDescendants(
+		workspace,
+		"Map",
+		"BaseMaps",
+		player:GetAttribute("BASE"),
+		"mapa",
+		"ModuleBuilding",
+		"Mainbuilding",
+		"FloorBase",
+		"Storage",
+		"Part"
+	)
+
+	local currentUsed = storage:GetAttribute("CURRENT_USED") or 0
+	local limited = storage:GetAttribute("LIMITED")
+
+	return currentUsed, limited
+end
+
 return StorageService

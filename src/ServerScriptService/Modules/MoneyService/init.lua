@@ -28,4 +28,11 @@ function MoneyService:ConsumeAllMoney(player: Player)
 	PlayerDataHandler:Set(player, "money", 0)
 	player:SetAttribute("MONEY", 0)
 end
+
+function MoneyService:HasMoney(player: Player, amount: number)
+	local currentMoney = PlayerDataHandler:Get(player, "money")
+
+	return amount <= currentMoney
+	
+end
 return MoneyService

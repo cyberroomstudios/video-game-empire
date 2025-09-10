@@ -14,7 +14,11 @@ local BridgeNet2 = require(Utility.BridgeNet2)
 local StockService = require(ServerScriptService.Modules.StockService)
 local ToolService = require(ServerScriptService.Modules.ToolService)
 local ThreadService = require(ServerScriptService.Modules.ThreadService)
+local MoneyService = require(ServerScriptService.Modules.MoneyService)
+
 local GameService = require(ServerScriptService.Modules.GameService)
+local GameNotificationService = require(ServerScriptService.Modules.GameNotificationService)
+
 local bridge = BridgeNet2.ReferenceBridge("DevService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -225,9 +229,18 @@ function DevService:BuyDev(player: Player, devName: string)
 	local hasStock = StockService:HasStock(player, devName)
 
 	if not hasStock then
+		GameNotificationService:SendErrorNotification(player, "No Stock!")
 		return false
 	end
 
+	-- Verifica se tem Dinheiro
+	if not MoneyService:HasMoney(player, devEnum.Price) then
+		GameNotificationService:SendErrorNotification(player, "Not Enough Money!")
+		return false
+	end
+
+	-- Consume o Dinheiro
+	MoneyService:ConsumeMoney(player, devEnum.Price)
 	-- Consume o Stock
 	StockService:ConsumeStock(player, devName)
 

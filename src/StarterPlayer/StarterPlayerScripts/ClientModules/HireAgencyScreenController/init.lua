@@ -26,7 +26,7 @@ local player = Players.LocalPlayer
 
 local screen
 local scrollingFrame
-
+local reestockLabel
 local playerStock = {}
 
 function HireAgencyScreenController:Init()
@@ -41,6 +41,7 @@ function HireAgencyScreenController:CreateReferences()
 	-- Botões referentes aos Teleports
 	screen = UIReferences:GetReference("HIRE_AGENCY")
 	scrollingFrame = UIReferences:GetReference("HIRE_AGENCY_SCROLLING_FRAME")
+	reestockLabel = UIReferences:GetReference("REESTOCK_LABEL")
 end
 
 function HireAgencyScreenController:Open()
@@ -150,6 +151,11 @@ function HireAgencyScreenController:InitAttributeListener()
 			local labels = item.Labels
 			labels.Stock.Text = "x" .. tostring(player:GetAttribute(dev.Name) or 0) .. " Stock"
 		end
+	end)
+
+	workspace:GetAttributeChangedSignal("TIME_TO_RELOAD_RESTOCK"):Connect(function()
+		local leftTime = workspace:GetAttribute("TIME_TO_RELOAD_RESTOCK")
+		reestockLabel.Text = ClientUtil:FormatSecondsToMinutes(leftTime)
 	end)
 end
 

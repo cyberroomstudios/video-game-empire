@@ -19,14 +19,22 @@ local Devs = require(ReplicatedStorage.Enums.Devs)
 local ready = false
 local globalStock = {}
 
+local TIME_TO_RELOAD_STOCK = 60
+local currentTimeToReload
 function StockService:Init()
 	StockService:InitStockCounter()
 end
 
 function StockService:InitStockCounter()
+	currentTimeToReload = TIME_TO_RELOAD_STOCK
 	task.spawn(function()
 		while true do
 			StockService:CreateStock()
+			while currentTimeToReload > 0 do
+				currentTimeToReload = currentTimeToReload - 1
+				workspace:SetAttribute("TIME_TO_RELOAD_RESTOCK", currentTimeToReload)
+				task.wait(1)
+			end
 			task.wait(20)
 		end
 	end)

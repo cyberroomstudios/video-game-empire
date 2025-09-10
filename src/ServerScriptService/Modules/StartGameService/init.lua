@@ -17,6 +17,7 @@ local ThreadService = require(ServerScriptService.Modules.ThreadService)
 local StockService = require(ServerScriptService.Modules.StockService)
 local ToolService = require(ServerScriptService.Modules.ToolService)
 local AutoCollectService = require(ServerScriptService.Modules.AutoCollectService)
+local StorageService = require(ServerScriptService.Modules.StorageService)
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -70,6 +71,8 @@ function StartGameService:InitBridgeListener()
 
 			StartGameService:InitPlayerAtributes(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando Atributos")
+			StorageService:InitStorage(player)
+			StorageService:AddGame(player, "Tycoon", 500)
 		end
 	end
 end

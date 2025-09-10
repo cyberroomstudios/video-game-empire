@@ -61,6 +61,7 @@ local dataTemplate = {
 	rebirthLuck = 0,
 	limitDateRobuxLuck = 0,
 	mapClaimed = false,
+	storageLimited = 1000,
 }
 
 local ProfileService = require(ServerScriptService.libs.ProfileService)

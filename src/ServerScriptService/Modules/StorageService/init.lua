@@ -1,0 +1,82 @@
+local StorageService = {}
+
+-- Init Bridg Net
+local ServerScriptService = game:GetService("ServerScriptService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Utility = ReplicatedStorage.Utility
+local BridgeNet2 = require(Utility.BridgeNet2)
+local UtilService = require(ServerScriptService.Modules.UtilService)
+local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
+local bridge = BridgeNet2.ReferenceBridge("StorageService")
+local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
+local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
+local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
+-- End Bridg Net
+
+function StorageService:Init()
+	StorageService:InitBridgeListener()
+end
+
+function StorageService:InitBridgeListener()
+	bridge.OnServerInvoke = function(player, data)
+		if data[actionIdentifier] == "GetStorage" then
+			local baseNumber = data.data.BaseNumber
+			print(baseNumber)
+			StorageService:GetStorage(player, baseNumber)
+		end
+	end
+end
+
+function StorageService:GetStorage(player: Player, baseNumber: number)
+	if tonumber(baseNumber) ~= tonumber(player:GetAttribute("BASE")) then
+		print("Base não pertece ao jogador")
+		return
+	end
+
+	print("Coletou!")
+end
+
+function StorageService:AddGame(player: Player, gameName: string, playerAmount: string)
+	local storage = UtilService:WaitForDescendants(
+		workspace,
+		"Map",
+		"BaseMaps",
+		player:GetAttribute("BASE"),
+		"mapa",
+		"ModuleBuilding",
+		"Mainbuilding",
+		"FloorBase",
+		"Storage",
+		"Part"
+	)
+
+	storage:SetAttribute("STORED_GAME_" .. gameName, playerAmount)
+
+	local oldValue = storage:GetAttribute("CURRENT_USED") or 0
+
+	storage:SetAttribute("CURRENT_USED", oldValue + playerAmount)
+
+	local currentPercentCapacity = (storage:GetAttribute("CURRENT_USED") or 0)
+		/ PlayerDataHandler:Get(player, "storageLimited")
+
+	storage:SetAttribute("CURRENT_PERCENT_USED", currentPercentCapacity)
+end
+
+function StorageService:InitStorage(player: Player)
+	local storage = UtilService:WaitForDescendants(
+		workspace,
+		"Map",
+		"BaseMaps",
+		player:GetAttribute("BASE"),
+		"mapa",
+		"ModuleBuilding",
+		"Mainbuilding",
+		"FloorBase",
+		"Storage",
+		"Part"
+	)
+
+	local storageLimit = PlayerDataHandler:Get(player, "storageLimited")
+	storage:SetAttribute("LIMITED", storageLimit)
+end
+return StorageService

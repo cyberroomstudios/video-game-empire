@@ -159,8 +159,19 @@ function ThreadService:CreateDevThread(player: Player)
 						model:SetAttribute("CURRENT_GAME_TIME", 0)
 						model:SetAttribute("CURRENT_PERCENT_PRODUCED", 100)
 
+						local gameName, playerAmount = ThreadService:CreateGame(player, model.Name)
+
+						-- Calcula o espaço restante
+						local spaceLeft = capacityOfGamesProduced - numberOfGamesStored
+
+						-- Se ultrapassar, ajusta playerAmount para apenas o que cabe
+						if playerAmount > spaceLeft then
+							playerAmount = spaceLeft
+						end
+
+						numberOfGamesStored = numberOfGamesStored + playerAmount
 						-- Incrementa a quantidade de jogodos produzidos
-						model:SetAttribute("NUMBER_OF_GAMES_STORED", numberOfGamesStored + 1)
+						model:SetAttribute("NUMBER_OF_GAMES_STORED", numberOfGamesStored)
 
 						if not playerGames[player.UserId] then
 							playerGames[player.UserId] = {}
@@ -170,7 +181,6 @@ function ThreadService:CreateDevThread(player: Player)
 							playerGames[player.UserId][worker.Id] = {}
 						end
 
-						local gameName, playerAmount = ThreadService:CreateGame(player, model.Name)
 						ThreadService:UpdateTotalCCU(player, playerAmount)
 
 						local storedGamesFromPlayerWorker = playerGames[player.UserId][worker.Id]

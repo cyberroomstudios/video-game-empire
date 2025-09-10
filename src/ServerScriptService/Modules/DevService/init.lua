@@ -195,6 +195,7 @@ function DevService:GetGamesFromDev(player: Player, devId: number)
 			GameService:GiveGame(player, gameName, amount)
 			model:SetAttribute("STORED_GAME_" .. gameName, 0)
 		end
+		model:SetAttribute("NUMBER_OF_GAMES_STORED", 0)
 
 		player:SetAttribute("COLLETING", false)
 		return games

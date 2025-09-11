@@ -131,7 +131,11 @@ function ThreadService:CreateDevThread(player: Player)
 						-- ou armazena no storage
 
 						-- Armazena no Dev
-						if numberOfGamesStored <= capacityOfGamesProduced then
+						print("Numero de Player Produzidos: " .. numberOfGamesStored)
+						print("Capacidade " .. capacityOfGamesProduced)
+
+						if numberOfGamesStored < capacityOfGamesProduced then
+							print("Armazenando em Dev")
 							-- Indica que não está com a capacidade máxima atingida
 							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", false)
 
@@ -146,9 +150,12 @@ function ThreadService:CreateDevThread(player: Player)
 
 							-- Insere um Game na memoria do dev
 							ThreadService:SetGameInDev(
+								player,
 								model,
+								worker.Id,
 								capacityOfGamesProduced,
 								numberOfGamesStored,
+								gameName,
 								playerAmount
 							)
 
@@ -156,9 +163,11 @@ function ThreadService:CreateDevThread(player: Player)
 						end
 
 						-- Armazena no Storage
-						if numberOfGamesStored > capacityOfGamesProduced then
+						if numberOfGamesStored >= capacityOfGamesProduced then
+							print("Armazenando No storage")
+
 							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", true)
-							ThreadService:SetGameInStorage(player, gameName, playerAmount)
+							ThreadService:SetGameInStorage(player, gameName, playerAmount, model)
 							continue
 						end
 
@@ -180,7 +189,7 @@ function ThreadService:CreateDevThread(player: Player)
 	end)
 end
 
-function ThreadService:SetGameInStorage(player: Player, gameName: string, playerAmount: number)
+function ThreadService:SetGameInStorage(player: Player, gameName: string, playerAmount: number, devModel: model)
 	local currentUsedStorage, limitedStorage = StorageService:GetCurrentUsedAndLimited(player)
 
 	-- Calcula o espaço restante
@@ -196,6 +205,8 @@ function ThreadService:SetGameInStorage(player: Player, gameName: string, player
 
 	-- PlayerAmount = 0 Signofica que não tem mais espaço pra armazenar aquee jogo
 	if not hasAvailableSpaceInStorage or playerAmount <= 0 then
+		devModel:SetAttribute("CURRENT_PERCENT_PRODUCED", 0)
+		devModel:SetAttribute("CURRENT_GAME_TIME", 0)
 		return
 	end
 
@@ -203,9 +214,12 @@ function ThreadService:SetGameInStorage(player: Player, gameName: string, player
 end
 
 function ThreadService:SetGameInDev(
+	player: Player,
 	model: Model,
+	devId: number,
 	capacityOfGamesProduced: number,
 	numberOfGamesStored: number,
+	gameName: string,
 	playerAmount: number
 )
 	-- Calcula o espaço restante
@@ -219,6 +233,13 @@ function ThreadService:SetGameInDev(
 	numberOfGamesStored = numberOfGamesStored + playerAmount
 	-- Incrementa a quantidade de jogodos produzidos
 	model:SetAttribute("NUMBER_OF_GAMES_STORED", numberOfGamesStored)
+
+	local storedGamesFromPlayerWorker = playerGames[player.UserId][devId]
+	storedGamesFromPlayerWorker[gameName] = (storedGamesFromPlayerWorker[gameName] or 0) + playerAmount
+
+	playerGames[player.UserId][devId] = storedGamesFromPlayerWorker
+
+	model:SetAttribute("STORED_GAME_" .. gameName, storedGamesFromPlayerWorker[gameName])
 end
 
 function ThreadService:UpdateDevCurrentTime(model: Model, currentGameTime: number, timeToProduceGame: number)
@@ -229,5 +250,9 @@ end
 function ThreadService:UpdateCurrentPercentCapacity(model: Model, capacityOfGamesProduced: number)
 	local currentPercentCapacity = (model:GetAttribute("NUMBER_OF_GAMES_STORED") or 0) / capacityOfGamesProduced
 	model:SetAttribute("CURRENT_PERCENT_CAPACITY", currentPercentCapacity * 100)
+end
+
+function ThreadService:InitPlayerGames(player: Player)
+	playerGames[player] = {}
 end
 return ThreadService

@@ -125,6 +125,7 @@ function ThreadService:CreateDevThread(player: Player)
 					currentGameTime = currentGameTime + 1
 
 					-- Significa que deve produzir um jogo, pois já chegou
+
 					-- Ao Tempo de Produção
 					if timeToProduceGame and currentGameTime >= timeToProduceGame then
 						-- Verificando se tem espaço disponivel
@@ -135,6 +136,7 @@ function ThreadService:CreateDevThread(player: Player)
 						print("Capacidade " .. capacityOfGamesProduced)
 
 						if numberOfGamesStored < capacityOfGamesProduced then
+							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", false)
 							print("Armazenando em Dev")
 							-- Indica que não está com a capacidade máxima atingida
 							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", false)
@@ -233,6 +235,16 @@ function ThreadService:SetGameInDev(
 	numberOfGamesStored = numberOfGamesStored + playerAmount
 	-- Incrementa a quantidade de jogodos produzidos
 	model:SetAttribute("NUMBER_OF_GAMES_STORED", numberOfGamesStored)
+
+	if not playerGames[player.UserId] then
+		playerGames[player.UserId] = {}
+	end
+
+	if not playerGames[player.UserId][devId] then
+		playerGames[player.UserId][devId] = {}
+	end
+
+	ThreadService:UpdateTotalCCU(player, playerAmount)
 
 	local storedGamesFromPlayerWorker = playerGames[player.UserId][devId]
 	storedGamesFromPlayerWorker[gameName] = (storedGamesFromPlayerWorker[gameName] or 0) + playerAmount

@@ -169,7 +169,9 @@ function DevController:UpdateDevInformations(model: Model)
 
 		while model:GetAttribute("UPDATE_INFORMATION") do
 			local currentPercent = model:GetAttribute("CURRENT_PERCENT_PRODUCED") or 0
-
+			if model:GetAttribute("MAXIMUM_CAPACITY_REACHED") then
+				currentPercent = 0
+			end
 			-- Configuração do Tween
 			local goal = { Size = UDim2.fromScale(currentPercent / 100, 1) }
 			local tweenInfo = TweenInfo.new(

@@ -118,104 +118,60 @@ function ThreadService:CreateDevThread(player: Player)
 
 					local gameName, playerAmount = ThreadService:CreateGame(player, model.Name)
 
-					-- Significa que não tem mais espaço de produção
-					if numberOfGamesStored >= capacityOfGamesProduced then
-						-- Verifica se tem Storage com espaço disponivel
-						model:SetAttribute("MAXIMUM_CAPACITY_REACHED", true)
-						local currentUsedStorage, limitedStorage = StorageService:GetCurrentUsedAndLimited(player)
-
-						-- Calcula o espaço restante
-						local spaceLeft = limitedStorage - currentUsedStorage
-
-						-- Se ultrapassar, ajusta playerAmount para apenas o que cabe
-						if playerAmount > spaceLeft then
-							playerAmount = spaceLeft
-						end
-
-						local hasAvailableSpaceInStorage = StorageService:HasAvailableSpace(player, playerAmount)
-
-						if not hasAvailableSpaceInStorage or playerAmount < 0 then
-							-- Pausa a animação
-							--	WorkerService:PlayOrPauseWorkerAnimation(model.Rig, false)
-							--	model.ExclamationBillboardGui.Enabled = true
-							model:SetAttribute("CURRENT_GAME_TIME", 0)
-							model:SetAttribute("CURRENT_PERCENT_PRODUCED", 0)
-
-							continue
-						end
-
-						StorageService:AddGame(player, gameName, playerAmount)
-					end
-
 					--	model.ExclamationBillboardGui.Enabled = false
 					ThreadService:PlayOrPauseWorkerAnimation(model, true)
 
 					-- Atualiza o Tempo que está produzindo o jogo
 					currentGameTime = currentGameTime + 1
 
-					-- Deve Produzir mais um jogo
+					-- Significa que deve produzir um jogo, pois já chegou
+					-- Ao Tempo de Produção
 					if timeToProduceGame and currentGameTime >= timeToProduceGame then
-						-- Verifica se deve usar o Storage
-						if numberOfGamesStored >= capacityOfGamesProduced then
+						-- Verificando se tem espaço disponivel
+						-- ou armazena no storage
+
+						-- Armazena no Dev
+						if numberOfGamesStored <= capacityOfGamesProduced then
+							-- Indica que não está com a capacidade máxima atingida
+							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", false)
+
+							-- Indica que não está utilizando o Storage
+							model:SetAttribute("USED_STORAGE", false)
+
 							-- Zera o Contador do jogo Atual
 							model:SetAttribute("CURRENT_GAME_TIME", 0)
 
-							-- Indica que está utilizando o Storage
-							model:SetAttribute("USED_STORAGE", true)
+							-- Porcentagem do jogo vai para 100%
+							model:SetAttribute("CURRENT_PERCENT_PRODUCED", 100)
 
-							-- Armazena no Storage
-							--	StorageService:SaveInStorage(player, worker.Name)
+							-- Insere um Game na memoria do dev
+							ThreadService:SetGameInDev(
+								model,
+								capacityOfGamesProduced,
+								numberOfGamesStored,
+								playerAmount
+							)
 
 							continue
 						end
 
-						model:SetAttribute("MAXIMUM_CAPACITY_REACHED", false)
-
-						-- Indica que não está utilizando o Storage
-						model:SetAttribute("USED_STORAGE", false)
-						-- Zera o Contador do jogo Atual
-						model:SetAttribute("CURRENT_GAME_TIME", 0)
-						model:SetAttribute("CURRENT_PERCENT_PRODUCED", 100)
-
-						-- Calcula o espaço restante
-						local spaceLeft = capacityOfGamesProduced - numberOfGamesStored
-
-						-- Se ultrapassar, ajusta playerAmount para apenas o que cabe
-						if playerAmount > spaceLeft then
-							playerAmount = spaceLeft
+						-- Armazena no Storage
+						if numberOfGamesStored > capacityOfGamesProduced then
+							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", true)
+							ThreadService:SetGameInStorage(player, gameName, playerAmount)
+							continue
 						end
 
-						numberOfGamesStored = numberOfGamesStored + playerAmount
-						-- Incrementa a quantidade de jogodos produzidos
-						model:SetAttribute("NUMBER_OF_GAMES_STORED", numberOfGamesStored)
-
-						if not playerGames[player.UserId] then
-							playerGames[player.UserId] = {}
-						end
-
-						if not playerGames[player.UserId][worker.Id] then
-							playerGames[player.UserId][worker.Id] = {}
-						end
-
-						ThreadService:UpdateTotalCCU(player, playerAmount)
-
-						local storedGamesFromPlayerWorker = playerGames[player.UserId][worker.Id]
-						storedGamesFromPlayerWorker[gameName] = (storedGamesFromPlayerWorker[gameName] or 0)
-							+ playerAmount
-
-						playerGames[player.UserId][worker.Id] = storedGamesFromPlayerWorker
-
-						model:SetAttribute("STORED_GAME_" .. gameName, storedGamesFromPlayerWorker[gameName])
+						-- Significa que não possui mais espaço em nenhum local
+						model:SetAttribute("MAXIMUM_CAPACITY_REACHED", true)
 						continue
 					end
 
-					model:SetAttribute("CURRENT_GAME_TIME", currentGameTime)
-					model:SetAttribute("CURRENT_PERCENT_PRODUCED", (currentGameTime / timeToProduceGame) * 100)
+					-- Significa que ainda está produzindo um jogo
+					ThreadService:UpdateDevCurrentTime(model, currentGameTime, timeToProduceGame)
 
-					local currentPercentCapacity = (model:GetAttribute("NUMBER_OF_GAMES_STORED") or 0)
-						/ capacityOfGamesProduced
-
-					model:SetAttribute("CURRENT_PERCENT_CAPACITY", currentPercentCapacity * 100)
+					-- Atualiza o percentual de uso do dev
+					ThreadService:UpdateCurrentPercentCapacity(model, capacityOfGamesProduced)
 				end
 			end
 
@@ -224,4 +180,54 @@ function ThreadService:CreateDevThread(player: Player)
 	end)
 end
 
+function ThreadService:SetGameInStorage(player: Player, gameName: string, playerAmount: number)
+	local currentUsedStorage, limitedStorage = StorageService:GetCurrentUsedAndLimited(player)
+
+	-- Calcula o espaço restante
+	local spaceLeft = limitedStorage - currentUsedStorage
+
+	-- Se ultrapassar, ajusta playerAmount para apenas o que cabe
+	if playerAmount > spaceLeft then
+		playerAmount = spaceLeft
+	end
+
+	local hasAvailableSpaceInStorage = StorageService:HasAvailableSpace(player, playerAmount)
+	print("Limite:" .. tostring(hasAvailableSpaceInStorage))
+
+	-- PlayerAmount = 0 Signofica que não tem mais espaço pra armazenar aquee jogo
+	if not hasAvailableSpaceInStorage or playerAmount <= 0 then
+		return
+	end
+
+	StorageService:AddGame(player, gameName, playerAmount)
+end
+
+function ThreadService:SetGameInDev(
+	model: Model,
+	capacityOfGamesProduced: number,
+	numberOfGamesStored: number,
+	playerAmount: number
+)
+	-- Calcula o espaço restante
+	local spaceLeft = capacityOfGamesProduced - numberOfGamesStored
+
+	-- Se ultrapassar, ajusta playerAmount para apenas o que cabe
+	if playerAmount > spaceLeft then
+		playerAmount = spaceLeft
+	end
+
+	numberOfGamesStored = numberOfGamesStored + playerAmount
+	-- Incrementa a quantidade de jogodos produzidos
+	model:SetAttribute("NUMBER_OF_GAMES_STORED", numberOfGamesStored)
+end
+
+function ThreadService:UpdateDevCurrentTime(model: Model, currentGameTime: number, timeToProduceGame: number)
+	model:SetAttribute("CURRENT_GAME_TIME", currentGameTime)
+	model:SetAttribute("CURRENT_PERCENT_PRODUCED", (currentGameTime / timeToProduceGame) * 100)
+end
+
+function ThreadService:UpdateCurrentPercentCapacity(model: Model, capacityOfGamesProduced: number)
+	local currentPercentCapacity = (model:GetAttribute("NUMBER_OF_GAMES_STORED") or 0) / capacityOfGamesProduced
+	model:SetAttribute("CURRENT_PERCENT_CAPACITY", currentPercentCapacity * 100)
+end
 return ThreadService

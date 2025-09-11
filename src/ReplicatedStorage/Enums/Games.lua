@@ -8,7 +8,7 @@ local Workers = table.freeze({
 
 		-- Definie quantos jogadores vão jogar jogo
 		Players = {
-			Min = 100,
+			Min = 500,
 			Max = 500,
 		},
 	},

@@ -42,7 +42,7 @@ function GameService:GiveGame(player: Player, gameName: string, amountPlayer: nu
 		for _, game in current do
 			if game.GameName == gameName then
 				-- se já existe, apenas atualiza o valor
-				game.AmountPlayer = amountPlayer
+				game.AmountPlayer = game.AmountPlayer + amountPlayer
 				return current
 			end
 		end

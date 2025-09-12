@@ -1,6 +1,7 @@
 local GameNotificationService = {}
 
 -- Init Bridg Net
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
@@ -37,6 +38,14 @@ function GameNotificationService:SendSuccessNotification(player: Player, message
 			Message = message,
 		},
 	})
+end
+
+function GameNotificationService:ShowStockNotification()
+	for _, player in Players:GetPlayers() do
+		bridge:Fire(player, {
+			[actionIdentifier] = "ShowStockNotification",
+		})
+	end
 end
 
 return GameNotificationService

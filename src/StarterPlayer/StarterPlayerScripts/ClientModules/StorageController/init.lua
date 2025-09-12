@@ -29,7 +29,7 @@ function StorageController:InitGUI()
 			"Mainbuilding",
 			"FloorBase",
 			"Storage",
-			"Part",
+			"ProximityPart",
 			"ProximityPrompt"
 		)
 

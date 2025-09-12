@@ -1,4 +1,4 @@
-local PreviewPCController = {}
+local MobileScreenController = {}
 -- Services
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -6,6 +6,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
+local PreviewPCController = require(Players.LocalPlayer.PlayerScripts.ClientModules.PreviewPCController)
 
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -14,18 +15,19 @@ local currentRotation = 0
 local base
 
 local previewButton
-function PreviewPCController:Init()
-	if UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled then
-		PreviewPCController:CreateReferences()
-		PreviewPCController:InitEquipToolListner()
+
+function MobileScreenController:Init()
+	if UserInputService.TouchEnabled then
+		MobileScreenController:CreateReferences()
+		MobileScreenController:InitEquipToolListner()
 	end
 end
 
-function PreviewPCController:CreateReferences()
-	previewButton = UIReferences:GetReference("PREVIEW_PC_BUTTON")
+function MobileScreenController:CreateReferences()
+	previewButton = UIReferences:GetReference("PREVIEW_MOBILE_BUTTON")
 end
 
-function PreviewPCController:IsPartInside(partA, partB)
+function MobileScreenController:IsPartInside(partA, partB)
 	local posA, sizeA = partA.Position, partA.Size
 	local posB, sizeB = partB.Position, partB.Size
 
@@ -40,7 +42,7 @@ function PreviewPCController:IsPartInside(partA, partB)
 	return (minA.X >= minB.X and maxA.X <= maxB.X and minA.Y >= minB.Y and maxA.Y <= maxB.Y)
 end
 
-function PreviewPCController:GetCollidingModels(hitbox: BasePart)
+function MobileScreenController:GetCollidingModels(hitbox: BasePart)
 	-- Certifique-se de que CanTouch está ativado
 	hitbox.CanTouch = true
 
@@ -66,7 +68,7 @@ function PreviewPCController:GetCollidingModels(hitbox: BasePart)
 	return result
 end
 
-function PreviewPCController:GetModelTouchingParts(part: BasePart)
+function MobileScreenController:GetModelTouchingParts(part: BasePart)
 	-- Configuração do filtro
 	local overlapParams = OverlapParams.new()
 	overlapParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -76,7 +78,7 @@ function PreviewPCController:GetModelTouchingParts(part: BasePart)
 	return workspace:GetPartsInPart(part, overlapParams)
 end
 
-function PreviewPCController:InitPreview(itemName: string, toolType: string)
+function MobileScreenController:InitPreview(itemName: string, toolType: string)
 	-- Remove qualquer preview antigo
 	if workspace:FindFirstChild("Preview") then
 		workspace.Preview:Destroy()
@@ -104,31 +106,9 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 	end
 
 	-- Configura RaycastParams para ignorar player e preview
-	local raycastParams = RaycastParams.new()
-	raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-	raycastParams.FilterDescendantsInstances = { player.Character, clonedModel }
-
-	-- Função auxiliar para pegar posição do mouse ignorando player e preview
-	local function getMousePosition()
-		local unitRay = mouse.UnitRay
-		local raycastResult = workspace:Raycast(unitRay.Origin, unitRay.Direction * 500, raycastParams)
-		if raycastResult then
-			return raycastResult.Position
-		end
-		return nil
-	end
 
 	local function snapToGrid(value, grid)
 		return math.floor((value + grid / 2) / grid) * grid
-	end
-
-	-- Define posição inicial
-	local startPos = getMousePosition()
-	if startPos then
-		local newPosition = Vector3.new(startPos.X, fixedY, startPos.Z)
-		local rotation = CFrame.Angles(0, math.rad(currentRotation), 0)
-
-		clonedModel:PivotTo(CFrame.new(newPosition) * rotation)
 	end
 
 	clonedModel.Name = "Preview"
@@ -151,14 +131,40 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 	local smoothFactor = 0.4 -- Quanto menor, mais suave e lento será o movimento
 	local currentPosition = clonedModel:GetPivot().Position
 
+	local camera = workspace.CurrentCamera
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterDescendantsInstances = { clonedModel }
+	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+	-- Distância à frente do jogador
+	local forwardDistance = 8 -- ajuste para aumentar/diminuir a distância
+
 	-- Atualiza posição a cada frame
 	self.previewConnection = RunService.RenderStepped:Connect(function()
 		if player:GetAttribute("TOOL_IN_HAND") == "" then
 			return
 		end
 
-		local targetPosition = getMousePosition()
-		if targetPosition then
+		local cameraCF = camera.CFrame
+		local playerPos = player.Character
+			and player.Character:FindFirstChild("HumanoidRootPart")
+			and player.Character.HumanoidRootPart.Position
+		if not playerPos then
+			return
+		end
+
+		-- Direção da câmera apenas no plano XZ
+		local lookDir = cameraCF.LookVector
+		lookDir = Vector3.new(lookDir.X, 0, lookDir.Z).Unit -- zera Y e normaliza
+
+		-- Origem 15 studs à frente no plano XZ
+		local rayOrigin = playerPos + lookDir * forwardDistance
+		local rayDirection = Vector3.new(lookDir.X, -1, lookDir.Z) * 1000 -- projeta o raio para baixo
+		local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+
+		if raycastResult then
+			local targetPosition = raycastResult.Position
+
 			local floor = player:GetAttribute("CURRENT_FLOOR") or 0
 			local yAxis = fixedY
 
@@ -170,11 +176,17 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 			local snappedZ = snapToGrid(targetPosition.Z, gridSize)
 			local newPosition = Vector3.new(snappedX, yAxis, snappedZ)
 
-			-- Suaviza a transição
+			-- Suaviza transição
 			currentPosition = currentPosition:Lerp(newPosition, smoothFactor)
 
-			if player:GetAttribute("ROTATE_PREVIEW") then
-				player:SetAttribute("ROTATE_PREVIEW", false)
+			-- Rotação
+			if player:GetAttribute("ROTATE_LEFT_PREVIEW") then
+				player:SetAttribute("ROTATE_LEFT_PREVIEW", false)
+				currentRotation -= 90
+			end
+
+			if player:GetAttribute("ROTATE_RIGHT_PREVIEW") then
+				player:SetAttribute("ROTATE_RIGHT_PREVIEW", false)
 				currentRotation += 90
 			end
 
@@ -182,8 +194,8 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 			clonedModel:PivotTo(CFrame.new(currentPosition) * rotation)
 
 			-- Verifica colisão
-			local isInsideBase = PreviewPCController:IsPartInside(clonedModel["Primary"], base.WorkArea.WorkArea)
-			if isInsideBase and #PreviewPCController:GetModelTouchingParts(clonedModel["Primary"]) == 0 then
+			local isInsideBase = MobileScreenController:IsPartInside(clonedModel["Primary"], base.WorkArea.WorkArea)
+			if isInsideBase and #MobileScreenController:GetModelTouchingParts(clonedModel["Primary"]) == 0 then
 				player:SetAttribute("CAN_SET", true)
 				clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanSet.Value
 			else
@@ -194,16 +206,14 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 	end)
 end
 
-function PreviewPCController:InitEquipToolListner()
+function MobileScreenController:InitEquipToolListner()
 	player.Character.ChildAdded:Connect(function(child)
 		if child:IsA("Tool") then
 			--	previewPcButtons.Visible = true
 			local toolType = child:GetAttribute("TOOL_TYPE")
-
+			local childName = child:GetAttribute("ORIGINAL_NAME")
 			if toolType == "DEV" then
-				local childName = child:GetAttribute("ORIGINAL_NAME")
-
-				PreviewPCController:InitPreview(childName, toolType)
+				MobileScreenController:InitPreview(childName, toolType)
 				player:SetAttribute("TOOL_IN_HAND", childName)
 				player:SetAttribute("TOOL_TYPE", toolType)
 				previewButton.Visible = true
@@ -224,4 +234,4 @@ function PreviewPCController:InitEquipToolListner()
 	end)
 end
 
-return PreviewPCController
+return MobileScreenController

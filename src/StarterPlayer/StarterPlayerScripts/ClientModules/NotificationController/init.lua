@@ -16,12 +16,8 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 
 local notificationScreen
-
-local notificationsTemplate = {
-	["WARN"] = ReplicatedStorage.GUI.Notifications.WarnNotification,
-	["ERROR"] = ReplicatedStorage.GUI.Notifications.ErrorNotification,
-	["SUCCESS"] = ReplicatedStorage.GUI.Notifications.SuccessNotification,
-}
+local stockNotification
+local notificationsTemplate
 
 function NotificationController:Init()
 	NotificationController:CreateReferences()
@@ -30,6 +26,13 @@ end
 
 function NotificationController:CreateReferences()
 	notificationScreen = UIReferences:GetReference("SYSTEM_NOTIFICATION")
+	stockNotification = UIReferences:GetReference("STOCK_NOTIFICATION")
+
+	notificationsTemplate = {
+		["WARN"] = ReplicatedStorage.GUI.Notifications.WarnNotification,
+		["ERROR"] = ReplicatedStorage.GUI.Notifications.ErrorNotification,
+		["SUCCESS"] = ReplicatedStorage.GUI.Notifications.SuccessNotification,
+	}
 end
 
 function NotificationController:InitListeners()
@@ -45,6 +48,10 @@ function NotificationController:InitListeners()
 		if response[actionIdentifier] == "ShowSuccessNotificaion" then
 			NotificationController:ShowNotification("SUCCESS", response.data.Message)
 		end
+
+		if response[actionIdentifier] == "ShowStockNotification" then
+			NotificationController:ShowStockNotification()
+		end
 	end)
 end
 
@@ -59,6 +66,13 @@ function NotificationController:ShowNotification(notificationType: string, messa
 
 	task.delay(1.5, function()
 		template:Destroy()
+	end)
+end
+
+function NotificationController:ShowStockNotification()
+	stockNotification.Visible = true
+	task.delay(2, function()
+		stockNotification.Visible = false
 	end)
 end
 

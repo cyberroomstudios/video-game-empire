@@ -15,12 +15,14 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Devs = require(ReplicatedStorage.Enums.Devs)
+local GameNotificationService = require(ServerScriptService.Modules.GameNotificationService)
 
 local ready = false
 local globalStock = {}
 
-local TIME_TO_RELOAD_STOCK = 60
+local TIME_TO_RELOAD_STOCK = 10
 local currentTimeToReload
+
 function StockService:Init()
 	StockService:InitStockCounter()
 end
@@ -37,6 +39,7 @@ function StockService:InitStockCounter()
 			end
 
 			currentTimeToReload = TIME_TO_RELOAD_STOCK
+			GameNotificationService:ShowStockNotification()
 		end
 	end)
 end

@@ -50,6 +50,23 @@ function DevController:CreateProximity(devId: number)
 	billboard.Name = "DEV_PROGRESS_" .. devId
 	billboard.Parent = screenGui
 
+	billboard.Content.Collect.MouseButton1Click:Connect(function()
+		local result = bridge:InvokeServerAsync({
+			[actionIdentifier] = "GetGames",
+			data = {
+				DevId = devId,
+			},
+		})
+
+		if result then
+			for _, value in billboard.Content.Unlocked:GetChildren() do
+				if value:GetAttribute("IS_GAME") then
+					value:Destroy()
+				end
+			end
+		end
+	end)
+
 	prompt.PromptShown:Connect(function()
 		model:SetAttribute("UPDATE_INFORMATION", true)
 		DevController:UpdateDevInformations(model)

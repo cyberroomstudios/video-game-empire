@@ -38,6 +38,11 @@ local rebirthButton
 local autoCollectButton
 local autoSellButton
 
+-- Botões do Preview do Mobile
+local leftPreviewButton
+local setPreviewButton
+local rightPreviewButton
+
 function HudController:Init()
 	HudController:CreateReferences()
 	HudController:InitButtonListerns()
@@ -55,6 +60,10 @@ function HudController:CreateReferences()
 	rebirthButton = UIReferences:GetReference("REBIRTH_BUTTON_HUD")
 	autoCollectButton = UIReferences:GetReference("AUTO_COLLECT_BUTTON_HUD")
 	autoSellButton = UIReferences:GetReference("AUTO_SELL_BUTTON")
+
+	leftPreviewButton = UIReferences:GetReference("LEFT_PREVIEW_BUTTON")
+	setPreviewButton = UIReferences:GetReference("SET_PREVIEW_BUTTON")
+	rightPreviewButton = UIReferences:GetReference("RIGHT_PREVIEW_BUTTON")
 end
 
 function HudController:InitButtonListerns()
@@ -91,6 +100,41 @@ function HudController:InitButtonListerns()
 
 	autoSellButton.MouseButton1Click:Connect(function()
 		AutoSellController:ActiveOrInactive()
+	end)
+
+	leftPreviewButton.MouseButton1Click:Connect(function()
+		Players.LocalPlayer:SetAttribute("ROTATE_LEFT_PREVIEW", true)
+	end)
+
+	rightPreviewButton.MouseButton1Click:Connect(function()
+		Players.LocalPlayer:SetAttribute("ROTATE_RIGHT_PREVIEW", true)
+	end)
+
+	setPreviewButton.MouseButton1Click:Connect(function()
+		if player:GetAttribute("CAN_SET") then
+			player:SetAttribute("CAN_SET", false)
+			local toolName = player:GetAttribute("TOOL_IN_HAND")
+			local toolType = player:GetAttribute("TOOL_TYPE")
+
+			local tool = player.Character:FindFirstChildOfClass("Tool")
+
+			if tool then
+				tool.Parent = player:FindFirstChild("Backpack")
+			end
+
+			if toolType == "DEV" then
+				player:SetAttribute("CAN_SET", false)
+				local result = bridge:InvokeServerAsync({
+					[actionIdentifier] = "SetDev",
+					data = {
+						CFrame = workspace.Preview.PrimaryPart.CFrame,
+						Dev = toolName,
+						Floor = player:GetAttribute("CURRENT_FLOOR"),
+					},
+				})
+				return
+			end
+		end
 	end)
 end
 

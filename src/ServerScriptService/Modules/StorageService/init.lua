@@ -65,6 +65,7 @@ function StorageService:GetStorage(player: Player, baseNumber: number)
 		storage:SetAttribute("COLLETING", false)
 		player:SetAttribute("COLLETING", false)
 	end
+	storage:SetAttribute("CURRENT_PERCENT_USED", 0)
 
 	storagePlayers[player.UserId] = {}
 
@@ -72,7 +73,9 @@ function StorageService:GetStorage(player: Player, baseNumber: number)
 end
 
 function StorageService:AddGame(player: Player, gameName: string, playerAmount: string)
-	print("Adicionando Game no Storage:" .. tostring(playerAmount))
+	if not StorageService:HasAvailableSpace(player, playerAmount) then
+		return
+	end
 
 	local storage = UtilService:WaitForDescendants(
 		workspace,

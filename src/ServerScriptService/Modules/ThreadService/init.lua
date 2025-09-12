@@ -14,33 +14,72 @@ local playerGames = {}
 function ThreadService:Init() end
 
 function ThreadService:PlayOrPauseWorkerAnimation(devModel: Model, shouldPlay: boolean)
-	if shouldPlay and not devModel:GetAttribute("PLAYING_ANIMATION") then
-		devModel:SetAttribute("PLAYING_ANIMATION", true)
-		local monitor = devModel:FindFirstChild("Monitor")
-		if monitor then
-			task.spawn(function()
-				local color1 = monitor.Color1
-				local color2 = monitor.Color2
-				local color3 = monitor.Color3
-				local colors = { color1, color2, color3 }
+	if not devModel then
+		return
+	end
 
-				while shouldPlay do
-					local randomColor = colors[math.random(1, #colors)]
-					monitor.Color = randomColor.Value
-					-- Pegar uma das 3 cores aleatorioas
-					task.wait(1)
-				end
-			end)
+	-- Função auxiliar para obter AnimationTrack
+	local function getAnimationTrack()
+		local animationController = devModel:FindFirstChild("Rig")
+			and devModel.Rig:FindFirstChild("AnimationController")
+		if not animationController then
+			return nil
 		end
 
-		local animationController = devModel.Rig:FindFirstChild("AnimationController")
 		local animator = animationController:FindFirstChild("Animator")
-		local animation = animator:FindFirstChild("Animation")
-		-- Carregando no Animator
-		local animationTrack = animator:LoadAnimation(animation)
+		local animation = animator and animator:FindFirstChild("Animation")
+		if animator and animation then
+			return animator:LoadAnimation(animation)
+		end
+		return nil
+	end
 
-		-- Tocando a animação
-		animationTrack:Play()
+	-- Função auxiliar para cores
+	local function startColorLoop(monitor)
+		local colors = {}
+		for i = 1, 3 do
+			local colorPart = monitor:FindFirstChild("Color" .. i)
+			if colorPart then
+				table.insert(colors, colorPart.Value)
+			end
+		end
+
+		if #colors == 0 then
+			return nil
+		end
+
+		return task.spawn(function()
+			while devModel:GetAttribute("PLAYING_ANIMATION") do
+				local randomColor = colors[math.random(1, #colors)]
+				monitor.Color = randomColor
+				task.wait(1)
+			end
+		end)
+	end
+
+	-- Lógica principal
+	local animationTrack = getAnimationTrack()
+	local monitor = devModel:FindFirstChild("Monitor")
+
+	if shouldPlay then
+		if devModel:GetAttribute("PLAYING_ANIMATION") then
+			return
+		end
+		devModel:SetAttribute("PLAYING_ANIMATION", true)
+
+		if monitor then
+			startColorLoop(monitor)
+		end
+
+		if animationTrack then
+			animationTrack:Play()
+			animationTrack:AdjustSpeed(1)
+		end
+	else
+		devModel:SetAttribute("PLAYING_ANIMATION", false)
+		if animationTrack then
+			animationTrack:AdjustSpeed(0) -- pausa
+		end
 	end
 end
 
@@ -118,71 +157,86 @@ function ThreadService:CreateDevThread(player: Player)
 
 					local gameName, playerAmount = ThreadService:CreateGame(player, model.Name)
 
-					--	model.ExclamationBillboardGui.Enabled = false
+					-- Significa que não tem mais espaço de produção
+					if numberOfGamesStored >= capacityOfGamesProduced then
+						-- Verifica se tem Storage com espaço disponivel
+						local hasStorage = StorageService:HasAvailableSpace(player, playerAmount)
+
+						if not hasStorage then
+							print("Sem Espaço")
+							-- Pausa a animação
+							ThreadService:PlayOrPauseWorkerAnimation(model, false)
+							model:SetAttribute("CURRENT_PERCENT_PRODUCED", 0)
+
+							continue
+						end
+					end
+
 					ThreadService:PlayOrPauseWorkerAnimation(model, true)
 
 					-- Atualiza o Tempo que está produzindo o jogo
 					currentGameTime = currentGameTime + 1
 
-					-- Significa que deve produzir um jogo, pois já chegou
-
-					-- Ao Tempo de Produção
-					if timeToProduceGame and currentGameTime >= timeToProduceGame then
-						-- Verificando se tem espaço disponivel
-						-- ou armazena no storage
-
-						-- Armazena no Dev
-						print("Numero de Player Produzidos: " .. numberOfGamesStored)
-						print("Capacidade " .. capacityOfGamesProduced)
-
-						if numberOfGamesStored < capacityOfGamesProduced then
-							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", false)
-							print("Armazenando em Dev")
-							-- Indica que não está com a capacidade máxima atingida
-							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", false)
-
-							-- Indica que não está utilizando o Storage
-							model:SetAttribute("USED_STORAGE", false)
-
-							-- Zera o Contador do jogo Atual
-							model:SetAttribute("CURRENT_GAME_TIME", 0)
-
-							-- Porcentagem do jogo vai para 100%
-							model:SetAttribute("CURRENT_PERCENT_PRODUCED", 100)
-
-							-- Insere um Game na memoria do dev
-							ThreadService:SetGameInDev(
-								player,
-								model,
-								worker.Id,
-								capacityOfGamesProduced,
-								numberOfGamesStored,
-								gameName,
-								playerAmount
-							)
-
-							continue
-						end
-
-						-- Armazena no Storage
+					-- Deve Produzir mais um jogo
+					if timeToProduceGame and (currentGameTime >= timeToProduceGame) then
+						-- Verifica se deve usar o Storage
 						if numberOfGamesStored >= capacityOfGamesProduced then
-							print("Armazenando No storage")
+							-- Indica que está utilizando o Storage
+							model:SetAttribute("USED_STORAGE", true)
+							model:SetAttribute("CURRENT_GAME_TIME", 0)
+							currentGameTime = 0
 
-							model:SetAttribute("MAXIMUM_CAPACITY_REACHED", true)
 							ThreadService:SetGameInStorage(player, gameName, playerAmount, model)
+
 							continue
 						end
 
-						-- Significa que não possui mais espaço em nenhum local
-						model:SetAttribute("MAXIMUM_CAPACITY_REACHED", true)
+						-- Indica que não está utilizando o Storage
+						model:SetAttribute("USED_STORAGE", false)
+						-- Zera o Contador do jogo Atual
+						model:SetAttribute("CURRENT_GAME_TIME", 0)
+
+						local spaceLeft = capacityOfGamesProduced - numberOfGamesStored
+
+						-- Se ultrapassar, ajusta playerAmount para apenas o que cabe
+						if playerAmount > spaceLeft then
+							playerAmount = spaceLeft
+						end
+
+						if not playerGames[player.UserId] then
+							playerGames[player.UserId] = {}
+						end
+
+						if not playerGames[player.UserId][worker.Id] then
+							playerGames[player.UserId][worker.Id] = {}
+						end
+
+						ThreadService:UpdateTotalCCU(player, playerAmount)
+
+						local storedGamesFromPlayerWorker = playerGames[player.UserId][worker.Id]
+						storedGamesFromPlayerWorker[gameName] = (storedGamesFromPlayerWorker[gameName] or 0)
+							+ playerAmount
+
+						playerGames[player.UserId][worker.Id] = storedGamesFromPlayerWorker
+
+						model:SetAttribute("STORED_GAME_" .. gameName, storedGamesFromPlayerWorker[gameName])
+
+						model:SetAttribute("CURRENT_PERCENT_PRODUCED", 100)
+
+						-- Incrementa a quantidade de jogodos produzidos
+						model:SetAttribute("NUMBER_OF_GAMES_STORED", numberOfGamesStored + playerAmount)
+
 						continue
 					end
 
-					-- Significa que ainda está produzindo um jogo
-					ThreadService:UpdateDevCurrentTime(model, currentGameTime, timeToProduceGame)
+					model:SetAttribute("CURRENT_PERCENT_PRODUCED", (currentGameTime / timeToProduceGame) * 100)
 
-					-- Atualiza o percentual de uso do dev
-					ThreadService:UpdateCurrentPercentCapacity(model, capacityOfGamesProduced)
+					local currentPercentCapacity = (model:GetAttribute("NUMBER_OF_GAMES_STORED") or 0)
+						/ capacityOfGamesProduced
+
+					model:SetAttribute("CURRENT_PERCENT_CAPACITY", currentPercentCapacity * 100)
+
+					model:SetAttribute("CURRENT_GAME_TIME", currentGameTime)
 				end
 			end
 
@@ -203,7 +257,6 @@ function ThreadService:SetGameInStorage(player: Player, gameName: string, player
 	end
 
 	local hasAvailableSpaceInStorage = StorageService:HasAvailableSpace(player, playerAmount)
-	print("Limite:" .. tostring(hasAvailableSpaceInStorage))
 
 	-- PlayerAmount = 0 Signofica que não tem mais espaço pra armazenar aquee jogo
 	if not hasAvailableSpaceInStorage or playerAmount <= 0 then
@@ -213,6 +266,8 @@ function ThreadService:SetGameInStorage(player: Player, gameName: string, player
 	end
 
 	StorageService:AddGame(player, gameName, playerAmount)
+
+	return true
 end
 
 function ThreadService:SetGameInDev(

@@ -163,7 +163,6 @@ function ThreadService:CreateDevThread(player: Player)
 						local hasStorage = StorageService:HasAvailableSpace(player, playerAmount)
 
 						if not hasStorage then
-							print("Sem Espaço")
 							-- Pausa a animação
 							ThreadService:PlayOrPauseWorkerAnimation(model, false)
 							model:SetAttribute("CURRENT_PERCENT_PRODUCED", 0)

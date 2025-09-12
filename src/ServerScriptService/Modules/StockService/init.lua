@@ -35,7 +35,8 @@ function StockService:InitStockCounter()
 				workspace:SetAttribute("TIME_TO_RELOAD_RESTOCK", currentTimeToReload)
 				task.wait(1)
 			end
-			task.wait(20)
+
+			currentTimeToReload = TIME_TO_RELOAD_STOCK
 		end
 	end)
 end

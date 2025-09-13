@@ -3,6 +3,7 @@ local MoneyService = {}
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
+local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
 
 function MoneyService:GiveMoney(player: Player, amount: number)
 	PlayerDataHandler:Update(player, "money", function(current)
@@ -12,6 +13,8 @@ function MoneyService:GiveMoney(player: Player, amount: number)
 
 		return newMoney
 	end)
+
+	LeadStatsService:UpdateMoney(player)
 end
 
 function MoneyService:ConsumeMoney(player: Player, amount: number)
@@ -22,11 +25,13 @@ function MoneyService:ConsumeMoney(player: Player, amount: number)
 
 		return newMoney
 	end)
+	LeadStatsService:UpdateMoney(player)
 end
 
 function MoneyService:ConsumeAllMoney(player: Player)
 	PlayerDataHandler:Set(player, "money", 0)
 	player:SetAttribute("MONEY", 0)
+	LeadStatsService:UpdateMoney(player)
 end
 
 function MoneyService:HasMoney(player: Player, amount: number)

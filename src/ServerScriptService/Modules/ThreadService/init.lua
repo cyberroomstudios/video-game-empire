@@ -8,6 +8,8 @@ local Devs = require(ReplicatedStorage.Enums.Devs)
 local Games = require(ReplicatedStorage.Enums.Games)
 local BaseService = require(ServerScriptService.Modules.BaseService)
 local StorageService = require(ServerScriptService.Modules.StorageService)
+local LeadboardService = require(ServerScriptService.Modules.LeadboardService)
+local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
 
 local playerGames = {}
 
@@ -131,6 +133,7 @@ function ThreadService:UpdateTotalCCU(player: Player, ccu: number)
 	end)
 
 	BaseService:UpdatePlayerCCU(player)
+	LeadStatsService:UpdateCCU(player)
 end
 -- Cria uma thread, responsavel por rodar os trabalhadores para cada jogador
 function ThreadService:CreateDevThread(player: Player)

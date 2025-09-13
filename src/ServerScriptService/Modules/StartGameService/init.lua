@@ -19,6 +19,8 @@ local ToolService = require(ServerScriptService.Modules.ToolService)
 local AutoCollectService = require(ServerScriptService.Modules.AutoCollectService)
 local StorageService = require(ServerScriptService.Modules.StorageService)
 local MoneyService = require(ServerScriptService.Modules.MoneyService)
+local LeadboardService = require(ServerScriptService.Modules.LeadboardService)
+local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
 
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
@@ -79,6 +81,9 @@ function StartGameService:InitBridgeListener()
 
 			StorageService:InitStorage(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando Storage")
+
+			LeadStatsService:InitPlayer(player)
+			StartGameService:NotifyLoadingStep(player, "Inicializando LeadStats")
 		end
 	end
 end

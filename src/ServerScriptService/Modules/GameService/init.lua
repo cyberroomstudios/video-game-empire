@@ -83,6 +83,7 @@ function GameService:GetGamesFromPlayer(player: Player)
 	return games
 end
 
+
 function GameService:ConsumeGame(player: Player, gameName: string)
 	PlayerDataHandler:Update(player, "games", function(current)
 		local newGames = {}

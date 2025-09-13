@@ -62,6 +62,7 @@ local dataTemplate = {
 	limitDateRobuxLuck = 0,
 	mapClaimed = false,
 	storageLimited = 1000,
+	robuxSpent = 0,
 }
 
 local ProfileService = require(ServerScriptService.libs.ProfileService)

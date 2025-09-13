@@ -61,7 +61,7 @@ function NotificationController:ShowNotification(notificationType: string, messa
 	end
 
 	local template = notificationsTemplate[notificationType]:Clone()
-	template.NotificationsText.Text = message
+	template.Message.NotificationsText.Text = message
 	template.Parent = notificationScreen
 
 	task.delay(1.5, function()

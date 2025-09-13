@@ -34,6 +34,7 @@ local shopButton
 local indexButton
 local rebirthButton
 local dailyRewardButton
+local codeButton
 
 -- Botões da Direta
 local autoCollectButton
@@ -62,6 +63,7 @@ function HudController:CreateReferences()
 	autoCollectButton = UIReferences:GetReference("AUTO_COLLECT_BUTTON_HUD")
 	autoSellButton = UIReferences:GetReference("AUTO_SELL_BUTTON")
 	dailyRewardButton = UIReferences:GetReference("DAILY_REWARD_HUD")
+	codeButton = UIReferences:GetReference("CODE_BUTTON_HUD")
 
 	leftPreviewButton = UIReferences:GetReference("LEFT_PREVIEW_BUTTON")
 	setPreviewButton = UIReferences:GetReference("SET_PREVIEW_BUTTON")
@@ -94,6 +96,10 @@ function HudController:InitButtonListerns()
 
 	dailyRewardButton.MouseButton1Click:Connect(function()
 		UIStateManager:Open("DAILY_REWARD")
+	end)
+
+	codeButton.MouseButton1Click:Connect(function()
+		UIStateManager:Open("CODE")
 	end)
 
 	autoCollectButton.MouseButton1Click:Connect(function()

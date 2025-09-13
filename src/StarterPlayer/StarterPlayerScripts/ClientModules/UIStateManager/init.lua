@@ -6,6 +6,7 @@ local TweenService = game:GetService("TweenService")
 local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local DailyRewardController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DailyRewardController)
+local CodesController = require(Players.LocalPlayer.PlayerScripts.ClientModules.CodesController)
 
 local screens = {}
 local loadedModules = false
@@ -48,6 +49,7 @@ function UIStateManager:LoadModules()
 			["AUTO_COLLECT"] = AutoCollectScreenController,
 			["BACKPACK_EXPAND"] = BackpackController,
 			["DAILY_REWARD"] = DailyRewardController,
+			["CODE"] = CodesController,
 		}
 	end
 end

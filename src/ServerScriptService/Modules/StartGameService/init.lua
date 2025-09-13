@@ -21,6 +21,7 @@ local StorageService = require(ServerScriptService.Modules.StorageService)
 local MoneyService = require(ServerScriptService.Modules.MoneyService)
 local LeadboardService = require(ServerScriptService.Modules.LeadboardService)
 local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
+local DailyRewardService = require(ServerScriptService.Modules.DailyRewardService)
 
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
@@ -43,6 +44,10 @@ function StartGameService:InitBridgeListener()
 			end
 
 			playerInitializer[player] = true
+
+			-- Seta a Data de Login do Daily Reward
+			DailyRewardService:SetDate(player)
+			StartGameService:NotifyLoadingStep(player, "Configurando Daily Reward")
 
 			AutoCollectService:AddAutoCollectPlaytime(player)
 			StartGameService:NotifyLoadingStep(player, "Registrando Login")
@@ -84,6 +89,12 @@ function StartGameService:InitBridgeListener()
 
 			LeadStatsService:InitPlayer(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando LeadStats")
+
+			return {
+				DailyReward = PlayerDataHandler:Get(player, "dailyReward"),
+				DaysWithRigthPrize = PlayerDataHandler:Get(player, "daysWithRigthPrize"),
+				MinLeftNextDay = DailyRewardService:CalculateMinLeftDay(player),
+			}
 		end
 	end
 end

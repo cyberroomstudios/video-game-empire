@@ -136,6 +136,8 @@ function HudController:InitButtonListerns()
 			end
 		end
 	end)
+
+	
 end
 
 function HudController:InitButtonEffects()

@@ -141,6 +141,7 @@ function MobileScreenController:InitPreview(itemName: string, toolType: string)
 
 	-- Atualiza posição a cada frame
 	self.previewConnection = RunService.RenderStepped:Connect(function()
+		
 		if player:GetAttribute("TOOL_IN_HAND") == "" then
 			return
 		end

@@ -73,7 +73,10 @@ end
 function UIStateManager:Close(screenName: string)
 	UIStateManager:RemoveBluer()
 	currentScreen = ""
-	screens[screenName]:Close()
+	if screenName and screens[screenName] then
+		print(screenName)
+		screens[screenName]:Close()
+	end
 end
 
 function UIStateManager:ApplyTween(screen: Frame)

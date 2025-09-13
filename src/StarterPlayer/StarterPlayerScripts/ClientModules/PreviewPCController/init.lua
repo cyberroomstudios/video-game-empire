@@ -214,6 +214,7 @@ function PreviewPCController:InitEquipToolListner()
 	player.Character.ChildRemoved:Connect(function(child)
 		if child:IsA("Tool") then
 			--previewPcButtons.Visible = false
+
 			if workspace:FindFirstChild("Preview") then
 				workspace.Preview:Destroy()
 				player:SetAttribute("TOOL_IN_HAND", "")

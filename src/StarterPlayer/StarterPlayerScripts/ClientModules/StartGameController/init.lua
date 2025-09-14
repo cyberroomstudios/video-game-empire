@@ -19,6 +19,12 @@ function StartGameController:Init(data)
 		data = {},
 	})
 
+	Players.LocalPlayer:SetAttribute("LOADED_END_SCREEN", true)
+
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local screenGui = playerGui:WaitForChild("LoadingScreen")
+
+	screenGui.Enabled = false
 	HireAgencyScreenController:CreateDevItems()
 
 	if result then

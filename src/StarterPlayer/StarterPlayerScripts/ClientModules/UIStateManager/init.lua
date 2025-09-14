@@ -1,12 +1,17 @@
 local UIStateManager = {}
 local CollectionService = game:GetService("CollectionService")
+local HapticService = game:GetService("HapticService")
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local DailyRewardController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DailyRewardController)
 local CodesController = require(Players.LocalPlayer.PlayerScripts.ClientModules.CodesController)
+local MobileVibrationController = require(Players.LocalPlayer.PlayerScripts.ClientModules.MobileVibrationController)
+local GroupRewardController = require(Players.LocalPlayer.PlayerScripts.ClientModules.GroupRewardController)
+local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 
 local screens = {}
 local loadedModules = false
@@ -23,6 +28,7 @@ function UIStateManager:Init()
 	UIStateManager:CreateReferences()
 	UIStateManager:ConfigureCloseButton()
 	UIStateManager:InitBackpackButtons()
+	UIStateManager:InitGroupRewardProximity()
 end
 
 function UIStateManager:CreateReferences()
@@ -50,6 +56,7 @@ function UIStateManager:LoadModules()
 			["BACKPACK_EXPAND"] = BackpackController,
 			["DAILY_REWARD"] = DailyRewardController,
 			["CODE"] = CodesController,
+			["GROUP_REWARD"] = GroupRewardController,
 		}
 	end
 end
@@ -68,6 +75,7 @@ function UIStateManager:Open(screenName: string)
 
 	UIStateManager:AddBluer()
 	task.spawn(function()
+		MobileVibrationController:Start()
 		screens[screenName]:Open()
 	end)
 	UIStateManager:ApplyTween(screens[screenName]:GetScreen())
@@ -158,6 +166,26 @@ function UIStateManager:InitBackpackButtons()
 			end)
 		end
 	end
+end
+
+function UIStateManager:InitGroupRewardProximity()
+	local proximityPart = ClientUtil:WaitForDescendants(
+		workspace,
+		"Map",
+		"CentralSquare",
+		"CentralSquare",
+		"GroupReward",
+		"ProximityPart"
+	)
+	local proximityPrompt = proximityPart.ProximityPrompt
+
+	proximityPrompt.PromptShown:Connect(function()
+		UIStateManager:Open("GROUP_REWARD")
+	end)
+
+	proximityPrompt.PromptHidden:Connect(function()
+		UIStateManager:Close("GROUP_REWARD")
+	end)
 end
 
 return UIStateManager

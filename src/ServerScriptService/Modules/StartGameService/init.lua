@@ -88,11 +88,11 @@ function StartGameService:InitBridgeListener()
 			StorageService:InitStorage(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando Storage")
 
-			LeadStatsService:InitPlayer(player)
-			StartGameService:NotifyLoadingStep(player, "Inicializando LeadStats")
-
 			OfflineGameService:Generate(player)
 			StartGameService:NotifyLoadingStep(player, "Obtendo Trabalho Offline")
+
+			LeadStatsService:InitPlayer(player)
+			StartGameService:NotifyLoadingStep(player, "Inicializando LeadStats")
 
 			return {
 				DailyReward = PlayerDataHandler:Get(player, "dailyReward"),

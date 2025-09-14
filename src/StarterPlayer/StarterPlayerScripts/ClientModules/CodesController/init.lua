@@ -45,8 +45,9 @@ function CodesController:SendCode()
 
 	if debounce then
 		screen.Visible = false
-		workspace.CurrentCamera.Blur.Size = 0
-
+		if workspace.CurrentCamera:FindFirstChild("Blur") then
+			workspace.CurrentCamera.Blur.Size = 0
+		end
 		debounce = false
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "GetCodeAward",

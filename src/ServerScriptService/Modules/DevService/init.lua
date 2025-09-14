@@ -188,6 +188,14 @@ function DevService:GiveDev(player: Player, devName: string)
 	end)
 end
 
+function DevService:GiveDevFromRobux(player: Player, devName: string)
+	-- Salva no banco de dados
+	DevService:GiveDev(player, devName)
+
+	-- Da uma tool ao jogador
+	ToolService:GiveDevTool(player, devName)
+end
+
 function DevService:GetGamesFromDev(player: Player, devId: number)
 	local games = ThreadService:GetGameFromPlayerAndDev(player, devId)
 

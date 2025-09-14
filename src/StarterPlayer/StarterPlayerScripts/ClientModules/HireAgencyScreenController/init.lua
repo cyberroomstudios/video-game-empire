@@ -32,6 +32,21 @@ local reestockLabel
 local restockAllButton
 local playerStock = {}
 
+local devsBuyId = {
+	["1_DevIntern"] = "DEV_INTERN",
+	["2_JuniorDev"] = "JUNIOR_DEVELOPER",
+	["3_MidLevelDev"] = "MID_LEVEL_DEVELOPER",
+	["4_SeniorDev"] = "SENIOR_DEVELOPER",
+	["5_ConceptArtist"] = "CONCEPET_ARTIST",
+}
+local devPrices = {
+	["1_DevIntern"] = "-",
+	["2_JuniorDev"] = "-",
+	["3_MidLevelDev"] = "-",
+	["4_SeniorDev"] = "-",
+	["5_ConceptArtist"] = "-",
+}
+
 function HireAgencyScreenController:Init()
 	HireAgencyScreenController:CreateReferences()
 	HireAgencyScreenController:ConfigureProximity()
@@ -39,6 +54,7 @@ function HireAgencyScreenController:Init()
 	HireAgencyScreenController:InitAttributeListener()
 	HireAgencyScreenController:InitBridgeListener()
 	HireAgencyScreenController:InitButtonListerns()
+	HireAgencyScreenController:CreateDevPrices()
 end
 
 function HireAgencyScreenController:CreateReferences()
@@ -49,6 +65,13 @@ function HireAgencyScreenController:CreateReferences()
 	restockAllButton = UIReferences:GetReference("RESTOCK_ALL_BUTTON")
 end
 
+function HireAgencyScreenController:CreateDevPrices()
+	task.spawn(function()
+		for index, dev in devsBuyId do
+			devPrices[index] = DeveloperProductController:GetProductPrice(dev)
+		end
+	end)
+end
 function HireAgencyScreenController:Open()
 	screen.Visible = true
 end
@@ -138,6 +161,7 @@ function HireAgencyScreenController:CreateDevItems()
 			scrollingFrame.Buttons.Buy.TextLabel.Text = ClientUtil:FormatToUSD(dev.Price)
 			scrollingFrame.Buttons.Visible = true
 			scrollingFrame.Buttons.LayoutOrder = currentLayoutOrder + 1
+			scrollingFrame.Buttons.Robux.TextLabel.Text = utf8.char(0xE002) .. devPrices[dev.Name]
 		end)
 	end
 
@@ -161,6 +185,10 @@ function HireAgencyScreenController:CreateDevItems()
 			},
 		})
 		DeveloperProductController:OpenPaymentRequestScreen("RESTOCK_THIS")
+	end)
+
+	scrollingFrame.Buttons.Robux.MouseButton1Click:Connect(function()
+		DeveloperProductController:OpenPaymentRequestScreen(devsBuyId[selectedItem])
 	end)
 end
 

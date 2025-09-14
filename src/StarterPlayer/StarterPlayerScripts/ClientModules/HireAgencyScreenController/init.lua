@@ -22,11 +22,14 @@ local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 local Devs = require(ReplicatedStorage.Enums.Devs)
 local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
+local DeveloperProductController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DeveloperProductController)
+
 local player = Players.LocalPlayer
 
 local screen
 local scrollingFrame
 local reestockLabel
+local restockAllButton
 local playerStock = {}
 
 function HireAgencyScreenController:Init()
@@ -35,6 +38,7 @@ function HireAgencyScreenController:Init()
 
 	HireAgencyScreenController:InitAttributeListener()
 	HireAgencyScreenController:InitBridgeListener()
+	HireAgencyScreenController:InitButtonListerns()
 end
 
 function HireAgencyScreenController:CreateReferences()
@@ -42,6 +46,7 @@ function HireAgencyScreenController:CreateReferences()
 	screen = UIReferences:GetReference("HIRE_AGENCY")
 	scrollingFrame = UIReferences:GetReference("HIRE_AGENCY_SCROLLING_FRAME")
 	reestockLabel = UIReferences:GetReference("REESTOCK_LABEL")
+	restockAllButton = UIReferences:GetReference("RESTOCK_ALL_BUTTON")
 end
 
 function HireAgencyScreenController:Open()
@@ -54,6 +59,12 @@ end
 
 function HireAgencyScreenController:GetScreen()
 	return screen
+end
+
+function HireAgencyScreenController:InitButtonListerns()
+	restockAllButton.MouseButton1Click:Connect(function()
+		DeveloperProductController:OpenPaymentRequestScreen("RESTOCK")
+	end)
 end
 
 function HireAgencyScreenController:ConfigureProximity()
@@ -140,6 +151,16 @@ function HireAgencyScreenController:CreateDevItems()
 
 		if result then
 		end
+	end)
+
+	scrollingFrame.Buttons.Restock.MouseButton1Click:Connect(function()
+		local result = bridge:InvokeServerAsync({
+			[actionIdentifier] = "SetRestockThisIntent",
+			data = {
+				DevName = selectedItem,
+			},
+		})
+		DeveloperProductController:OpenPaymentRequestScreen("RESTOCK_THIS")
 	end)
 end
 

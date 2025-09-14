@@ -19,12 +19,23 @@ local GameNotificationService = require(ServerScriptService.Modules.GameNotifica
 
 local ready = false
 local globalStock = {}
+local restockThisIntentFromPlayer = {}
 
 local TIME_TO_RELOAD_STOCK = 60 * 5
 local currentTimeToReload
 
 function StockService:Init()
+	StockService:InitBridgeListener()
 	StockService:InitStockCounter()
+end
+
+function StockService:InitBridgeListener()
+	bridge.OnServerInvoke = function(player, data)
+		if data[actionIdentifier] == "SetRestockThisIntent" then
+			local devName = data.data.DevName
+			restockThisIntentFromPlayer[player] = devName
+		end
+	end
 end
 
 function StockService:InitStockCounter()
@@ -42,6 +53,26 @@ function StockService:InitStockCounter()
 			GameNotificationService:ShowStockNotification()
 		end
 	end)
+end
+
+function StockService:RestockAllFromRobux()
+	currentTimeToReload = 0
+end
+
+function StockService:RestockThisFromRobux(player: Player)
+	if restockThisIntentFromPlayer[player] then
+		local devName = restockThisIntentFromPlayer[player]
+		local devEnum = Devs[devName]
+		local amount = math.random(devEnum.Stock.Min, devEnum.Stock.Max)
+
+		globalStock[devName] = amount
+
+		local globalStockCount = workspace:GetAttribute("GLOBAL_STOCK_COUNT") or 0
+		workspace:SetAttribute("GLOBAL_STOCK_COUNT", globalStockCount + 1)
+
+		StockService:UpdateAllPlayers()
+		restockThisIntentFromPlayer[player] = nil
+	end
 end
 
 function StockService:CreateStock()

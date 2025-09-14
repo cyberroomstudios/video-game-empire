@@ -8,7 +8,12 @@ export type DeveloperProduct = {
 DeveloperProducts.ENUM = {
 	RESTOCK = {
 		Name = "RESTOCK",
-		Id = 3346973568,
+		Id = 3403471358,
+	},
+
+	RESTOCK_THIS = {
+		Name = "RESTOCK_THIS",
+		Id = 3403482621,
 	},
 }
 

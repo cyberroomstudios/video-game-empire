@@ -23,6 +23,7 @@ local LeadboardService = require(ServerScriptService.Modules.LeadboardService)
 local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
 local DailyRewardService = require(ServerScriptService.Modules.DailyRewardService)
 local OfflineGameService = require(ServerScriptService.Modules.OfflineGameService)
+local GamepassManager = require(ServerScriptService.Modules.GamepassManager)
 
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
@@ -93,6 +94,11 @@ function StartGameService:InitBridgeListener()
 
 			LeadStatsService:InitPlayer(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando LeadStats")
+
+			GamepassManager:InitGamePassesFromPlayer(player)
+			StartGameService:NotifyLoadingStep(player, "Inicializando GamePasses")
+
+			GamepassManager:InitGamePassesFromPlayer(player)
 
 			return {
 				DailyReward = PlayerDataHandler:Get(player, "dailyReward"),

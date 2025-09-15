@@ -208,11 +208,11 @@ function HudController:InitButtonEffects()
 	end)
 
 	autoSellButton.MouseEnter:Connect(function()
-		autoCollectButton.UIScale.Scale = 1.1
+		autoSellButton.UIScale.Scale = 1.1
 	end)
 
 	autoSellButton.MouseLeave:Connect(function()
-		autoCollectButton.UIScale.Scale = 1
+		autoSellButton.UIScale.Scale = 1
 	end)
 end
 

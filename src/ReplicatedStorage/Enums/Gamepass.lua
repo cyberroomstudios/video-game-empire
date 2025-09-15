@@ -8,17 +8,12 @@ export type Gamepass = {
 Gamepass.ENUM = {
 	VIP = {
 		Name = "VIP",
-		Id = 1356645137,
-	},
-
-	AUTO_COLLECT = {
-		Name = "AUTO_COLLECT",
-		Id = 1358998345,
+		Id = 1463571489,
 	},
 
 	AUTO_SELL = {
 		Name = "AUTO_SELL",
-		Id = 1357296902,
+		Id = 1463553528,
 	},
 }
 

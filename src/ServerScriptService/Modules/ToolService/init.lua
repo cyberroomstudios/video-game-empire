@@ -14,13 +14,47 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 
 local UtilService = require(ServerScriptService.Modules.UtilService)
+local Devs = require(ReplicatedStorage.Enums.Devs)
+local Games = require(ReplicatedStorage.Enums.Games)
 
-function ToolService:Init() end
+local minSizeTool = 1
+local maxSizeTool = 30
+local maxPlayerGame = 0
+
+function ToolService:Init()
+	ToolService:GetMaxPlayerFromGames()
+end
 
 function ToolService:UpdateBackpack(player: Player)
 	bridge:Fire(player, {
 		[actionIdentifier] = "UpdateBackpack",
 	})
+end
+
+function ToolService:GetMaxPlayerFromGames()
+	local maxPlayer = 0
+
+	for _, value in Games do
+		if value.Players.Max > maxPlayer then
+			maxPlayer = value.Players.Max
+		end
+	end
+
+	maxPlayerGame = maxPlayer
+end
+
+function ToolService:GetScaleTool(amountPlayer: number)
+	-- Garante que o valor não passa dos limites
+	if amountPlayer < 0 then
+		amountPlayer = 0
+	end
+	if amountPlayer > maxPlayerGame then
+		amountPlayer = maxPlayerGame
+	end
+
+	-- Calcula a escala proporcional
+	local scale = minSizeTool + (amountPlayer / maxPlayerGame) * (maxSizeTool - minSizeTool)
+	return scale
 end
 
 -- Da uma nova tool de Desenvolvedor ao jogador
@@ -99,6 +133,7 @@ function ToolService:GiveGameTool(player: Player, gameName: string, amountPlayer
 		newToll:SetAttribute("ORIGINAL_NAME", gameName)
 		newToll:SetAttribute("PLAYER_AMOUNT", amountPlayer)
 		newToll:SetAttribute("TOOL_TYPE", "GAME")
+		newToll:ScaleTo(ToolService:GetScaleTool(amountPlayer))
 
 		newToll.Name = UtilService:formatCamelCase(gameName) .. " " .. (playerAmountTool + (amountPlayer or 0))
 
@@ -109,6 +144,7 @@ function ToolService:GiveGameTool(player: Player, gameName: string, amountPlayer
 
 	tool:SetAttribute("PLAYER_AMOUNT", playerAmountTool + amountPlayer)
 	tool.Name = UtilService:formatCamelCase(gameName) .. " " .. (playerAmountTool + (amountPlayer or 0))
+	tool:ScaleTo(ToolService:GetScaleTool(playerAmountTool + amountPlayer))
 	ToolService:UpdateBackpack(player)
 end
 

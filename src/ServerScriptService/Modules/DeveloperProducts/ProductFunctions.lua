@@ -8,6 +8,7 @@ local DeveloperProducts = require(ReplicatedStorage.Enums.DeveloperProducts)
 local StockService = require(ServerScriptService.Modules.StockService)
 local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
 local DevService = require(ServerScriptService.Modules.DevService)
+local AutoCollectService = require(ServerScriptService.Modules.AutoCollectService)
 
 ProductFunctions[DeveloperProducts:GetEnum("RESTOCK").Id] = function(receipt, player)
 	StockService:RestockAllFromRobux()
@@ -18,6 +19,12 @@ end
 ProductFunctions[DeveloperProducts:GetEnum("RESTOCK_THIS").Id] = function(receipt, player)
 	StockService:RestockThisFromRobux(player)
 	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("RESTOCK_THIS").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("UNLOCK_AUTO_COLLECT").Id] = function(receipt, player)
+	AutoCollectService:BuyAutoCollect(player)
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("UNLOCK_AUTO_COLLECT").Id)
 	return true
 end
 

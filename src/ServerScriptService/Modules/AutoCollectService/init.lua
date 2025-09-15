@@ -14,7 +14,7 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
-local TARGET_PLAYTIME = 10 -- 10 minutos
+local TARGET_PLAYTIME = 10 * 60 -- 10 minutos
 
 function AutoCollectService:Init()
 	AutoCollectService:InitBridgeListener()
@@ -61,6 +61,13 @@ function AutoCollectService:ActiveAutoCollect(player: Player)
 		AutoCollectService:ActiveAutoCollectThread(player)
 		return true
 	end
+end
+
+function AutoCollectService:BuyAutoCollect(player)
+	player:SetAttribute("HAS_AUTO_COLLECT", true)
+	PlayerDataHandler:Set(player, "hasAutoCollect", true)
+	player:SetAttribute("ACTIVED_AUTO_COLLECT", true)
+	AutoCollectService:ActiveAutoCollectThread(player)
 end
 
 function AutoCollectService:GetPlaytime(player: Player)

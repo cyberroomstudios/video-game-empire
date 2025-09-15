@@ -21,6 +21,11 @@ DeveloperProducts.ENUM = {
 		Id = 3404259538,
 	},
 
+	UNLOCK_AUTO_COLLECT = {
+		Name = "UNLOCK_AUTO_COLLECT",
+		Id = 3404259536,
+	},
+
 	JUNIOR_DEVELOPER = {
 		Name = "JUNIOR_DEVELOPER",
 		Id = 3404259535,

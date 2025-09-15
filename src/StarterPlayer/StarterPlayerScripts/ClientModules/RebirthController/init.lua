@@ -44,7 +44,7 @@ function RebirthController:Open()
 	mainRebirth.Visible = false
 	screen.Visible = true
 	RebirthController:BuildScreen()
-	mainRebirth.Visible = true
+	--	mainRebirth.Visible = true
 end
 
 function RebirthController:Close()
@@ -120,6 +120,10 @@ function RebirthController:InitButtonListerns()
 		if canClick then
 			canClick = false
 			screen.Visible = false
+			if workspace.CurrentCamera:FindFirstChild("Blur") then
+				workspace.CurrentCamera.Blur.Size = 0
+			end
+
 			local result = bridge:InvokeServerAsync({
 				[actionIdentifier] = "GetRebirth",
 			})

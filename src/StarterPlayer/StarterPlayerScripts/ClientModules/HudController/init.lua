@@ -206,6 +206,14 @@ function HudController:InitButtonEffects()
 	autoCollectButton.MouseLeave:Connect(function()
 		autoCollectButton.UIScale.Scale = 1
 	end)
+
+	autoSellButton.MouseEnter:Connect(function()
+		autoCollectButton.UIScale.Scale = 1.1
+	end)
+
+	autoSellButton.MouseLeave:Connect(function()
+		autoCollectButton.UIScale.Scale = 1
+	end)
 end
 
 function HudController:InitUserInputService()

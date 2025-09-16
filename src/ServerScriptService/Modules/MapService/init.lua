@@ -25,10 +25,11 @@ function MapService:InitBridgeListener()
 			local floor = data.data.Floor
 
 			if floor > player:GetAttribute("FLOOR") then
-				return
+				return false
 			end
 
 			MapService:SetDevToMap(player, cFrame, dev, floor)
+			return true
 		end
 	end
 end

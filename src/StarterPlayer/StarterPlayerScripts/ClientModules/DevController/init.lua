@@ -7,6 +7,7 @@ local TweenService = game:GetService("TweenService")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
+local FTUEController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FTUEController)
 local bridge = BridgeNet2.ReferenceBridge("DevService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -63,6 +64,13 @@ function DevController:CreateProximity(devId: number)
 				if value:GetAttribute("IS_GAME") then
 					value:Destroy()
 				end
+			end
+
+			local currentFTUE = FTUEController:GetCurrentState()
+			print(currentFTUE)
+			if currentFTUE and currentFTUE == "COLLECT_GAME" then
+				FTUEController:SetCurrentSellFTUE()
+				
 			end
 		end
 	end)
@@ -130,6 +138,12 @@ function DevController:CreateProximity(devId: number)
 				end
 			end
 		end
+
+		local currentFTUE = FTUEController:GetCurrentState()
+		print(currentFTUE)
+		if currentFTUE and currentFTUE == "COLLECT_GAME" then
+			FTUEController:SetCurrentSellFTUE()
+		end
 	end)
 end
 
@@ -156,6 +170,10 @@ function DevController:UpdateDevInformations(model: Model)
 		end
 
 		while model:GetAttribute("UPDATE_INFORMATION") do
+			local currentFTUE = FTUEController:GetCurrentState()
+
+			billboard.Content.Collect.FTUE.Visible = currentFTUE and currentFTUE == "COLLECT_GAME"
+
 			local developingText = billboard.Content.ProgressBar.Developing.Title.TextLabel
 
 			if model:GetAttribute("MAXIMUM_CAPACITY_REACHED") then

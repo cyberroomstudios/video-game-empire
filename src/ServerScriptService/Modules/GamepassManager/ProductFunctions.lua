@@ -13,7 +13,6 @@ ProductFunctions[Gamepass:GetEnum("VIP").Id] = function(player)
 	return true
 end
 ProductFunctions[Gamepass:GetEnum("AUTO_SELL").Id] = function(player)
-	print("Comprou")
 	AutoSellService:BuyAutoCollect(player)
 	return true
 end

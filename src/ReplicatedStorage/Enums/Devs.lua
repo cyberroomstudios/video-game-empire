@@ -18,11 +18,8 @@ local Devs = table.freeze({
 			Max = 5,
 		},
 		Games = {
-			["Tycoon"] = {
-				Chance = 70,
-			},
-			["Obby"] = {
-				Chance = 30,
+			["Become_a_Ninja"] = {
+				Chance = 100,
 			},
 		},
 	},
@@ -45,15 +42,8 @@ local Devs = table.freeze({
 			Max = 10,
 		},
 		Games = {
-			["Tycoon"] = {
-				Chance = 70,
-			},
-			["Obby"] = {
-				Chance = 20,
-			},
-
-			["Simulator"] = {
-				Chance = 30,
+			["Become_a_Ninja"] = {
+				Chance = 100,
 			},
 		},
 	},
@@ -76,11 +66,8 @@ local Devs = table.freeze({
 			Max = 10,
 		},
 		Games = {
-			["Roleplay"] = {
-				Chance = 70,
-			},
-			["Adventure"] = {
-				Chance = 30,
+			["Become_a_Ninja"] = {
+				Chance = 100,
 			},
 		},
 	},
@@ -102,17 +89,8 @@ local Devs = table.freeze({
 			Max = 10,
 		},
 		Games = {
-			["Tycoon"] = {
-				Chance = 25,
-			},
-			["Obby"] = {
-				Chance = 25,
-			},
-			["Roleplay"] = {
-				Chance = 25,
-			},
-			["Adventure"] = {
-				Chance = 25,
+			["Become_a_Ninja"] = {
+				Chance = 100,
 			},
 		},
 	},
@@ -135,7 +113,7 @@ local Devs = table.freeze({
 			Max = 10,
 		},
 		Games = {
-			["Tycoon"] = {
+			["Become_a_Ninja"] = {
 				Chance = 100,
 			},
 		},

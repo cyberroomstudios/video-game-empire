@@ -23,6 +23,7 @@ local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.Clien
 local Devs = require(ReplicatedStorage.Enums.Devs)
 local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
 local DeveloperProductController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DeveloperProductController)
+local FTUEController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FTUEController)
 
 local player = Players.LocalPlayer
 
@@ -73,6 +74,7 @@ function HireAgencyScreenController:CreateDevPrices()
 	end)
 end
 function HireAgencyScreenController:Open()
+	HireAgencyScreenController:InitFTUE()
 	screen.Visible = true
 end
 
@@ -156,6 +158,15 @@ function HireAgencyScreenController:CreateDevItems()
 					end
 				end
 			end
+			local currentFTUE = FTUEController:GetCurrentState()
+
+			if currentFTUE and currentFTUE == "SELECT_ITEM" then
+				newItem.Image.FTUE.Visible = false
+				scrollingFrame.Buttons.Buy.FTUE.Visible = true
+				FTUEController:SetCurrentState("BUY_ITEM")
+			else
+				scrollingFrame.Buttons.Buy.FTUE.Visible = false
+			end
 			selectedItem = dev.Name
 
 			scrollingFrame.Buttons.Buy.TextLabel.Text = ClientUtil:FormatToUSD(dev.Price)
@@ -172,8 +183,10 @@ function HireAgencyScreenController:CreateDevItems()
 				DevName = selectedItem,
 			},
 		})
-
-		if result then
+		local currentFTUE = FTUEController:GetCurrentState()
+		if currentFTUE and currentFTUE == "BUY_ITEM" then
+			scrollingFrame.Buttons.Buy.FTUE.Visible = false
+			FTUEController:SetCurrentMyStudioFTUE()
 		end
 	end)
 
@@ -221,6 +234,19 @@ function HireAgencyScreenController:InitBridgeListener()
 			labels.Stock.Text = "x" .. amount .. " Stock"
 		end
 	end)
+end
+
+function HireAgencyScreenController:InitFTUE()
+	local currentFTUE = FTUEController:GetCurrentState()
+	for _, value in scrollingFrame:GetChildren() do
+		if value:IsA("TextButton") and value.LayoutOrder == 1 then
+			if currentFTUE and currentFTUE == "SELECT_ITEM" then
+				value.Image.FTUE.Visible = true
+			else
+				value.Image.FTUE.Visible = false
+			end
+		end
+	end
 end
 
 return HireAgencyScreenController

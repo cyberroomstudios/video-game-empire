@@ -21,6 +21,7 @@ local IndexController = require(Players.LocalPlayer.PlayerScripts.ClientModules.
 local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
 local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
 local AutoSellController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoSellController)
+local FTUEController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FTUEController)
 
 local player = Players.LocalPlayer
 
@@ -144,6 +145,10 @@ function HudController:InitButtonListerns()
 						Floor = player:GetAttribute("CURRENT_FLOOR"),
 					},
 				})
+
+				if result then
+					FTUEController:SetCurrentGetGameFTUE()
+				end
 				return
 			end
 		end
@@ -248,6 +253,11 @@ function HudController:InitUserInputService()
 							Floor = player:GetAttribute("CURRENT_FLOOR"),
 						},
 					})
+
+					if result then
+						FTUEController:SetCurrentGetGameFTUE()
+					end
+
 					return
 				end
 			end

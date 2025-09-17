@@ -402,10 +402,10 @@ local Workers = {
 		},
 	},
 
-	["Rivaed"] = { -- Key
-		Name = "Rivaed", -- Tool Name
+	["Rivaled"] = { -- Key
+		Name = "Rivaled", -- Tool Name
 		GUI = {
-			Name = "Rivaed", --GUI Name
+			Name = "Rivaled", --GUI Name
 		},
 
 		-- Define CCU

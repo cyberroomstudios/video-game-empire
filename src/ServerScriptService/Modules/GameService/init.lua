@@ -11,6 +11,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
 local ServerScriptService = game:GetService("ServerScriptService")
+local Workspace = game:GetService("Workspace")
 local ToolService = require(ServerScriptService.Modules.ToolService)
 local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
 local MoneyService = require(ServerScriptService.Modules.MoneyService)
@@ -83,7 +84,6 @@ function GameService:GetGamesFromPlayer(player: Player)
 	return games
 end
 
-
 function GameService:ConsumeGame(player: Player, gameName: string)
 	PlayerDataHandler:Update(player, "games", function(current)
 		local newGames = {}
@@ -99,7 +99,7 @@ function GameService:ConsumeGame(player: Player, gameName: string)
 end
 
 function GameService:GetGamePrice(amountPlayers: number)
-	return math.floor(amountPlayers * 0.5)
+	return math.floor(amountPlayers * Workspace:GetAttribute("PRICE_PER_CCU"))
 end
 
 function GameService:SellGame(player: Player, gameName: string)

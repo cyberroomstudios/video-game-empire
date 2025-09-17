@@ -132,17 +132,27 @@ function HireAgencyScreenController:CreateDevItems()
 		labels.Stock.Text = "x" .. tostring(player:GetAttribute(dev.Name) or 0) .. " Stock"
 
 		-- Games
+		local newViewPort = ReplicatedStorage.GUI.ViewPorts.Devs[dev.Name]:Clone()
+
+		newViewPort.Position = newItem.ViewPort.Position
+		newViewPort.Size = newItem.ViewPort.Size
+		newViewPort.Parent = newItem
+		local ftue = newItem.ViewPort.FTUE:Clone()
+		ftue.Parent = newViewPort
+
+		newItem.ViewPort:Destroy()
+		newViewPort.Name = "ViewPort"
 		local games = Devs[dev.Name].Games
 
 		for gameName, gameChance in games do
-			local gameIcon = ReplicatedStorage.GUI.ViewPorts.Games[gameName]:Clone()
-			local newGame = information.Games.Frame:Clone()
-			gameIcon.Parent = newGame
-			newGame.Visible = true
-			newGame.GameChance.Text = gameChance["Chance"] .. "%"
-
-			newGame.GameName.Text = gameName
-			newGame.Parent = information.Games
+			pcall(function()
+				local gameFrameClone = information.Games.Frame:Clone()
+				local newViewPort = ReplicatedStorage.GUI.ViewPorts.Games[gameName]:Clone()
+				newViewPort.Position = gameFrameClone.Position
+				newViewPort.Size = gameFrameClone.Size
+				newViewPort.Visible = true
+				newViewPort.Parent = information.Games
+			end)
 		end
 
 		newItem.Parent = scrollingFrame
@@ -161,7 +171,7 @@ function HireAgencyScreenController:CreateDevItems()
 			local currentFTUE = FTUEController:GetCurrentState()
 
 			if currentFTUE and currentFTUE == "SELECT_ITEM" then
-				newItem.Image.FTUE.Visible = false
+				newItem.ViewPort.FTUE.Visible = false
 				scrollingFrame.Buttons.Buy.FTUE.Visible = true
 				FTUEController:SetCurrentState("BUY_ITEM")
 			else
@@ -241,9 +251,9 @@ function HireAgencyScreenController:InitFTUE()
 	for _, value in scrollingFrame:GetChildren() do
 		if value:IsA("TextButton") and value.LayoutOrder == 1 then
 			if currentFTUE and currentFTUE == "SELECT_ITEM" then
-				value.Image.FTUE.Visible = true
+				value.ViewPort.FTUE.Visible = true
 			else
-				value.Image.FTUE.Visible = false
+				value.ViewPort.FTUE.Visible = false
 			end
 		end
 	end

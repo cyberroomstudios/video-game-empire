@@ -54,7 +54,8 @@ local function ConfigureMaxCCU()
 	for _, gameInfo in Games do
 		local min = gameInfo.Players.Min
 		local maxCCU = workspace:GetAttribute("MAX_CCU_PERCENT_VAR")
-		local max = min + (min * maxCCU)
+		local max = min + (min * maxCCU / 100)
+
 		gameInfo.Players.Max = max
 	end
 end

@@ -97,7 +97,9 @@ function HireAgencyScreenController:ConfigureProximity()
 	local proximityPrompt = proximityPart.ProximityPrompt
 
 	proximityPrompt.PromptShown:Connect(function()
-		UIStateManager:Open("WORKERS")
+		if FTUEController:GetCanProximityWorker() then
+			UIStateManager:Open("WORKERS")
+		end
 	end)
 
 	proximityPrompt.PromptHidden:Connect(function()
@@ -186,7 +188,9 @@ function HireAgencyScreenController:CreateDevItems()
 		end)
 	end
 
+	print("Configurando")
 	scrollingFrame.Buttons.Buy.MouseButton1Click:Connect(function()
+		print("Click")
 		local result = bridgeDevService:InvokeServerAsync({
 			[actionIdentifier] = "BuyDev",
 			data = {

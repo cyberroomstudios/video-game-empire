@@ -13,16 +13,18 @@ local sellAllGames
 local backpackButtons
 
 local currentFTUE
-
+local canProximityWorkers = false
 function FTUEController:Init(data)
 	FTUEController:CreateReferences()
 	FTUEController:InitButtonListerns()
 
-	if data.totalPlaytime then
+	if data.totalPlaytime == 0 then
+		currentFTUE = "WORKERS"
+		FTUEController:SetFTUE(workersButton, true)
+		return
 	end
 
-	currentFTUE = "WORKERS"
-	FTUEController:SetFTUE(workersButton, true)
+	canProximityWorkers = true
 end
 
 function FTUEController:CreateReferences()
@@ -37,6 +39,15 @@ function FTUEController:SetFTUE(button, state)
 	if button and button:FindFirstChild("FTUE") then
 		button.FTUE.Visible = state
 	end
+end
+
+function FTUEController:SetCanProximityWorker(state)
+	print("Setando Estado")
+	canProximityWorkers = state
+end
+
+function FTUEController:GetCanProximityWorker()
+	return canProximityWorkers
 end
 
 function FTUEController:InitButtonListerns()

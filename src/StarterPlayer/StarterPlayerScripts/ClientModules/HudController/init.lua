@@ -73,6 +73,7 @@ end
 
 function HudController:InitButtonListerns()
 	workesButton.MouseButton1Click:Connect(function()
+		FTUEController:SetCanProximityWorker(true)
 		TeleportController:ToWorkers()
 	end)
 

@@ -174,8 +174,8 @@ function BackpackController:UpdateBackpack()
 			end
 
 			if toolType == "GAME" then
-				slot.Content.TextLabel.Visible = true
-				slot.Content.TextLabel.Text = tool:GetAttribute("PLAYER_AMOUNT")
+				slot.Amount.Visible = true
+				slot.Amount.Text = ClientUtil:FormatNumberToSuffixes(tool:GetAttribute("PLAYER_AMOUNT"))
 			end
 			tools[tonumber(slot.Name)] = tool
 			continue
@@ -196,7 +196,7 @@ function BackpackController:UpdateBackpack()
 				newViewPort.Parent = nextSlot.Content
 				newViewPort.Name = "ViewPort"
 				newViewPort:SetAttribute("VIEW_PORT", true)
-
+				newViewPort.Size = UDim2.fromScale(1, 1)
 				nextSlot.Amount.Visible = true
 				nextSlot.Amount.Text = "X" .. tool:GetAttribute("AMOUNT")
 				nextSlot:SetAttribute("BUSY", true)
@@ -211,9 +211,10 @@ function BackpackController:UpdateBackpack()
 				newViewPort.Size = UDim2.fromScale(0.7, 0.7)
 				newViewPort.Parent = nextSlot.Content
 				newViewPort.Name = "ViewPort"
+				newViewPort.Size = UDim2.fromScale(1, 1)
 
-				nextSlot.Content.TextLabel.Visible = true
-				nextSlot.Content.TextLabel.Text = ClientUtil:FormatNumberToSuffixes(tool:GetAttribute("PLAYER_AMOUNT"))
+				nextSlot.Amount.Visible = true
+				nextSlot.Amount.Text = ClientUtil:FormatNumberToSuffixes(tool:GetAttribute("PLAYER_AMOUNT"))
 
 				nextSlot:SetAttribute("BUSY", true)
 			end
@@ -318,7 +319,7 @@ function BackpackController:DeleteSlots(toolNameList)
 			end
 
 			slot.Amount.Visible = false
-			slot.Content.TextLabel.Visible = false
+
 			tools[tonumber(slot.Name)] = nil
 		end
 	end

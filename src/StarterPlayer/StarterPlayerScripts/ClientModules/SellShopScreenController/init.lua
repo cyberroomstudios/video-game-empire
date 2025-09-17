@@ -65,7 +65,6 @@ function SellShopScreenController:Close()
 	screen.Visible = false
 end
 
-
 function SellShopScreenController:GetScreen()
 	return screen
 end
@@ -106,6 +105,9 @@ function SellShopScreenController:BuildScreen()
 		newItem.Parent = scrollingGames
 
 		local gameIcon = ReplicatedStorage.GUI.ViewPorts.Games[value.GameName]:Clone()
+		gameIcon.Size = UDim2.fromScale(1, 1)
+		gameIcon.Position = UDim2.fromScale(0.5, 0.5)
+		gameIcon.AnchorPoint = Vector2.new(0.5, 0.5)
 		gameIcon.Parent = newItem.Content.ProductImage
 
 		local clicked = false

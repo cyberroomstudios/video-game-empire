@@ -70,7 +70,6 @@ function DevController:CreateProximity(devId: number)
 			print(currentFTUE)
 			if currentFTUE and currentFTUE == "COLLECT_GAME" then
 				FTUEController:SetCurrentSellFTUE()
-				
 			end
 		end
 	end)
@@ -246,6 +245,9 @@ function DevController:UpdateDevInformations(model: Model)
 						newItem.GameName.Text = gameName
 
 						local viewPort = ReplicatedStorage.GUI.ViewPorts.Games:FindFirstChild(gameName):Clone()
+						viewPort.Size = UDim2.fromScale(1, 1)
+						viewPort.AnchorPoint = Vector2.new(0.5, 0.5)
+						viewPort.Position = UDim2.fromScale(0.5, 0.5)
 						viewPort.Parent = newItem
 					end
 

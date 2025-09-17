@@ -2,7 +2,7 @@ local Workers = {
 	["Become_a_Ninja"] = { -- Key
 		Name = "Become_a_Ninja", -- Tool Name
 		GUI = {
-			Name = "Become_a_Ninja", --GUI Name
+			Name = "Become A Ninja", --GUI Name
 		},
 
 		-- -- Define CCU

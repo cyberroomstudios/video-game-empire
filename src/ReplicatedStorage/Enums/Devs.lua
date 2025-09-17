@@ -19,7 +19,23 @@ local Devs = table.freeze({
 		},
 		Games = {
 			["Become_a_Ninja"] = {
-				Chance = 100,
+				Chance = 20,
+			},
+
+			["Be_a_Model"] = {
+				Chance = 20,
+			},
+
+			["Build_a_City"] = {
+				Chance = 20,
+			},
+
+			["Coin_Runner"] = {
+				Chance = 20,
+			},
+
+			["Obby_World"] = {
+				Chance = 20,
 			},
 		},
 	},

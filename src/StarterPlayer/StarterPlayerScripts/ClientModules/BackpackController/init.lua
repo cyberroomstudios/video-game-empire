@@ -10,6 +10,9 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
+local Devs = require(ReplicatedStorage.Enums.Devs)
+local Games = require(ReplicatedStorage.Enums.Games)
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
@@ -21,6 +24,7 @@ local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.Clien
 local backpackButtons
 local backpackExpand
 local backpackGrid
+local backpackSelectedItem
 
 local workersFrame
 local gamesFrame
@@ -38,6 +42,7 @@ function BackpackController:Init()
 	BackpackController:CreateReferences()
 	BackpackController:InitButtonListerns()
 	BackpackController:InitBridgeListener()
+	BackpackController:InitEquipToolListner()
 	backpack = player:WaitForChild("Backpack")
 end
 
@@ -49,6 +54,7 @@ function BackpackController:CreateReferences()
 	gamesFrame = UIReferences:GetReference("BACKPACK_GAMES")
 	showWorkesBackpackButton = UIReferences:GetReference("SHOW_WORKERS_BACKPACK")
 	showGamesBackpackButton = UIReferences:GetReference("SHOW_GAME_BACKPACK")
+	backpackSelectedItem = UIReferences:GetReference("BACKPACK_SELECTED_ITEM")
 end
 
 function BackpackController:InitButtonListerns()
@@ -68,6 +74,7 @@ function BackpackController:InitButtonListerns()
 			if tool then
 				if currenTool == tool then
 					currenTool = nil
+					backpackSelectedItem.Visible = false
 					player.Character.Humanoid:UnequipTools()
 
 					return
@@ -99,6 +106,7 @@ function BackpackController:InitButtonListerns()
 					if currenTool == tool then
 						currenTool = nil
 						humanoid:UnequipTools()
+						backpackSelectedItem.Visible = false
 						return
 					end
 
@@ -108,6 +116,27 @@ function BackpackController:InitButtonListerns()
 			end
 		end
 	end)
+end
+
+function BackpackController:GetUIToolName(tool)
+	local toolType = tool:GetAttribute("TOOL_TYPE")
+	local originalName = tool:GetAttribute("ORIGINAL_NAME")
+
+	if toolType == "GAME" then
+		local gameEnum = Games[originalName]
+		if gameEnum then
+			return gameEnum.GUI.Name
+		end
+	end
+
+	if toolType == "DEV" then
+		local devEnum = Devs[originalName]
+		if devEnum then
+			return devEnum.GUI.Label
+		end
+	end
+
+	return ""
 end
 function BackpackController:InitBridgeListener()
 	bridge:Connect(function(response)
@@ -353,6 +382,21 @@ end
 
 function BackpackController:GetScreen()
 	return backpackExpand
+end
+
+function BackpackController:InitEquipToolListner()
+	player.Character.ChildAdded:Connect(function(child)
+		if child:IsA("Tool") then
+			backpackSelectedItem.Text = BackpackController:GetUIToolName(child)
+			backpackSelectedItem.Visible = true
+		end
+	end)
+
+	player.Character.ChildRemoved:Connect(function(child)
+		if child:IsA("Tool") then
+			backpackSelectedItem.Visible = false
+		end
+	end)
 end
 
 return BackpackController

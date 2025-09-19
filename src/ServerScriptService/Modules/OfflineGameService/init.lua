@@ -13,7 +13,6 @@ local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local Devs = require(ReplicatedStorage.Enums.Devs)
 local ThreadService = require(ServerScriptService.Modules.ThreadService)
-local StorageService = require(ServerScriptService.Modules.StorageService)
 local bridge = BridgeNet2.ReferenceBridge("OfflineGrowthService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -94,10 +93,11 @@ function OfflineGameService:Generate(player: Player)
 
 			local gameName, playerAmount = ThreadService:CreateGame(player, dev.Name)
 
-			local hasSpace = StorageService:HasAvailableSpace(player, playerAmount)
+			local hasSpace = OfflineGameService:HasOfflineStorageSpace(player, playerAmount)
 
 			if hasSpace then
-				StorageService:AddGame(player, gameName, playerAmount)
+				OfflineGameService:AddOfflineGameInStorage(player, playerAmount)
+
 				local newGame = {
 					Name = gameName,
 					PlayerAmount = playerAmount,
@@ -117,6 +117,27 @@ function OfflineGameService:Generate(player: Player)
 			})
 		end
 	end
+end
+
+function OfflineGameService:HasOfflineStorageSpace(player: Player, playerAmount: number)
+	if not player:GetAttribute("LIMIT_OFFLINE_STORAGE") then
+		player:SetAttribute("LIMIT_OFFLINE_STORAGE", PlayerDataHandler:Get(player, "storageLimited"))
+	end
+
+	local amount = player:GetAttribute("USED_OFFLINE_STORAGE") or 0
+	local limit = player:GetAttribute("LIMIT_OFFLINE_STORAGE")
+
+	return (amount + playerAmount) <= limit
+end
+
+function OfflineGameService:AddOfflineGameInStorage(player: Player, amount: number)
+	if not player:GetAttribute("LIMIT_OFFLINE_STORAGE") then
+		player:SetAttribute("LIMIT_OFFLINE_STORAGE", PlayerDataHandler:Get(player, "storageLimited"))
+	end
+
+	local oldAmount = player:GetAttribute("USED_OFFLINE_STORAGE") or 0
+
+	player:SetAttribute("USED_OFFLINE_STORAGE", oldAmount + amount)
 end
 
 function OfflineGameService:GetShuffledListFromStorage(gamesForStorages)

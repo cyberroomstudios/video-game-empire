@@ -116,4 +116,6 @@ function BaseService:UpdatePlayerCCU(player: Player)
 	player:SetAttribute("CCU", totalCCU)
 end
 
+
+
 return BaseService

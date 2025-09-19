@@ -67,6 +67,7 @@ local dataTemplate = {
 }
 
 local ProfileService = require(ServerScriptService.libs.ProfileService)
+local EndGameService = require(ServerScriptService.Modules.EndGameService)
 
 local ProfileStore = ProfileService.GetProfileStore("PlayerProfile", dataTemplate)
 
@@ -160,6 +161,7 @@ function PlayerDataHandler:GetAll(player)
 	return profile.Data
 end
 
+
 function PlayerDataHandler:Init()
 	for _, player in Players:GetPlayers() do
 		task.spawn(playerAdded, player)
@@ -182,6 +184,8 @@ function PlayerDataHandler:Init()
 			local totalPlaytime = currentPlaytime + playtime
 			return totalPlaytime
 		end)
+
+		EndGameService:Apply(player)
 
 		-- Guarda quanto Resta de Robux Luck
 		PlayerDataHandler:Set(player, "limitDateRobuxLuck", player:GetAttribute("LIMIT_DATE_ROBUX_LUCK") or 0)

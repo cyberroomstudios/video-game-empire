@@ -46,7 +46,7 @@ function StorageService:GetStorage(player: Player, baseNumber: number)
 		"Mainbuilding",
 		"FloorBase",
 		"Storage",
-		"Part"
+		"ProximityPart"
 	)
 
 	local gamesFromPlayerStorage = storagePlayers[player.UserId]
@@ -87,7 +87,7 @@ function StorageService:AddGame(player: Player, gameName: string, playerAmount: 
 		"Mainbuilding",
 		"FloorBase",
 		"Storage",
-		"Part"
+		"ProximityPart"
 	)
 
 	if storage:GetAttribute("COLLETING") then
@@ -124,7 +124,7 @@ function StorageService:InitStorage(player: Player)
 		"Mainbuilding",
 		"FloorBase",
 		"Storage",
-		"Part"
+		"ProximityPart"
 	)
 
 	local storageLimit = PlayerDataHandler:Get(player, "storageLimited")
@@ -143,7 +143,7 @@ function StorageService:HasAvailableSpace(player: Player, amount: number)
 		"Mainbuilding",
 		"FloorBase",
 		"Storage",
-		"Part"
+		"ProximityPart"
 	)
 
 	local limited = storage:GetAttribute("LIMITED")
@@ -163,7 +163,7 @@ function StorageService:GetCurrentUsedAndLimited(player: Player)
 		"Mainbuilding",
 		"FloorBase",
 		"Storage",
-		"Part"
+		"ProximityPart"
 	)
 
 	local currentUsed = storage:GetAttribute("CURRENT_USED") or 0

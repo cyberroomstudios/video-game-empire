@@ -73,14 +73,10 @@ function StorageController:InitGUI()
 				billboard.Content.Position = UDim2.fromScale(0.5, 0.5) -- centraliza na tela
 
 				-- Configuração do tween
-				local tweenInfo = TweenInfo.new(
-					0.1, -- duração (meio segundo)
-					Enum.EasingStyle.Back, -- estilo com "esticadinha" no final
-					Enum.EasingDirection.In
-				)
+				local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Back, Enum.EasingDirection.In)
 
 				local goal = {}
-				goal.Size = UDim2.fromScale(0, 0) -- tamanho final do frame
+				goal.Size = UDim2.fromScale(0, 0)
 
 				-- Criar e executar o tween
 				local tween = TweenService:Create(billboard.Content, tweenInfo, goal)
@@ -131,6 +127,9 @@ function StorageController:UpdateInformations(storage: Part, billboard: Billboar
 						newItem.GameName.Text = gameName
 
 						local viewPort = ReplicatedStorage.GUI.ViewPorts.Games:FindFirstChild(gameName):Clone()
+						viewPort.Size = UDim2.fromScale(1, 1)
+						viewPort.AnchorPoint = Vector2.new(0.5, 0.5)
+						viewPort.Position = UDim2.fromScale(0.5, 0.5)
 						viewPort.Parent = newItem
 					end
 

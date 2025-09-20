@@ -13,6 +13,17 @@ local MobileVibrationController = require(Players.LocalPlayer.PlayerScripts.Clie
 local GroupRewardController = require(Players.LocalPlayer.PlayerScripts.ClientModules.GroupRewardController)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 
+-- Init Bridg Net
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Utility = ReplicatedStorage.Utility
+local BridgeNet2 = require(Utility.BridgeNet2)
+local NewGameController = require(Players.LocalPlayer.PlayerScripts.ClientModules.NewGameController)
+local bridge = BridgeNet2.ReferenceBridge("UIStateService")
+local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
+local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
+local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
+-- End Bridg Net
+
 local screens = {}
 local loadedModules = false
 local camera = workspace.CurrentCamera
@@ -29,6 +40,7 @@ function UIStateManager:Init()
 	UIStateManager:ConfigureCloseButton()
 	UIStateManager:InitBackpackButtons()
 	UIStateManager:InitGroupRewardProximity()
+	UIStateManager:InitListeners()
 end
 
 function UIStateManager:CreateReferences()
@@ -57,6 +69,7 @@ function UIStateManager:LoadModules()
 			["DAILY_REWARD"] = DailyRewardController,
 			["CODE"] = CodesController,
 			["GROUP_REWARD"] = GroupRewardController,
+			["NEW_GAME"] = NewGameController,
 		}
 	end
 end
@@ -92,6 +105,10 @@ function UIStateManager:Close(screenName: string)
 end
 
 function UIStateManager:ApplyTween(screen: Frame)
+	if screen.Name == "NewGame" then
+		return
+	end
+
 	local originalSize = screen.Size
 	local tweenInfo = TweenInfo.new(
 		0.3, -- duração
@@ -185,6 +202,19 @@ function UIStateManager:InitGroupRewardProximity()
 
 	proximityPrompt.PromptHidden:Connect(function()
 		UIStateManager:Close("GROUP_REWARD")
+	end)
+end
+
+function UIStateManager:InitListeners()
+	bridge:Connect(function(response)
+		if response[actionIdentifier] == "ShowNewGame" then
+			for _, value in response.data.NewGames do
+				NewGameController:AddNewGameName(value)
+			end
+			UIStateManager:Open("NEW_GAME")
+			task.wait(2)
+			UIStateManager:Close("NEW_GAME")
+		end
 	end)
 end
 

@@ -6,6 +6,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
 local UtilService = require(ServerScriptService.Modules.UtilService)
 local Devs = require(ReplicatedStorage.Enums.Devs)
+local Games = require(ReplicatedStorage.Enums.Games)
 
 -- Init Bridg Net
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -20,6 +21,7 @@ local GameService = require(ServerScriptService.Modules.GameService)
 local GameNotificationService = require(ServerScriptService.Modules.GameNotificationService)
 
 local bridge = BridgeNet2.ReferenceBridge("DevService")
+local bridgeUIStateService = BridgeNet2.ReferenceBridge("UIStateService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
@@ -201,6 +203,8 @@ function DevService:GetGamesFromDev(player: Player, devId: number)
 
 	if games then
 		player:SetAttribute("COLLETING", true)
+		DevService:VerifyNewGames(player, games)
+
 		local model = DevService:GetModel(player, devId)
 
 		for gameName, amount in games do
@@ -212,6 +216,33 @@ function DevService:GetGamesFromDev(player: Player, devId: number)
 		player:SetAttribute("COLLETING", false)
 		return games
 	end
+end
+
+function DevService:VerifyNewGames(player: Player, collectGames)
+	local index = PlayerDataHandler:Get(player, "index")
+
+	local indexLookup = {}
+	for _, indexGame in ipairs(index) do
+		indexLookup[indexGame] = true
+	end
+
+	local newGames = {}
+	for gameName, gameAmount in collectGames do
+		if not indexLookup[gameName] then
+			table.insert(newGames, gameName)
+		end
+	end
+
+	if #newGames > 0 then
+		bridgeUIStateService:Fire(player, {
+			[actionIdentifier] = "ShowNewGame",
+			data = {
+				NewGames = newGames,
+			},
+		})
+	end
+
+	--
 end
 
 function DevService:GetModel(player: Player, devId: number)

@@ -135,12 +135,11 @@ function GameService:SellAllGame(player: Player)
 	local totalPrice = 0
 	for _, value in games do
 		totalPrice = totalPrice + GameService:GetGamePrice(value.AmountPlayer)
+		-- Consome a Tool
+		ToolService:ConsumeGameTool(player, value.GameName)
 	end
 
 	PlayerDataHandler:Set(player, "games", {})
-
-	-- Consome Todas as Tools
-	ToolService:ConsumeAllGameTool(player)
 
 	-- Da o Dinheiro pro Jogadore
 	MoneyService:GiveMoney(player, totalPrice)

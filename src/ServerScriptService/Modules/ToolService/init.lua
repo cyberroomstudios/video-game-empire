@@ -207,23 +207,4 @@ function ToolService:ConsumeGameTool(player: Player, gameName: string)
 	ToolService:UpdateBackpack(player)
 end
 
-function ToolService:ConsumeAllGameTool(player: Player)
-	for _, item in player:FindFirstChildOfClass("Backpack"):GetChildren() do
-		if item:IsA("Tool") and item:GetAttribute("TOOL_TYPE") == "GAME" then
-			item:Destroy()
-		end
-	end
-
-	local character = player.Character
-	if character then
-		for _, item in ipairs(character:GetChildren()) do
-			if item:IsA("Tool") and item:GetAttribute("TOOL_TYPE") == "GAME" then
-				item:Destroy()
-			end
-		end
-	end
-
-	ToolService:UpdateBackpack(player)
-end
-
 return ToolService

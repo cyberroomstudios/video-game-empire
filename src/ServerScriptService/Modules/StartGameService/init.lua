@@ -24,6 +24,7 @@ local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
 local DailyRewardService = require(ServerScriptService.Modules.DailyRewardService)
 local OfflineGameService = require(ServerScriptService.Modules.OfflineGameService)
 local GamepassManager = require(ServerScriptService.Modules.GamepassManager)
+local SettingsService = require(ServerScriptService.Modules.SettingsService)
 
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
@@ -46,6 +47,10 @@ function StartGameService:InitBridgeListener()
 			end
 
 			playerInitializer[player] = true
+
+			-- Inicializa as Configurações
+			SettingsService:InitPlayer(player)
+			StartGameService:NotifyLoadingStep(player, "Configurando Settings")
 
 			-- Seta a Data de Login do Daily Reward
 			DailyRewardService:SetDate(player)

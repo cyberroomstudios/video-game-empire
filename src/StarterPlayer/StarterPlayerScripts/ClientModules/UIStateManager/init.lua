@@ -18,6 +18,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local NewGameController = require(Players.LocalPlayer.PlayerScripts.ClientModules.NewGameController)
+local SettingsController = require(Players.LocalPlayer.PlayerScripts.ClientModules.SettingsController)
 local bridge = BridgeNet2.ReferenceBridge("UIStateService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -70,6 +71,7 @@ function UIStateManager:LoadModules()
 			["CODE"] = CodesController,
 			["GROUP_REWARD"] = GroupRewardController,
 			["NEW_GAME"] = NewGameController,
+			["SETTINGS"] = SettingsController,
 		}
 	end
 end

@@ -37,6 +37,8 @@ local MAX_SLOTS = 7
 local currentExpandedTool = 7
 local tools = {}
 local currenTool
+
+local updating = false
 function BackpackController:Init()
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 	BackpackController:CreateReferences()
@@ -184,6 +186,10 @@ function BackpackController:UpdateGrid(gridLayout, maxItemsPerRow, padding, minC
 end
 
 function BackpackController:UpdateBackpack()
+	while updating do
+		task.wait()
+	end
+	updating = true
 	local toolsNames = {}
 
 	for index, tool in backpack:GetChildren() do
@@ -254,6 +260,7 @@ function BackpackController:UpdateBackpack()
 	end
 
 	BackpackController:DeleteSlots(toolsNames)
+	updating = false
 end
 
 function BackpackController:GetSlotFromNameTool(toolName: string, toolType: string)
@@ -335,6 +342,7 @@ function BackpackController:DeleteSlots(toolNameList)
 		-- VERIFICAR SE O NOME NÃO ESTÁ NA LISTA
 		if not toolNameList[slotName] then
 			slot:SetAttribute("BUSY", false)
+			slot:SetAttribute("ORIGINAL_NAME", "")
 			local viewPortDev = slot:FindFirstChild("ViewPort")
 
 			if viewPortDev then

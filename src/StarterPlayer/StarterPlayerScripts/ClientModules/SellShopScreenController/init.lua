@@ -10,6 +10,7 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 local Players = game:GetService("Players")
+local Games = require(ReplicatedStorage.Enums.Games)
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
@@ -98,7 +99,7 @@ function SellShopScreenController:BuildScreen()
 	for _, value in result do
 		local newItem = scrollingGames.Product:Clone()
 		newItem.Name = value.GameName
-		newItem.Content.Informations.ProductName.Text = value.GameName
+		newItem.Content.Informations.ProductName.Text = Games[value.GameName].GUI.Name
 		newItem.Content.Informations.ProductPlayers.Text = value.AmountPlayer .. " Players"
 		newItem.Content.Informations.ProductAmountPrice.Text = ClientUtil:FormatToUSD(value.Price)
 		newItem.Visible = true

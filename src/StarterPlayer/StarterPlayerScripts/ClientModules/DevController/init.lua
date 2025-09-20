@@ -139,7 +139,7 @@ function DevController:CreateProximity(devId: number)
 		end
 
 		local currentFTUE = FTUEController:GetCurrentState()
-		print(currentFTUE)
+
 		if currentFTUE and currentFTUE == "COLLECT_GAME" then
 			FTUEController:SetCurrentSellFTUE()
 		end

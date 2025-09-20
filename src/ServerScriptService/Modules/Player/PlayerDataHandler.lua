@@ -63,7 +63,10 @@ local dataTemplate = {
 	mapClaimed = false,
 	storageLimited = 1000,
 	robuxSpent = 0,
-	groupRewardClaimed = false
+	groupRewardClaimed = false,
+	settingsMusicTheme = true,
+	settingsSoundEffect = true,
+	settingsVibration = true,
 }
 
 local ProfileService = require(ServerScriptService.libs.ProfileService)
@@ -160,7 +163,6 @@ function PlayerDataHandler:GetAll(player)
 
 	return profile.Data
 end
-
 
 function PlayerDataHandler:Init()
 	for _, player in Players:GetPlayers() do

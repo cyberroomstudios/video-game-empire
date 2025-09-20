@@ -13,12 +13,15 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
+
 function StartGameController:Init(data)
 	local result = bridge:InvokeServerAsync({
 		[actionIdentifier] = "Start",
 		data = {},
 	})
 
+	SoundManager:StartOrPauseBGM()
 	Players.LocalPlayer:SetAttribute("LOADED_END_SCREEN", true)
 
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")

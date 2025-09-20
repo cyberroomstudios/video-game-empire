@@ -15,6 +15,7 @@ local Games = require(ReplicatedStorage.Enums.Games)
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local screen
 local scrollingGames
@@ -38,6 +39,8 @@ end
 function SellShopScreenController:InitButtonListerns()
 	local clicked = false
 	sellAllGames.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		if not clicked then
 			clicked = true
 			local result = bridge:InvokeServerAsync({
@@ -113,6 +116,8 @@ function SellShopScreenController:BuildScreen()
 
 		local clicked = false
 		newItem.Sell.Sell.MouseButton1Click:Connect(function()
+			SoundManager:Play("UI_CLICK")
+
 			if not clicked then
 				clicked = true
 				local result = bridge:InvokeServerAsync({

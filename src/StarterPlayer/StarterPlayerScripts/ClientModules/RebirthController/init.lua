@@ -14,6 +14,7 @@ local Players = game:GetService("Players")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 local Devs = require(ReplicatedStorage.Enums.Devs)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local screen
 local getRebirthButton
@@ -117,6 +118,8 @@ end
 function RebirthController:InitButtonListerns()
 	local canClick = true
 	getRebirthButton.MouseButton1Click:Connect(function()
+				SoundManager:Play("UI_CLICK")
+
 		if canClick then
 			canClick = false
 			screen.Visible = false

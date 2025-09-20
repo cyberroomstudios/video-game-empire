@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local DeveloperProductController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DeveloperProductController)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local ShopController = {}
 
@@ -55,50 +56,74 @@ end
 
 function ShopController:InitButtonListerns()
 	buyStarterPack1.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("STARTER_PACK_1")
 	end)
 
 	buyStarterPack2.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("STARTER_PACK_2")
 	end)
 
 	buyStarterPack3.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("STARTER_PACK_3")
 	end)
 
 	buyOPPack1.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("OP_PACK_1")
 	end)
 
 	buyOPPack2.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("OP_PACK_2")
 	end)
 
 	buyOPPack3.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("OP_PACK_3")
 	end)
 
 	money1.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("MONEY_1")
 	end)
 
 	money2.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("MONEY_2")
 	end)
 
 	money3.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("MONEY_3")
 	end)
 
 	money4.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("MONEY_4")
 	end)
 
 	money5.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("MONEY_5")
 	end)
 
 	money6.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("MONEY_6")
 	end)
 end

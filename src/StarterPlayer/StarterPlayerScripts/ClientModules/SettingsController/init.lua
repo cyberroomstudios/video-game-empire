@@ -14,6 +14,8 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
+
 local screen
 local theme
 local soundEffect
@@ -51,10 +53,14 @@ function SettingsController:InitButtonListerns()
 		end
 
 		offBtn.MouseButton1Click:Connect(function()
+			SoundManager:Play("UI_CLICK")
+
 			setState(true)
 		end)
 
 		onBtn.MouseButton1Click:Connect(function()
+			SoundManager:Play("UI_CLICK")
+
 			setState(false)
 		end)
 	end
@@ -64,11 +70,14 @@ function SettingsController:InitButtonListerns()
 			[actionIdentifier] = "ToogleTheme",
 			data = {},
 		})
+
+		SoundManager:StartOrPauseBGM()
 	end, function()
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "ToogleTheme",
 			data = {},
 		})
+		SoundManager:StartOrPauseBGM()
 	end)
 
 	setupToggle(soundEffect.Toggle, function()

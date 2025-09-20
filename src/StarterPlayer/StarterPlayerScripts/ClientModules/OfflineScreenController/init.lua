@@ -14,6 +14,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local screen
 local getButton
@@ -43,6 +44,8 @@ end
 
 function OfflineScreenController:InitButtonListerns()
 	getButton.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		OfflineScreenController:Close()
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "GetOfflineGames",
@@ -50,6 +53,8 @@ function OfflineScreenController:InitButtonListerns()
 	end)
 
 	getVipButton.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		OfflineScreenController:Close()
 	end)
 end
@@ -93,8 +98,6 @@ function OfflineScreenController:BuilScreen(offLineGames)
 			item:SetAttribute("PLAYER_AMOUNT", newPlayerAmount)
 			item.PlayerInfo.Text = ClientUtil:FormatNumberToSuffixes(newPlayerAmount)
 		end
-
-		
 	end
 end
 

@@ -20,6 +20,7 @@ local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local backpackButtons
 local backpackExpand
@@ -72,6 +73,8 @@ function BackpackController:InitButtonListerns()
 	for i = 1, MAX_SLOTS - 1 do
 		local slot = backpackButtons[i]
 		slot.MouseButton1Click:Connect(function()
+									SoundManager:Play("UI_CLICK")
+
 			local tool = tools[i]
 			if tool then
 				if currenTool == tool then
@@ -89,11 +92,15 @@ function BackpackController:InitButtonListerns()
 	end
 
 	showWorkesBackpackButton.MouseButton1Click:Connect(function()
+											SoundManager:Play("UI_CLICK")
+
 		workersFrame.Visible = true
 		gamesFrame.Visible = false
 	end)
 
 	showGamesBackpackButton.MouseButton1Click:Connect(function()
+											SoundManager:Play("UI_CLICK")
+
 		workersFrame.Visible = false
 		gamesFrame.Visible = true
 	end)
@@ -323,6 +330,8 @@ function BackpackController:GetNextSlotTool(toolType: string)
 	item.Parent = scrolling[toolType]
 
 	item.MouseButton1Click:Connect(function()
+											SoundManager:Play("UI_CLICK")
+
 		local tool = tools[currentExpandedTool]
 		if tool then
 			player.Character.Humanoid:EquipTool(tool)

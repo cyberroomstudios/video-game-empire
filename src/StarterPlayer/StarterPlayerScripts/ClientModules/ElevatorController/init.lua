@@ -8,6 +8,7 @@ local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences
 local TeleportController = require(Players.LocalPlayer.PlayerScripts.ClientModules.TeleportController)
 
 local player = Players.LocalPlayer
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local elevatorScreen
 local elevatorUp
@@ -42,10 +43,14 @@ end
 
 function ElevatorController:InitButtonListerns()
 	elevatorUp.MouseButton1Click:Connect(function()
+					SoundManager:Play("UI_CLICK")
+
 		TeleportController:ToNextFloor()
 	end)
 
 	elevatorDown.MouseButton1Click:Connect(function()
+					SoundManager:Play("UI_CLICK")
+
 		TeleportController:ToPreviousFloor()
 	end)
 end

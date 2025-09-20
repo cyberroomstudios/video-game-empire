@@ -13,7 +13,8 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
 local sounds = {
-	TO_TYPE = "",
+	BGM = "",
+	UI_CLICK = "",
 }
 
 local soundLooped = {}
@@ -21,14 +22,27 @@ local soundLooped = {}
 function SoundManager:Init()
 	SoundManager:InitRef()
 	SoundManager:InitBridgeListener()
-
 end
 
 function SoundManager:InitRef()
-	sounds["TO_TYPE"] = SoundService.Game.ToType
+	sounds["BGM"] = SoundService.Game.BGM
+	sounds["UI_CLICK"] = SoundService.GUI.Click
 end
 
+function SoundManager:StartOrPauseBGM()
+	local settingsMusicTheme = Players.LocalPlayer:GetAttribute("SETTINGS_MUSIC_THEME")
+	if settingsMusicTheme then
+		sounds["BGM"]:Play()
+	else
+		sounds["BGM"]:Stop()
+	end
+end
 function SoundManager:Play(sondName: string)
+	local settingsSoundEffect = Players.LocalPlayer:GetAttribute("SETTINGS_SOUND_EFFECT")
+
+	if not settingsSoundEffect then
+		return
+	end
 	local sound = sounds[sondName]:Clone()
 	sound.Parent = script.Parent
 	sound:Play()

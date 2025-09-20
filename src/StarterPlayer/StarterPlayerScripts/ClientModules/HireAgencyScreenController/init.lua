@@ -24,6 +24,7 @@ local Devs = require(ReplicatedStorage.Enums.Devs)
 local UIStateManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.UIStateManager)
 local DeveloperProductController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DeveloperProductController)
 local FTUEController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FTUEController)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local player = Players.LocalPlayer
 
@@ -88,6 +89,8 @@ end
 
 function HireAgencyScreenController:InitButtonListerns()
 	restockAllButton.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen("RESTOCK")
 	end)
 end
@@ -161,6 +164,8 @@ function HireAgencyScreenController:CreateDevItems()
 
 		-- Buttons
 		newItem.MouseButton1Click:Connect(function()
+			SoundManager:Play("UI_CLICK")
+
 			local currentLayoutOrder = newItem.LayoutOrder
 
 			for _, item in scrollingFrame:GetChildren() do
@@ -188,9 +193,8 @@ function HireAgencyScreenController:CreateDevItems()
 		end)
 	end
 
-	print("Configurando")
 	scrollingFrame.Buttons.Buy.MouseButton1Click:Connect(function()
-		print("Click")
+		SoundManager:Play("UI_CLICK")
 		local result = bridgeDevService:InvokeServerAsync({
 			[actionIdentifier] = "BuyDev",
 			data = {
@@ -205,6 +209,8 @@ function HireAgencyScreenController:CreateDevItems()
 	end)
 
 	scrollingFrame.Buttons.Restock.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "SetRestockThisIntent",
 			data = {
@@ -215,6 +221,8 @@ function HireAgencyScreenController:CreateDevItems()
 	end)
 
 	scrollingFrame.Buttons.Robux.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		DeveloperProductController:OpenPaymentRequestScreen(devsBuyId[selectedItem])
 	end)
 end

@@ -26,6 +26,8 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
+
 local screens = {}
 local loadedModules = false
 local camera = workspace.CurrentCamera
@@ -172,6 +174,8 @@ function UIStateManager:ConfigureCloseButton()
 
 	for _, button in taggedObjects do
 		button.MouseButton1Click:Connect(function()
+			SoundManager:Play("UI_CLICK")
+
 			UIStateManager:Close(button:GetAttribute("Screen"))
 		end)
 	end

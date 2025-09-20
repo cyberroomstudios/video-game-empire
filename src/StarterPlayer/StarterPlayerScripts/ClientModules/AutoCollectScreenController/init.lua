@@ -14,6 +14,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local DeveloperProductController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DeveloperProductController)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local autoCollectScreen
 local mainAutoCollect
@@ -42,6 +43,8 @@ end
 
 function AutoCollectScreenController:InitButtonListerns()
 	unlockNowButton.MouseButton1Click:Connect(function()
+						SoundManager:Play("UI_CLICK")
+
 		autoCollectScreen.Visible = false
 		DeveloperProductController:OpenPaymentRequestScreen("UNLOCK_AUTO_COLLECT")
 		workspace.CurrentCamera.Blur.Size = 0

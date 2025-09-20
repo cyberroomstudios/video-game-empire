@@ -13,6 +13,8 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
+
 local screen
 local textBox
 local sendButton
@@ -61,6 +63,8 @@ end
 
 function CodesController:InitButtonListerns()
 	sendButton.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
 		CodesController:SendCode()
 	end)
 end

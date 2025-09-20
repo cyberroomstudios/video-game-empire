@@ -13,6 +13,7 @@ local Players = game:GetService("Players")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local screen
 local getGroupRewardButton
@@ -41,6 +42,8 @@ end
 
 function GroupRewardController:InitButtonListerns()
 	getGroupRewardButton.MouseButton1Click:Connect(function()
+					SoundManager:Play("UI_CLICK")
+
 		GroupRewardController:Close()
 		if workspace.CurrentCamera:FindFirstChild("Blur") then
 			workspace.CurrentCamera.Blur.Size = 0

@@ -93,6 +93,10 @@ function HudController:InitButtonListerns()
 		UIStateManager:Open("REBIRTH")
 	end)
 
+	shopButton.MouseButton1Click:Connect(function()
+		UIStateManager:Open("SHOP")
+	end)
+
 	indexButton.MouseButton1Click:Connect(function()
 		UIStateManager:Open("INDEX")
 	end)

@@ -42,6 +42,15 @@ function StorageController:InitGUI()
 			billboard.Enabled = false
 			billboard.Parent = screenGui
 
+			billboard.Content.Collect.MouseButton1Click:Connect(function()
+				local result = bridge:InvokeServerAsync({
+					[actionIdentifier] = "GetStorage",
+					data = {
+						BaseNumber = i,
+					},
+				})
+			end)
+
 			proximity.PromptShown:Connect(function()
 				proximity.Parent:SetAttribute("UPDATE_INFORMATION", true)
 				StorageController:UpdateInformations(proximity.Parent, billboard)

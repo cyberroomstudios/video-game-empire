@@ -9,6 +9,7 @@ local StockService = require(ServerScriptService.Modules.StockService)
 local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
 local DevService = require(ServerScriptService.Modules.DevService)
 local AutoCollectService = require(ServerScriptService.Modules.AutoCollectService)
+local MoneyService = require(ServerScriptService.Modules.MoneyService)
 
 ProductFunctions[DeveloperProducts:GetEnum("RESTOCK").Id] = function(receipt, player)
 	StockService:RestockAllFromRobux()
@@ -55,6 +56,110 @@ end
 ProductFunctions[DeveloperProducts:GetEnum("CONCEPET_ARTIST").Id] = function(receipt, player)
 	DevService:GiveDevFromRobux(player, "5_ConceptArtist")
 	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("CONCEPET_ARTIST").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("STARTER_PACK_1").Id] = function(receipt, player)
+	DevService:GiveDevFromRobux(player, "2_JuniorDev")
+	DevService:GiveDevFromRobux(player, "3_MidLevelDev")
+	MoneyService:GiveMoney(player, 500)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("STARTER_PACK_1").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("STARTER_PACK_2").Id] = function(receipt, player)
+	for i = 1, 3 do
+		DevService:GiveDevFromRobux(player, "2_JuniorDev")
+		DevService:GiveDevFromRobux(player, "3_MidLevelDev")
+		MoneyService:GiveMoney(player, 500)
+	end
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("STARTER_PACK_2").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("STARTER_PACK_3").Id] = function(receipt, player)
+	for i = 1, 10 do
+		DevService:GiveDevFromRobux(player, "2_JuniorDev")
+		DevService:GiveDevFromRobux(player, "3_MidLevelDev")
+		MoneyService:GiveMoney(player, 500)
+	end
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("STARTER_PACK_3").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("OP_PACK_1").Id] = function(receipt, player)
+	DevService:GiveDevFromRobux(player, "6_TechLead")
+	DevService:GiveDevFromRobux(player, "7_GameTester")
+	MoneyService:GiveMoney(player, 1000)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("CONCEPET_ARTIST").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("OP_PACK_2").Id] = function(receipt, player)
+	for i = 1, 3 do
+		DevService:GiveDevFromRobux(player, "6_TechLead")
+		DevService:GiveDevFromRobux(player, "7_GameTester")
+		MoneyService:GiveMoney(player, 1000)
+	end
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("OP_PACK_2").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("OP_PACK_3").Id] = function(receipt, player)
+	for i = 1, 10 do
+		DevService:GiveDevFromRobux(player, "6_TechLead")
+		DevService:GiveDevFromRobux(player, "7_GameTester")
+		MoneyService:GiveMoney(player, 1000)
+	end
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("OP_PACK_3").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("MONEY_1").Id] = function(receipt, player)
+	MoneyService:GiveMoney(player, 100)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("MONEY_1").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("MONEY_2").Id] = function(receipt, player)
+	MoneyService:GiveMoney(player, 300)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("MONEY_2").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("MONEY_3").Id] = function(receipt, player)
+	MoneyService:GiveMoney(player, 500)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("MONEY_3").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("MONEY_4").Id] = function(receipt, player)
+	MoneyService:GiveMoney(player, 700)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("MONEY_4").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("MONEY_5").Id] = function(receipt, player)
+	MoneyService:GiveMoney(player, 900)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("MONEY_5").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("MONEY_6").Id] = function(receipt, player)
+	MoneyService:GiveMoney(player, 2000)
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("MONEY_6").Id)
 	return true
 end
 

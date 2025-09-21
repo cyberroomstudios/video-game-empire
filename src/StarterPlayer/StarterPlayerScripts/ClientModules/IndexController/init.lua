@@ -65,6 +65,9 @@ function IndexController:BuildScreen()
 
 	for _, gameInfo in Games do
 		local newItem = scrollingIndex:FindFirstChild("Item"):Clone()
+		newItem.Visible = true
+		newItem.LayoutOrder = gameInfo.GUI.Order or 1
+
 		if hasItem(result, gameInfo.Name) then
 			local viewPort = ReplicatedStorage.GUI.ViewPorts.Games[gameInfo.Name]:Clone()
 			viewPort.Size = UDim2.fromScale(1, 1)
@@ -77,7 +80,6 @@ function IndexController:BuildScreen()
 			newItem.Info.Genre.Text = gameInfo.GUI.Name
 		end
 
-		--	newItem.LayoutOrder = gameInfo.GUI.Order
 		newItem:SetAttribute("IS_GAME", true)
 		newItem.Parent = scrollingIndex
 	end

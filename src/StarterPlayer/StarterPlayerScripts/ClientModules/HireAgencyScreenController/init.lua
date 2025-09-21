@@ -40,6 +40,8 @@ local devsBuyId = {
 	["3_MidLevelDev"] = "MID_LEVEL_DEVELOPER",
 	["4_SeniorDev"] = "SENIOR_DEVELOPER",
 	["5_ConceptArtist"] = "CONCEPET_ARTIST",
+	["6_TechLead"] = "TECH_LEAD",
+	["7_GameTester"] = "GAME_TESTER",
 }
 local devPrices = {
 	["1_DevIntern"] = "-",
@@ -47,6 +49,8 @@ local devPrices = {
 	["3_MidLevelDev"] = "-",
 	["4_SeniorDev"] = "-",
 	["5_ConceptArtist"] = "-",
+	["6_TechLead"] = "-",
+	["7_GameTester"] = "-",
 }
 
 function HireAgencyScreenController:Init()
@@ -65,6 +69,7 @@ function HireAgencyScreenController:CreateReferences()
 	scrollingFrame = UIReferences:GetReference("HIRE_AGENCY_SCROLLING_FRAME")
 	reestockLabel = UIReferences:GetReference("REESTOCK_LABEL")
 	restockAllButton = UIReferences:GetReference("RESTOCK_ALL_BUTTON")
+
 end
 
 function HireAgencyScreenController:CreateDevPrices()
@@ -86,6 +91,8 @@ end
 function HireAgencyScreenController:GetScreen()
 	return screen
 end
+
+
 
 function HireAgencyScreenController:InitButtonListerns()
 	restockAllButton.MouseButton1Click:Connect(function()

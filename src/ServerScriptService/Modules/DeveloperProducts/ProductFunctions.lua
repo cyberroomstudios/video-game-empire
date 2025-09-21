@@ -59,6 +59,24 @@ ProductFunctions[DeveloperProducts:GetEnum("CONCEPET_ARTIST").Id] = function(rec
 	return true
 end
 
+ProductFunctions[DeveloperProducts:GetEnum("CONCEPET_ARTIST").Id] = function(receipt, player)
+	DevService:GiveDevFromRobux(player, "5_ConceptArtist")
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("CONCEPET_ARTIST").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("TECH_LEAD").Id] = function(receipt, player)
+	DevService:GiveDevFromRobux(player, "6_TechLead")
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("TECH_LEAD").Id)
+	return true
+end
+
+ProductFunctions[DeveloperProducts:GetEnum("GAME_TESTER").Id] = function(receipt, player)
+	DevService:GiveDevFromRobux(player, "7_GameTester")
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("GAME_TESTER").Id)
+	return true
+end
+
 ProductFunctions[DeveloperProducts:GetEnum("STARTER_PACK_1").Id] = function(receipt, player)
 	DevService:GiveDevFromRobux(player, "2_JuniorDev")
 	DevService:GiveDevFromRobux(player, "3_MidLevelDev")

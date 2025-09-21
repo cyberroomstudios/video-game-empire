@@ -29,6 +29,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local screens = {}
+local originalSizeScreen = {}
 local loadedModules = false
 local camera = workspace.CurrentCamera
 
@@ -77,6 +78,10 @@ function UIStateManager:LoadModules()
 			["SETTINGS"] = SettingsController,
 			["SHOP"] = ShopController,
 		}
+
+		for screenName, screen in screens do
+			originalSizeScreen[screenName] = screen:GetScreen().Size
+		end
 	end
 end
 
@@ -98,7 +103,7 @@ function UIStateManager:Open(screenName: string)
 		SoundManager:Play("UI_OPEN_SCREEN")
 		screens[screenName]:Open()
 	end)
-	UIStateManager:ApplyTween(screens[screenName]:GetScreen())
+	UIStateManager:ApplyTween(screenName, screens[screenName]:GetScreen())
 	currentScreen = screenName
 end
 
@@ -111,12 +116,13 @@ function UIStateManager:Close(screenName: string)
 	end
 end
 
-function UIStateManager:ApplyTween(screen: Frame)
+function UIStateManager:ApplyTween(screenName: string, screen: Frame)
 	if screen.Name == "NewGame" then
 		return
 	end
 
-	local originalSize = screen.Size
+	local originalSize = originalSizeScreen[screenName]
+
 	local tweenInfo = TweenInfo.new(
 		0.3, -- duração
 		Enum.EasingStyle.Quad,

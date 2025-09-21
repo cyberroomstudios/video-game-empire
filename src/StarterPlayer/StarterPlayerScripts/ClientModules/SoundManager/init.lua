@@ -15,6 +15,8 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 local sounds = {
 	BGM = "",
 	UI_CLICK = "",
+	UI_OPEN_SCREEN = "",
+	MONEY_COMING_IN = "",
 }
 
 local soundLooped = {}
@@ -27,6 +29,8 @@ end
 function SoundManager:InitRef()
 	sounds["BGM"] = SoundService.Game.BGM
 	sounds["UI_CLICK"] = SoundService.GUI.Click
+	sounds["UI_OPEN_SCREEN"] = SoundService.GUI.OpenScreen
+	sounds["MONEY_COMING_IN"] = SoundService.GUI.MoneyComingIn
 end
 
 function SoundManager:StartOrPauseBGM()

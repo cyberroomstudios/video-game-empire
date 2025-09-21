@@ -32,28 +32,29 @@ function ToolService:UpdateBackpack(player: Player)
 end
 
 function ToolService:GetMaxPlayerFromGames()
-	local maxPlayer = 0
-
-	for _, value in Games do
-		if value.Players.Max > maxPlayer then
-			maxPlayer = value.Players.Max
-		end
-	end
-
-	maxPlayerGame = maxPlayer
+	maxPlayerGame = 1000000
 end
 
 function ToolService:GetScaleTool(amountPlayer: number)
+	if 1 == 1 then
+		return 1
+	end
+
+	print(amountPlayer)
 	-- Garante que o valor não passa dos limites
-	if amountPlayer < 0 then
-		amountPlayer = 0
+	if amountPlayer <= 10 then
+		print("ESCALA 1")
+		return 1
 	end
 	if amountPlayer > maxPlayerGame then
-		amountPlayer = maxPlayerGame
+		print("ESCALA 50")
+
+		return 50
 	end
 
 	-- Calcula a escala proporcional
 	local scale = minSizeTool + (amountPlayer / maxPlayerGame) * (maxSizeTool - minSizeTool)
+	print("Escala:" .. scale)
 	return scale
 end
 

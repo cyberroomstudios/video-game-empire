@@ -33,7 +33,7 @@ function OffersController:CreateRotateOffers()
 
 		local function InitContent()
 			local frame = rotateOfferContent
-			local speed = 2 -- Velocidade do pulso
+			local speed = 1.8 -- Velocidade do pulso
 			local baseSize = frame.Size -- Tamanho original
 			local timeElapsed = 0
 
@@ -42,8 +42,7 @@ function OffersController:CreateRotateOffers()
 			local maxScale = 1.3 -- 120% do tamanho original
 
 			RunService.RenderStepped:Connect(function(deltaTime)
-				timeElapsed += deltaTime
-
+				timeElapsed += deltaTime * speed
 				-- Valor do seno varia de -1 a 1
 				local sineValue = math.sin(timeElapsed * speed)
 

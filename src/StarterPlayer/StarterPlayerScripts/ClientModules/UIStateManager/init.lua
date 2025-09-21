@@ -63,6 +63,7 @@ function UIStateManager:LoadModules()
 		local RebirthController = require(clientModules.RebirthController)
 		local AutoCollectScreenController = require(clientModules.AutoCollectScreenController)
 		local BackpackController = require(clientModules.BackpackController)
+		local FeedbackController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FeedbackController)
 
 		screens = {
 			["WORKERS"] = HireAgencyScreenController,
@@ -77,6 +78,7 @@ function UIStateManager:LoadModules()
 			["NEW_GAME"] = NewGameController,
 			["SETTINGS"] = SettingsController,
 			["SHOP"] = ShopController,
+			["FEEDBACK"] = FeedbackController,
 		}
 
 		for screenName, screen in screens do

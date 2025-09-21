@@ -73,6 +73,32 @@ local function createSession(userId, startTime, endTime)
 	return nil
 end
 
+local function sendFeedback(userId, feedbackText)
+	local payload = {
+		text = feedbackText,
+		user_id = userId,
+	}
+
+	-- Etapa 1: POST para inserir a sessão
+	local postSuccess, postResponse = pcall(function()
+		return HttpService:RequestAsync({
+			Url = SUPABASE_URL .. "/rest/v1/feedback",
+			Method = "POST",
+			Headers = {
+				["Content-Type"] = "application/json",
+				["apikey"] = SUPABASE_KEY,
+				["Authorization"] = "Bearer " .. SUPABASE_KEY,
+			},
+			Body = HttpService:JSONEncode(payload),
+		})
+	end)
+
+	if not postSuccess or not postResponse.Success then
+		warn("Erro ao criar Feedback:", postResponse and postResponse.StatusCode, postResponse and postResponse.Body)
+		return nil
+	end
+end
+
 -- Função para enviar eventos
 local function sendEvents(sessionId, events)
 	local payload = {}
@@ -143,6 +169,9 @@ Players.PlayerRemoving:Connect(function(player)
 
 	local startTime = os.date("!%Y-%m-%dT%H:%M:%SZ", data.startTime)
 	local endTime = isoTimestamp()
+	if player:GetAttribute("FEEDBACK_TEXT") then
+		sendFeedback(userId, player:GetAttribute("FEEDBACK_TEXT"))
+	end
 
 	local sessionId = createSession(userId, startTime, endTime)
 	if sessionId then

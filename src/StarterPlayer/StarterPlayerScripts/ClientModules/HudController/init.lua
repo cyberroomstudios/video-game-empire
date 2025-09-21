@@ -38,6 +38,7 @@ local rebirthButton
 local settingsButton
 local dailyRewardButton
 local codeButton
+local feedbackButton
 
 -- Botões da Direta
 local autoCollectButton
@@ -71,6 +72,7 @@ function HudController:CreateReferences()
 	leftPreviewButton = UIReferences:GetReference("LEFT_PREVIEW_BUTTON")
 	setPreviewButton = UIReferences:GetReference("SET_PREVIEW_BUTTON")
 	rightPreviewButton = UIReferences:GetReference("RIGHT_PREVIEW_BUTTON")
+	feedbackButton = UIReferences:GetReference("FEEDBACK_BUTTON")
 end
 
 function HudController:InitButtonListerns()
@@ -95,43 +97,49 @@ function HudController:InitButtonListerns()
 	end)
 
 	rebirthButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		UIStateManager:Open("REBIRTH")
 	end)
 
 	shopButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		UIStateManager:Open("SHOP")
 	end)
 
 	indexButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		UIStateManager:Open("INDEX")
 	end)
 
 	settingsButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		UIStateManager:Open("SETTINGS")
 	end)
 
 	dailyRewardButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		UIStateManager:Open("DAILY_REWARD")
 	end)
 
 	codeButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		UIStateManager:Open("CODE")
 	end)
 
+	feedbackButton.MouseButton1Click:Connect(function()
+		SoundManager:Play("UI_CLICK")
+
+		UIStateManager:Open("FEEDBACK")
+	end)
+
 	autoCollectButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		if Players.LocalPlayer:GetAttribute("HAS_AUTO_COLLECT") then
 			AutoCollectScreenController:ActiveOrInactive()
@@ -141,25 +149,25 @@ function HudController:InitButtonListerns()
 	end)
 
 	autoSellButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		AutoSellController:ActiveOrInactive()
 	end)
 
 	leftPreviewButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		Players.LocalPlayer:SetAttribute("ROTATE_LEFT_PREVIEW", true)
 	end)
 
 	rightPreviewButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		Players.LocalPlayer:SetAttribute("ROTATE_RIGHT_PREVIEW", true)
 	end)
 
 	setPreviewButton.MouseButton1Click:Connect(function()
-				SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		if player:GetAttribute("CAN_SET") then
 			player:SetAttribute("CAN_SET", false)

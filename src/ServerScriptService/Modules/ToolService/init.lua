@@ -40,7 +40,7 @@ function ToolService:GetScaleTool(amountPlayer: number)
 		return 1
 	end
 
-	print(amountPlayer)
+	
 	-- Garante que o valor não passa dos limites
 	if amountPlayer <= 10 then
 		print("ESCALA 1")
@@ -130,7 +130,7 @@ function ToolService:GiveGameTool(player: Player, gameName: string, amountPlayer
 
 	-- Se não encontrar nenhum, cria uma nova tool
 	if not tool then
-		print(gameName)
+		
 		local newToll = ServerStorage.Tools.Games:FindFirstChild(gameName):Clone()
 		newToll:SetAttribute("ORIGINAL_NAME", gameName)
 		newToll:SetAttribute("PLAYER_AMOUNT", amountPlayer)

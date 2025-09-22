@@ -56,63 +56,41 @@ function OfflineGameService:Generate(player: Player)
 	local timeLeftGame = PlayerDataHandler:Get(player, "timeLeftGame")
 
 	if timeLeftGame > 0 then
-		-- Tempo que se passou desde o ultimo login
 		local now = os.time()
 		local secondsPassed = now - timeLeftGame
+		print("Passaram:", secondsPassed)
 
-		-- Obtem todos os programadores
 		local workers = PlayerDataHandler:Get(player, "workers")
-
-		-- Lista de Jogos para armazenar no Storage
-		local gamesForStorages = {}
 		local allGames = {}
 
-		-- Gera os Jogos para os trabalhadores
 		for _, dev in workers do
 			local devEnum = Devs[dev.Name]
-
-			-- Obtem a quantidade de jogos produzidos no periodo
 			local amountGames = math.floor(secondsPassed / devEnum.TimeToProduceGame)
-
-			-- Capacidade do dev
-			local devCapacity = devEnum.CapacityOfGamesProduced
-
-			-- Total ja Produzido pelo dev
-			local totalAmount = 0
-
+			print("Dev Produzir:" .. amountGames)
+			-- Limita pela capacidade máxima do desenvolvedor
+			local totalProduced = 0
 			for i = 1, amountGames do
+				if totalProduced >= devEnum.CapacityOfGamesProduced then
+					break
+				end
+
 				local gameName, playerAmount = ThreadService:CreateGame(player, dev.Name)
 
-				-- Verifica se ainda tem espaço disponivel no programador para produzir o jogo
-				if totalAmount + playerAmount <= devEnum.CapacityOfGamesProduced then
-					local newGame = {
+				-- Verifica espaço do dev + espaço no armazenamento offline
+				local canProduce = (totalProduced + playerAmount <= devEnum.CapacityOfGamesProduced)
+					and OfflineGameService:HasOfflineStorageSpace(player, playerAmount)
+
+				if canProduce then
+					OfflineGameService:AddOfflineGameInStorage(player, playerAmount)
+					table.insert(allGames, {
 						Name = gameName,
 						PlayerAmount = playerAmount,
-					}
-					table.insert(allGames, newGame)
-					totalAmount = totalAmount + playerAmount
+					})
+					totalProduced = totalProduced + playerAmount
 				end
 			end
 		end
-
-		for _, dev in workers do
-			local devEnum = Devs[dev.Name]
-
-			local gameName, playerAmount = ThreadService:CreateGame(player, dev.Name)
-
-			local hasSpace = OfflineGameService:HasOfflineStorageSpace(player, playerAmount)
-
-			if hasSpace then
-				OfflineGameService:AddOfflineGameInStorage(player, playerAmount)
-
-				local newGame = {
-					Name = gameName,
-					PlayerAmount = playerAmount,
-				}
-				table.insert(allGames, newGame)
-			end
-		end
-
+		print(allGames)
 		offlineGamesPlayer[player.UserId] = allGames
 
 		if #allGames > 0 then

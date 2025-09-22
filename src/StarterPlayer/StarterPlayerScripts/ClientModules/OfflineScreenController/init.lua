@@ -78,7 +78,7 @@ end
 
 function OfflineScreenController:BuilScreen(offLineGames)
 	if Players.LocalPlayer:GetAttribute("2X_OFFLINE_COLLECT") then
-		getButton.Visible = false
+		getButton.Parent.Visible = false
 	end
 
 	for _, value in offLineGames do

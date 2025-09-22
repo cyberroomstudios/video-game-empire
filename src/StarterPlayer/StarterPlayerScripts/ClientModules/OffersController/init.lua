@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 
@@ -19,10 +20,15 @@ function OffersController:CreateReferences()
 end
 
 function OffersController:CreateRotateOffers()
+	if UserInputService.TouchEnabled then
+		rotateOfferBackground.Position = UDim2.fromScale(0.9, rotateOfferBackground.Position.Y.Scale)
+		rotateOfferContent.Position = UDim2.fromScale(0.9, rotateOfferContent.Position.Y.Scale)
+	end
+
 	task.spawn(function()
 		local function InitBackground()
 			-- Configurando o Background
-			local rotationSpeed = 50 -- Graus por segundo
+			local rotationSpeed = 30 -- Graus por segundo
 			RunService.RenderStepped:Connect(function(deltaTime)
 				rotateOfferBackground.Rotation = rotateOfferBackground.Rotation + rotationSpeed * deltaTime
 				if rotateOfferBackground.Rotation >= 360 then

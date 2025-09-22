@@ -238,8 +238,10 @@ function BackpackController:UpdateBackpack()
 			continue
 		end
 
+		currentExpandedTool = currentExpandedTool + 1
+		print(currentExpandedTool)
 		-- Se não encontrou nenhum, cria um novo
-		local nextSlot = BackpackController:GetNextSlotTool(toolType)
+		local nextSlot = BackpackController:GetNextSlotTool(toolType, currentExpandedTool)
 
 		if nextSlot then
 			nextSlot:SetAttribute("ORIGINAL_NAME", toolName)
@@ -312,7 +314,7 @@ function BackpackController:GetSlotFromNameTool(toolName: string, toolType: stri
 	end
 end
 
-function BackpackController:GetNextSlotTool(toolType: string)
+function BackpackController:GetNextSlotTool(toolType: string, toolIndex: number)
 	local function updateGrid(gridLayout: UIGridLayout, scrollingFrame: ScrollingFrame, maxColumns: number)
 		-- Largura total disponível no ScrollingFrame
 		local frameWidth = scrollingFrame.AbsoluteSize.X
@@ -338,16 +340,15 @@ function BackpackController:GetNextSlotTool(toolType: string)
 		end
 	end
 
-	currentExpandedTool = currentExpandedTool + 1
-
 	local item = ReplicatedStorage.GUI.Backpack.ExpandedItem:Clone()
-	item.Name = currentExpandedTool
+	item.Name = toolIndex
 	item.Parent = scrolling[toolType]
 
 	item.MouseButton1Click:Connect(function()
+		print(toolIndex)
 		SoundManager:Play("UI_CLICK")
 
-		local tool = tools[currentExpandedTool]
+		local tool = tools[toolIndex]
 		if tool then
 			player.Character.Humanoid:EquipTool(tool)
 		end

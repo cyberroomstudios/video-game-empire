@@ -8,6 +8,7 @@ local OffersController = {}
 
 local rotateOfferBackground
 local rotateOfferContent
+
 function OffersController:Init()
 	OffersController:CreateReferences()
 	OffersController:CreateRotateOffers()

@@ -14,6 +14,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
 local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
+local FastPlayerController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FastPlayerController)
 
 function StartGameController:Init(data)
 	local result = bridge:InvokeServerAsync({
@@ -29,6 +30,7 @@ function StartGameController:Init(data)
 
 	screenGui.Enabled = false
 	HireAgencyScreenController:CreateDevItems()
+	FastPlayerController:InitPartVerify()
 
 	if result then
 		StartGameController:FillDailyReward(result)

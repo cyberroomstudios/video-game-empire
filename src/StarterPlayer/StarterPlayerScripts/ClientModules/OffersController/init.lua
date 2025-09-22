@@ -54,7 +54,7 @@ function OffersController:CreateRotateOffers()
 
 			-- Limites
 			local minScale = 0.8 -- 50% do tamanho original
-			local maxScale = 1.3 -- 120% do tamanho original
+			local maxScale = 1.2 -- 120% do tamanho original
 
 			RunService.RenderStepped:Connect(function(deltaTime)
 				timeElapsed += deltaTime * speed

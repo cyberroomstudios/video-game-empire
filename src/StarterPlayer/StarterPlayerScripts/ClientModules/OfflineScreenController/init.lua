@@ -15,6 +15,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
+local GamepassController = require(Players.LocalPlayer.PlayerScripts.ClientModules.GamepassController)
 
 local screen
 local getButton
@@ -54,8 +55,15 @@ function OfflineScreenController:InitButtonListerns()
 
 	getVipButton.MouseButton1Click:Connect(function()
 		SoundManager:Play("UI_CLICK")
-
 		OfflineScreenController:Close()
+
+		if Players.LocalPlayer:GetAttribute("2X_OFFLINE_COLLECT") then
+			local result = bridge:InvokeServerAsync({
+				[actionIdentifier] = "GetOfflineGames",
+			})
+		else
+			GamepassController:OpenPaymentRequestScreen("x2_COLLECT")
+		end
 	end)
 end
 
@@ -69,6 +77,10 @@ function OfflineScreenController:InitListeners()
 end
 
 function OfflineScreenController:BuilScreen(offLineGames)
+	if Players.LocalPlayer:GetAttribute("2X_OFFLINE_COLLECT") then
+		getButton.Visible = false
+	end
+
 	for _, value in offLineGames do
 		local gameName = value.Name
 		local playerAmount = value.PlayerAmount

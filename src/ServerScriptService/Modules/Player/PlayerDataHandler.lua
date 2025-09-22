@@ -67,6 +67,7 @@ local dataTemplate = {
 	settingsMusicTheme = true,
 	settingsSoundEffect = true,
 	settingsVibration = true,
+	x2OfflineCollect = false,
 }
 
 local ProfileService = require(ServerScriptService.libs.ProfileService)

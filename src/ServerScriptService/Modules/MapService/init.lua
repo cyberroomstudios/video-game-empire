@@ -46,6 +46,7 @@ function MapService:SetDevToMap(player: Player, CFrame: CFrame, devName: string,
 		end
 
 		local devClone = devFolder:FindFirstChild(devName):Clone()
+
 		devClone["bounding_box"].Transparency = 1
 		devClone:SetPrimaryPartCFrame(CFrame)
 		devClone.Parent = workspace

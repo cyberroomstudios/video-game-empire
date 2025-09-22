@@ -128,6 +128,12 @@ function DevService:SetDevInMap(player: Player, devId: number, devName: string, 
 
 	if devFolder:FindFirstChild(devName) then
 		local model = devFolder:FindFirstChild(devName):Clone()
+
+		local hightlight = Instance.new("Highlight")
+		hightlight.FillColor = Color3.new(255, 255, 255)
+		hightlight.FillTransparency = 0
+		hightlight.Parent = model
+
 		local devEnum = Devs[devName]
 
 		if not devEnum then
@@ -164,6 +170,12 @@ function DevService:SetDevInMap(player: Player, devId: number, devName: string, 
 
 		model:SetPrimaryPartCFrame(newCFrame)
 		model.Parent = workspace.Runtime[player.UserId]
+
+		task.delay(0.2, function()
+			if model:FindFirstChild("Highlight") then
+				model.Highlight:Destroy()
+			end
+		end)
 
 		-- Cria o Proximity
 		DevService:CreateDevProximityPrompt(player, devId)

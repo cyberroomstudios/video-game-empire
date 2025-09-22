@@ -45,7 +45,7 @@ function DevController:CreateProximity(devId: number)
 	prompt.Style = Enum.ProximityPromptStyle.Custom
 
 	local billboard = ReplicatedStorage.GUI.DevProgress.BillboardGui:Clone()
-	billboard.Adornee = model.Rig.Head
+	billboard.Adornee = model.Rig.BillboardAdornee
 
 	billboard.Enabled = false
 	billboard.Name = "DEV_PROGRESS_" .. devId

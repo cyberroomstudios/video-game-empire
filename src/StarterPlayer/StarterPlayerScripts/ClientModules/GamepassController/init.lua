@@ -19,7 +19,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 function GamepassController:Init() end
 
 function GamepassController:OpenPaymentRequestScreen(gamepassName: string)
-	MarketplaceService:PromptGamePassPurchase(Players.LocalPlayer, Gamepass.ENUM.AUTO_SELL.Id)
+	MarketplaceService:PromptGamePassPurchase(Players.LocalPlayer, Gamepass.ENUM[gamepassName].Id)
 end
 
 return GamepassController

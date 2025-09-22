@@ -155,6 +155,9 @@ function StartGameService:InitPlayerAtributes(player: Player)
 
 	local hasAutoCollect = PlayerDataHandler:Get(player, "hasAutoCollect")
 	player:SetAttribute("HAS_AUTO_COLLECT", hasAutoCollect)
+
+	local x2OfflineCollect = PlayerDataHandler:Get(player, "x2OfflineCollect")
+	player:SetAttribute("2X_OFFLINE_COLLECT", x2OfflineCollect)
 end
 
 return StartGameService

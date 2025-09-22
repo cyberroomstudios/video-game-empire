@@ -36,11 +36,18 @@ end
 function OfflineGameService:GetOfflineGames(player: Player)
 	local games = offlineGamesPlayer[player.UserId]
 
+	local x2Collect = PlayerDataHandler:Get(player, "x2OfflineCollect")
+
 	if games then
 		for _, gameInfo in games do
 			local name = gameInfo.Name
 			local playerAmount = gameInfo.PlayerAmount
-			GameService:GiveGame(player, name, playerAmount)
+			if x2Collect then
+				GameService:GiveGame(player, name, playerAmount)
+				GameService:GiveGame(player, name, playerAmount)
+			else
+				GameService:GiveGame(player, name, playerAmount)
+			end
 		end
 	end
 end
@@ -159,4 +166,21 @@ function OfflineGameService:GetShuffledListFromStorage(gamesForStorages)
 	return result
 end
 
+function OfflineGameService:Buy2XCollect(player: Player)
+	player:SetAttribute("2X_OFFLINE_COLLECT", true)
+	PlayerDataHandler:Update(player, "x2OfflineCollect", function(current)
+		return true
+	end)
+
+	local games = offlineGamesPlayer[player.UserId]
+
+	if games then
+		for _, gameInfo in games do
+			local name = gameInfo.Name
+			local playerAmount = gameInfo.PlayerAmount
+			GameService:GiveGame(player, name, playerAmount)
+			GameService:GiveGame(player, name, playerAmount)
+		end
+	end
+end
 return OfflineGameService

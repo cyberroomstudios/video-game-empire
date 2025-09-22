@@ -18,8 +18,8 @@ local Devs = require(ReplicatedStorage.Enums.Devs)
 local Games = require(ReplicatedStorage.Enums.Games)
 
 local minSizeTool = 1
-local maxSizeTool = 30
-local maxPlayerGame = 0
+local maxSizeTool = 50
+local maxPlayerGame = 100000
 
 function ToolService:Init()
 	ToolService:GetMaxPlayerFromGames()
@@ -32,25 +32,19 @@ function ToolService:UpdateBackpack(player: Player)
 end
 
 function ToolService:GetMaxPlayerFromGames()
-	maxPlayerGame = 1000000
+	maxPlayerGame = 100000
 end
 
 function ToolService:GetScaleTool(amountPlayer: number)
-	-- Garante que o valor não passa dos limites
 	if amountPlayer <= 10 then
-		print("ESCALA 1")
-		return 1
+		return minSizeTool
+	elseif amountPlayer > maxPlayerGame then
+		return maxSizeTool
+	else
+		-- Calcula proporcionalmente entre 1 e 50
+		local proporcao = (amountPlayer - 10) / (maxPlayerGame - 10)
+		return minSizeTool + proporcao * (maxSizeTool - minSizeTool)
 	end
-	if amountPlayer > maxPlayerGame then
-		print("ESCALA 50")
-
-		return 50
-	end
-
-	-- Calcula a escala proporcional
-	local scale = minSizeTool + (amountPlayer / maxPlayerGame) * (maxSizeTool - minSizeTool)
-	print("Escala:" .. scale)
-	return scale
 end
 
 -- Da uma nova tool de Desenvolvedor ao jogador

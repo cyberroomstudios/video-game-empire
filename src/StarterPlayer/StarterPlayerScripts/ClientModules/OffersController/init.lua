@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
+local DeveloperProductController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DeveloperProductController)
 
 local OffersController = {}
 
@@ -12,12 +13,19 @@ local rotateOfferContent
 function OffersController:Init()
 	OffersController:CreateReferences()
 	OffersController:CreateRotateOffers()
+	OffersController:InitButtonListerns()
 end
 
 function OffersController:CreateReferences()
 	-- Botões referentes aos Teleports
 	rotateOfferContent = UIReferences:GetReference("ROTATE_OFFER_CONTENT")
 	rotateOfferBackground = UIReferences:GetReference("START_BURST")
+end
+
+function OffersController:InitButtonListerns()
+	rotateOfferContent.MouseButton1Click:Connect(function()
+		DeveloperProductController:OpenPaymentRequestScreen("SAHUR")
+	end)
 end
 
 function OffersController:CreateRotateOffers()

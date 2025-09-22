@@ -73,6 +73,7 @@ function HudController:CreateReferences()
 	setPreviewButton = UIReferences:GetReference("SET_PREVIEW_BUTTON")
 	rightPreviewButton = UIReferences:GetReference("RIGHT_PREVIEW_BUTTON")
 	feedbackButton = UIReferences:GetReference("FEEDBACK_BUTTON")
+	
 end
 
 function HudController:InitButtonListerns()

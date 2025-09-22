@@ -181,6 +181,13 @@ ProductFunctions[DeveloperProducts:GetEnum("MONEY_6").Id] = function(receipt, pl
 	return true
 end
 
+ProductFunctions[DeveloperProducts:GetEnum("SAHUR").Id] = function(receipt, player)
+	DevService:GiveDevFromRobux(player, "6_TechLead")
+
+	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("SAHUR").Id)
+	return true
+end
+
 function ProductFunctions:AddRobuxSpent(player: Player, productId: number)
 	local info = MarketplaceService:GetProductInfo(productId, Enum.InfoType.Product)
 	if info then

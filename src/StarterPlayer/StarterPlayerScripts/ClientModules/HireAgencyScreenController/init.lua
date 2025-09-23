@@ -69,7 +69,6 @@ function HireAgencyScreenController:CreateReferences()
 	scrollingFrame = UIReferences:GetReference("HIRE_AGENCY_SCROLLING_FRAME")
 	reestockLabel = UIReferences:GetReference("REESTOCK_LABEL")
 	restockAllButton = UIReferences:GetReference("RESTOCK_ALL_BUTTON")
-
 end
 
 function HireAgencyScreenController:CreateDevPrices()
@@ -91,8 +90,6 @@ end
 function HireAgencyScreenController:GetScreen()
 	return screen
 end
-
-
 
 function HireAgencyScreenController:InitButtonListerns()
 	restockAllButton.MouseButton1Click:Connect(function()
@@ -121,6 +118,11 @@ function HireAgencyScreenController:CreateDevItems()
 	local selectedItem = nil
 
 	for _, dev in Devs do
+		if not dev.Buyable then
+			continue
+		end
+
+		
 		local newItem = ReplicatedStorage.GUI.HireAgency.HireAgencyItem:Clone()
 		newItem.Name = dev.Name
 		newItem.LayoutOrder = dev.GUI.Order

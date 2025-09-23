@@ -1,4 +1,5 @@
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
@@ -90,6 +91,24 @@ function FTUEController:InitButtonListerns()
 				local ftueTarget = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.Ftue.FTUETarget
 				FTUEController:CreateBeam(ftueTarget)
 				currentFTUE = "SET_DEV"
+			end
+		end
+	end)
+
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		local inputOne = Enum.KeyCode.One
+
+		if input.KeyCode == inputOne and not gameProcessed then
+			if currentFTUE == "SELECT_ITEM_BACKPACK" then
+				print("Teste")
+				local baseNumber = Players.LocalPlayer:GetAttribute("BASE")
+				local base = Workspace.Map.BaseMaps:FindFirstChild(baseNumber)
+
+				if base then
+					local ftueTarget = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.Ftue.FTUETarget
+					FTUEController:CreateBeam(ftueTarget)
+					currentFTUE = "SET_DEV"
+				end
 			end
 		end
 	end)

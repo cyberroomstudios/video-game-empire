@@ -67,7 +67,7 @@ function DevController:CreateProximity(devId: number)
 			end
 
 			local currentFTUE = FTUEController:GetCurrentState()
-			print(currentFTUE)
+			
 			if currentFTUE and currentFTUE == "COLLECT_GAME" then
 				FTUEController:SetCurrentSellFTUE()
 			end
@@ -242,7 +242,6 @@ function DevController:UpdateDevInformations(model: Model)
 						newItem.Visible = true
 						newItem.Parent = billboard.Content.Unlocked
 						newItem:SetAttribute("IS_GAME", true)
-						newItem.GameName.Text = gameName
 
 						local viewPort = ReplicatedStorage.GUI.ViewPorts.Games:FindFirstChild(gameName):Clone()
 						viewPort.Size = UDim2.fromScale(1, 1)

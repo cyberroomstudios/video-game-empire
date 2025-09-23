@@ -239,7 +239,7 @@ function BackpackController:UpdateBackpack()
 		end
 
 		currentExpandedTool = currentExpandedTool + 1
-		print(currentExpandedTool)
+		
 		-- Se não encontrou nenhum, cria um novo
 		local nextSlot = BackpackController:GetNextSlotTool(toolType, currentExpandedTool)
 
@@ -345,7 +345,6 @@ function BackpackController:GetNextSlotTool(toolType: string, toolIndex: number)
 	item.Parent = scrolling[toolType]
 
 	item.MouseButton1Click:Connect(function()
-		print(toolIndex)
 		SoundManager:Play("UI_CLICK")
 
 		local tool = tools[toolIndex]

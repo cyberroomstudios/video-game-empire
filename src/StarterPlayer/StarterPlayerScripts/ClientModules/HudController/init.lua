@@ -178,7 +178,7 @@ function HudController:InitButtonListerns()
 			local tool = player.Character:FindFirstChildOfClass("Tool")
 
 			if tool then
-				tool.Parent = player:FindFirstChild("Backpack")
+			--	tool.Parent = player:FindFirstChild("Backpack")
 			end
 
 			if toolType == "DEV" then
@@ -286,7 +286,7 @@ function HudController:InitUserInputService()
 				local tool = player.Character:FindFirstChildOfClass("Tool")
 
 				if tool then
-					tool.Parent = player:FindFirstChild("Backpack")
+					--tool.Parent = player:FindFirstChild("Backpack")
 				end
 
 				if toolType == "DEV" then

@@ -70,6 +70,8 @@ function BackpackController:InitButtonListerns()
 		[Enum.KeyCode.Six] = 6,
 	}
 
+	local content = backpackButtons[1].Content
+
 	for i = 1, MAX_SLOTS - 1 do
 		local slot = backpackButtons[i]
 		slot.MouseButton1Click:Connect(function()
@@ -239,7 +241,7 @@ function BackpackController:UpdateBackpack()
 		end
 
 		currentExpandedTool = currentExpandedTool + 1
-		
+
 		-- Se não encontrou nenhum, cria um novo
 		local nextSlot = BackpackController:GetNextSlotTool(toolType, currentExpandedTool)
 

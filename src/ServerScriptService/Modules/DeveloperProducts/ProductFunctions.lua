@@ -182,7 +182,7 @@ ProductFunctions[DeveloperProducts:GetEnum("MONEY_6").Id] = function(receipt, pl
 end
 
 ProductFunctions[DeveloperProducts:GetEnum("SAHUR").Id] = function(receipt, player)
-	DevService:GiveDevFromRobux(player, "Sahur")
+	DevService:GiveDevFromRobux(player, "8-SahurDev")
 
 	ProductFunctions:AddRobuxSpent(player, DeveloperProducts:GetEnum("SAHUR").Id)
 	return true

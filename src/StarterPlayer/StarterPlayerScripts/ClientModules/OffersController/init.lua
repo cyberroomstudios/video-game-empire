@@ -9,6 +9,7 @@ local OffersController = {}
 
 local rotateOfferBackground
 local rotateOfferContent
+local sahurPrice
 
 function OffersController:Init()
 	OffersController:CreateReferences()
@@ -20,12 +21,34 @@ function OffersController:CreateReferences()
 	-- Botões referentes aos Teleports
 	rotateOfferContent = UIReferences:GetReference("ROTATE_OFFER_CONTENT")
 	rotateOfferBackground = UIReferences:GetReference("START_BURST")
+	sahurPrice = UIReferences:GetReference("SAHUR_PRICE")
 end
 
 function OffersController:InitButtonListerns()
 	rotateOfferContent.MouseButton1Click:Connect(function()
 		DeveloperProductController:OpenPaymentRequestScreen("SAHUR")
 	end)
+end
+
+function OffersController:StartSahurAnimator()
+	local model = rotateOfferContent.Frame.Sahur["8-SahurDev"]
+	local function getAnimationTrack()
+		local animationController = model:FindFirstChild("Rig") and model.Rig:FindFirstChild("AnimationController")
+		if not animationController then
+			return nil
+		end
+
+		local animator = animationController:FindFirstChild("Animator")
+		local animation = animator and animator:FindFirstChild("Animation")
+		if animator and animation then
+			return animator:LoadAnimation(animation)
+		end
+		return nil
+	end
+
+	local animationTrack = getAnimationTrack()
+	animationTrack:Play()
+	animationTrack:AdjustSpeed(1)
 end
 
 function OffersController:CreateRotateOffers()
@@ -48,13 +71,13 @@ function OffersController:CreateRotateOffers()
 
 		local function InitContent()
 			local frame = rotateOfferContent
-			local speed = 1.8 -- Velocidade do pulso
+			local speed = 1.4 -- Velocidade do pulso
 			local baseSize = frame.Size -- Tamanho original
 			local timeElapsed = 0
 
 			-- Limites
-			local minScale = 0.8 -- 50% do tamanho original
-			local maxScale = 1.2 -- 120% do tamanho original
+			local minScale = 0.9 -- 50% do tamanho original
+			local maxScale = 1.1 -- 120% do tamanho original
 
 			RunService.RenderStepped:Connect(function(deltaTime)
 				timeElapsed += deltaTime * speed
@@ -76,6 +99,8 @@ function OffersController:CreateRotateOffers()
 		InitBackground()
 		InitContent()
 	end)
+
+	sahurPrice.Text = "ONLY " .. utf8.char(0xE002) .. "9"
 end
 
 return OffersController

@@ -74,9 +74,23 @@ function BackpackController:InitButtonListerns()
 
 	for i = 1, MAX_SLOTS - 1 do
 		local slot = backpackButtons[i]
+
 		slot.MouseButton1Click:Connect(function()
 			SoundManager:Play("UI_CLICK")
-
+			if not slot.Content:FindFirstChild("ViewPort") then
+				return
+			end
+			if slot.Content.BackgroundColor3 == slot.Colors.NotSelected.Value then
+				slot.Content.BackgroundColor3 = slot.Colors.Selected.Value
+				for j = 1, MAX_SLOTS - 1 do
+					if j ~= i then
+						local otherSlot = backpackButtons[j]
+						otherSlot.Content.BackgroundColor3 = otherSlot.Colors.NotSelected.Value
+					end
+				end
+			else
+				slot.Content.BackgroundColor3 = slot.Colors.NotSelected.Value
+			end
 			local tool = tools[i]
 			if tool then
 				if currenTool == tool then

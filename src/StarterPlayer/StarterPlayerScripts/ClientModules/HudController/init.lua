@@ -73,7 +73,6 @@ function HudController:CreateReferences()
 	setPreviewButton = UIReferences:GetReference("SET_PREVIEW_BUTTON")
 	rightPreviewButton = UIReferences:GetReference("RIGHT_PREVIEW_BUTTON")
 	feedbackButton = UIReferences:GetReference("FEEDBACK_BUTTON")
-	
 end
 
 function HudController:InitButtonListerns()
@@ -178,11 +177,12 @@ function HudController:InitButtonListerns()
 			local tool = player.Character:FindFirstChildOfClass("Tool")
 
 			if tool then
-			--	tool.Parent = player:FindFirstChild("Backpack")
+				--	tool.Parent = player:FindFirstChild("Backpack")
 			end
 
 			if toolType == "DEV" then
 				player:SetAttribute("CAN_SET", false)
+				SoundManager:Play("PLACE_ITEM")
 				local result = bridge:InvokeServerAsync({
 					[actionIdentifier] = "SetDev",
 					data = {
@@ -291,6 +291,7 @@ function HudController:InitUserInputService()
 
 				if toolType == "DEV" then
 					player:SetAttribute("CAN_SET", false)
+					SoundManager:Play("PLACE_ITEM")
 					local result = bridge:InvokeServerAsync({
 						[actionIdentifier] = "SetDev",
 						data = {

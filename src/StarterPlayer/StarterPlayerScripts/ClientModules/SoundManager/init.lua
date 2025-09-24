@@ -23,6 +23,7 @@ local sounds = {
 	NOTIFICATION_ERROR = "",
 	NOTIFICATION_SUCCESS = "",
 	RESTOCK = "",
+	PLACE_ITEM = "",
 }
 
 local soundLooped = {}
@@ -43,6 +44,7 @@ function SoundManager:InitRef()
 	sounds["NOTIFICATION_ERROR"] = SoundService.Notification.Error
 	sounds["NOTIFICATION_SUCCESS"] = SoundService.Notification.Success
 	sounds["RESTOCK"] = SoundService.Notification.Restock
+	sounds["PLACE_ITEM"] = SoundService.Game.PlaceItem
 end
 
 function SoundManager:StartOrPauseBGM()
@@ -102,7 +104,7 @@ function SoundManager:PlayProgrammerSound(soundName: string, model: Model)
 	programmersSounds["SAHUR"] = SoundService.Programmers.Sahur
 	programmersSounds["GAME_SPACE"] = SoundService.Programmers.GameSpace
 	programmersSounds["CONSOLE_CONTROLLER"] = SoundService.Programmers.ConsoleController
-	
+
 	local sound = programmersSounds[soundName]
 	if sound then
 		local newSound = sound:Clone()

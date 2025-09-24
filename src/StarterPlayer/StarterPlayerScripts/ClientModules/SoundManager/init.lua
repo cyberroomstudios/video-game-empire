@@ -87,6 +87,30 @@ function SoundManager:StopWithLooped(sondName: string)
 	end
 end
 
+function SoundManager:PlayProgrammerSound(soundName: string, model: Model)
+	local programmersSounds = {
+		KEYBOARD_1 = "",
+		KEYBOARD_2 = "",
+		KEYBOARD_3 = "",
+		SAHUR = "",
+		CONSOLE_CONTROLLER = "",
+		GAME_SPACE = "",
+	}
+	programmersSounds["KEYBOARD_1"] = SoundService.Programmers.KeyBoard1
+	programmersSounds["KEYBOARD_2"] = SoundService.Programmers.KeyBoard2
+	programmersSounds["KEYBOARD_3"] = SoundService.Programmers.KeyBoard3
+	programmersSounds["SAHUR"] = SoundService.Programmers.Sahur
+	programmersSounds["GAME_SPACE"] = SoundService.Programmers.GameSpace
+	programmersSounds["CONSOLE_CONTROLLER"] = SoundService.Programmers.ConsoleController
+	
+	local sound = programmersSounds[soundName]
+	if sound then
+		local newSound = sound:Clone()
+		newSound.Parent = model.PrimaryPart
+		newSound:Play()
+	end
+end
+
 function SoundManager:InitBridgeListener()
 	bridge:Connect(function(response)
 		if response[actionIdentifier] == "Play" then

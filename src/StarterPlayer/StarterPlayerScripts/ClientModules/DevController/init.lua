@@ -3,6 +3,7 @@ local DevController = {}
 -- Init Bridg Net
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
@@ -27,7 +28,32 @@ function DevController:InitBridgeListener()
 			local devId = response.data.DevId
 			DevController:CreateProximity(devId)
 		end
+
+		if response[actionIdentifier] == "StartDevSound" then
+			local devId = response.data.DevId
+			DevController:InitProgrammerSound(devId)
+		end
 	end)
+end
+
+function DevController:InitProgrammerSound(devId: number)
+	local playerFolder = workspace.Runtime[player.UserId]
+
+	local model = DevController:GetDevModel(playerFolder, devId)
+
+	if model.Name == "7_GameTester" then
+		--SoundManager:PlayProgrammerSound("GAME_SPACE", model)
+		SoundManager:PlayProgrammerSound("CONSOLE_CONTROLLER", model)
+		return
+	end
+
+	if model.Name == "8-SahurDev" then
+		SoundManager:PlayProgrammerSound("SAHUR", model)
+		return
+	end
+
+	local indexRandom = math.random(1, 3)
+	SoundManager:PlayProgrammerSound("KEYBOARD_" .. indexRandom, model)
 end
 
 function DevController:CreateProximity(devId: number)
@@ -68,7 +94,7 @@ function DevController:CreateProximity(devId: number)
 			end
 
 			local currentFTUE = FTUEController:GetCurrentState()
-			
+
 			if currentFTUE and currentFTUE == "COLLECT_GAME" then
 				FTUEController:SetCurrentSellFTUE()
 			end

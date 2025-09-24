@@ -180,6 +180,8 @@ function DevService:SetDevInMap(player: Player, devId: number, devName: string, 
 		-- Cria o Proximity
 		DevService:CreateDevProximityPrompt(player, devId)
 
+		-- Cria o Som
+		DevService:StartDevSound(player, devId)
 		return
 	end
 
@@ -189,6 +191,15 @@ end
 function DevService:CreateDevProximityPrompt(player: Player, devId: number)
 	bridge:Fire(player, {
 		[actionIdentifier] = "CreateProximity",
+		data = {
+			DevId = devId,
+		},
+	})
+end
+
+function DevService:StartDevSound(player: Player, devId: number)
+	bridge:Fire(player, {
+		[actionIdentifier] = "StartDevSound",
 		data = {
 			DevId = devId,
 		},

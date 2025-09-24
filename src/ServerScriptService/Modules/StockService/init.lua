@@ -21,7 +21,7 @@ local ready = false
 local globalStock = {}
 local restockThisIntentFromPlayer = {}
 
-local TIME_TO_RELOAD_STOCK = 10
+local TIME_TO_RELOAD_STOCK = 60 * 5
 local currentTimeToReload
 
 function StockService:Init()

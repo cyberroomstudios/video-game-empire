@@ -13,7 +13,6 @@ local robuxLeadboardModule = require(script.robuxLeadboard)
 
 function LeadboardService:Init()
 	task.spawn(function()
-		print("Init")
 		LeadboardService:UpdateEveryTime()
 	end)
 end

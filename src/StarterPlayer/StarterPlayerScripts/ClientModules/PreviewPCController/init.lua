@@ -73,7 +73,7 @@ function PreviewPCController:GetModelTouchingParts(part: BasePart)
 	overlapParams.FilterDescendantsInstances = { part } -- evita retornar a própria parte
 
 	-- Retorna as partes encostando ou dentro da "part"
-	--print(workspace:GetPartsInPart(part, overlapParams))
+	
 	return workspace:GetPartsInPart(part, overlapParams)
 end
 

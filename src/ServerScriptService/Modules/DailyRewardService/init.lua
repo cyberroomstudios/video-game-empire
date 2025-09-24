@@ -9,6 +9,8 @@ local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataH
 local BridgeNet2 = require(Utility.BridgeNet2)
 local GameNotificationService = require(ServerScriptService.Modules.GameNotificationService)
 local Messages = require(ReplicatedStorage.Enums.Messages)
+local MoneyService = require(ServerScriptService.Modules.MoneyService)
+local DevService = require(ServerScriptService.Modules.DevService)
 local bridge = BridgeNet2.ReferenceBridge("DailyRewardService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -64,31 +66,31 @@ end
 
 function DailyRewardService:GivePrize(player: Player, dayNumber: number)
 	if dayNumber == 1 then
-		print("Premio 1")
+		MoneyService:GiveMoney(player, 100)
 	end
 
 	if dayNumber == 2 then
-		print("Premio 2")
+		MoneyService:GiveMoney(player, 3000)
 	end
 
 	if dayNumber == 3 then
-		print("Premio 3")
+		DevService:GiveDevFromRobux(player, "4_SeniorDev")
 	end
 
 	if dayNumber == 4 then
-		print("Premio 4")
+		MoneyService:GiveMoney(player, 10000)
 	end
 
 	if dayNumber == 5 then
-		print("Premio 5")
+		MoneyService:GiveMoney(player, 50000)
 	end
 
 	if dayNumber == 6 then
-		print("Premio 6")
+		DevService:GiveDevFromRobux(player, "6_TechLead")
 	end
 
 	if dayNumber == 7 then
-		print("Premio 7")
+		DevService:GiveDevFromRobux(player, "SahurDev")
 	end
 end
 

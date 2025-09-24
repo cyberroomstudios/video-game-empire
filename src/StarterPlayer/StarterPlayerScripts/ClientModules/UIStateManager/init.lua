@@ -113,7 +113,7 @@ function UIStateManager:Close(screenName: string)
 	UIStateManager:RemoveBluer()
 	currentScreen = ""
 	if screenName and screens[screenName] then
-		print(screenName)
+		
 		screens[screenName]:Close()
 	end
 end
@@ -132,7 +132,7 @@ function UIStateManager:ApplyTween(screenName: string, screen: Frame)
 	)
 
 	if screen.Name == "Expand" then
-		print("Entrou aqui")
+		
 		local tweenInfo = TweenInfo.new(
 			0.1, -- duração
 			Enum.EasingStyle.Quad,

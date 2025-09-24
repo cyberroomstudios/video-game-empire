@@ -43,7 +43,7 @@ function FTUEController:SetFTUE(button, state)
 end
 
 function FTUEController:SetCanProximityWorker(state)
-	print("Setando Estado")
+	
 	canProximityWorkers = state
 end
 
@@ -100,7 +100,7 @@ function FTUEController:InitButtonListerns()
 
 		if input.KeyCode == inputOne and not gameProcessed then
 			if currentFTUE == "SELECT_ITEM_BACKPACK" then
-				print("Teste")
+				
 				local baseNumber = Players.LocalPlayer:GetAttribute("BASE")
 				local base = Workspace.Map.BaseMaps:FindFirstChild(baseNumber)
 

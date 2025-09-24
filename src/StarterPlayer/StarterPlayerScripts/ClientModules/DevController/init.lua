@@ -86,7 +86,8 @@ function DevController:CreateProximity(devId: number)
 			},
 		})
 
-		if result then
+		if result and next(result) ~= nil then
+			SoundManager:Play("COLLECT_GAME")
 			for _, value in billboard.Content.Unlocked:GetChildren() do
 				if value:GetAttribute("IS_GAME") then
 					value:Destroy()
@@ -157,7 +158,8 @@ function DevController:CreateProximity(devId: number)
 			},
 		})
 
-		if result then
+		
+		if result and next(result) ~= nil then
 			SoundManager:Play("COLLECT_GAME")
 			for _, value in billboard.Content.Unlocked:GetChildren() do
 				if value:GetAttribute("IS_GAME") then

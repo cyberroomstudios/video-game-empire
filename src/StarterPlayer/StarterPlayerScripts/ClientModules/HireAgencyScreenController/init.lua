@@ -122,7 +122,6 @@ function HireAgencyScreenController:CreateDevItems()
 			continue
 		end
 
-		
 		local newItem = ReplicatedStorage.GUI.HireAgency.HireAgencyItem:Clone()
 		newItem.Name = dev.Name
 		newItem.LayoutOrder = dev.GUI.Order
@@ -237,15 +236,6 @@ function HireAgencyScreenController:CreateDevItems()
 end
 
 function HireAgencyScreenController:InitAttributeListener()
-	workspace:GetAttributeChangedSignal("GLOBAL_STOCK_COUNT"):Connect(function()
-		for _, dev in Devs do
-			local item = scrollingFrame:FindFirstChild(dev.Name)
-			local information = item.Information
-			local labels = item.Labels
-			labels.Stock.Text = "x" .. tostring(player:GetAttribute(dev.Name) or 0) .. " Stock"
-		end
-	end)
-
 	workspace:GetAttributeChangedSignal("TIME_TO_RELOAD_RESTOCK"):Connect(function()
 		local leftTime = workspace:GetAttribute("TIME_TO_RELOAD_RESTOCK")
 		reestockLabel.Text = ClientUtil:FormatSecondsToMinutes(leftTime)

@@ -7,6 +7,7 @@ local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataHandler)
 local GameNotificationService = require(ServerScriptService.Modules.GameNotificationService)
+local MoneyService = require(ServerScriptService.Modules.MoneyService)
 local bridge = BridgeNet2.ReferenceBridge("GroupRewardService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -31,6 +32,7 @@ function GroupRewardService:GetGroupReward(player: Player)
 
 		if not groupRewardClaimed then
 			PlayerDataHandler:Set(player, "groupRewardClaimed", true)
+			MoneyService:GiveMoney(player, 1000)
 			GameNotificationService:SendSuccessNotification(player, "Prize Collected Successfully!")
 			return
 		end

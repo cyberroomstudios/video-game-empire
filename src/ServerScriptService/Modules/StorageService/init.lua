@@ -24,7 +24,7 @@ function StorageService:InitBridgeListener()
 	bridge.OnServerInvoke = function(player, data)
 		if data[actionIdentifier] == "GetStorage" then
 			local baseNumber = data.data.BaseNumber
-			print(baseNumber)
+			
 			StorageService:GetStorage(player, baseNumber)
 		end
 	end
@@ -32,7 +32,6 @@ end
 
 function StorageService:GetStorage(player: Player, baseNumber: number)
 	if tonumber(baseNumber) ~= tonumber(player:GetAttribute("BASE")) then
-		print("Base não pertece ao jogador")
 		return
 	end
 
@@ -69,7 +68,7 @@ function StorageService:GetStorage(player: Player, baseNumber: number)
 
 	storagePlayers[player.UserId] = {}
 
-	print("Coletou!")
+	
 end
 
 function StorageService:AddGame(player: Player, gameName: string, playerAmount: string)

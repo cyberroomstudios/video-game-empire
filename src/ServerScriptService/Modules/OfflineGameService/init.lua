@@ -58,7 +58,6 @@ function OfflineGameService:Generate(player: Player)
 	if timeLeftGame > 0 then
 		local now = os.time()
 		local secondsPassed = now - timeLeftGame
-		print("Passaram:", secondsPassed)
 
 		local workers = PlayerDataHandler:Get(player, "workers")
 		local allGames = {}
@@ -66,7 +65,6 @@ function OfflineGameService:Generate(player: Player)
 		for _, dev in workers do
 			local devEnum = Devs[dev.Name]
 			local amountGames = math.floor(secondsPassed / devEnum.TimeToProduceGame)
-			print("Dev Produzir:" .. amountGames)
 			-- Limita pela capacidade máxima do desenvolvedor
 			local totalProduced = 0
 			for i = 1, amountGames do
@@ -90,7 +88,7 @@ function OfflineGameService:Generate(player: Player)
 				end
 			end
 		end
-		print(allGames)
+		
 		offlineGamesPlayer[player.UserId] = allGames
 
 		if #allGames > 0 then

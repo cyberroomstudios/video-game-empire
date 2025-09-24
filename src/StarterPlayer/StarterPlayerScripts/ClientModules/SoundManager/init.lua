@@ -17,6 +17,12 @@ local sounds = {
 	UI_CLICK = "",
 	UI_OPEN_SCREEN = "",
 	MONEY_COMING_IN = "",
+	MONEY_COMING_OUT = "",
+	COLLECT_GAME = "",
+	COLLECT_NEW_GAME = "",
+	NOTIFICATION_ERROR = "",
+	NOTIFICATION_SUCCESS = "",
+	RESTOCK = "",
 }
 
 local soundLooped = {}
@@ -31,6 +37,12 @@ function SoundManager:InitRef()
 	sounds["UI_CLICK"] = SoundService.GUI.Click
 	sounds["UI_OPEN_SCREEN"] = SoundService.GUI.OpenScreen
 	sounds["MONEY_COMING_IN"] = SoundService.GUI.MoneyComingIn
+	sounds["MONEY_COMING_OUT"] = SoundService.GUI.MoneyComingOut
+	sounds["COLLECT_GAME"] = SoundService.Game.CollectGame
+	sounds["COLLECT_NEW_GAME"] = SoundService.Game.CollectNewGame
+	sounds["NOTIFICATION_ERROR"] = SoundService.Notification.Error
+	sounds["NOTIFICATION_SUCCESS"] = SoundService.Notification.Success
+	sounds["RESTOCK"] = SoundService.Notification.Restock
 end
 
 function SoundManager:StartOrPauseBGM()

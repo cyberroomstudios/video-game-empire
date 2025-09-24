@@ -14,6 +14,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local notificationScreen
 local stockNotification
@@ -38,18 +39,25 @@ end
 function NotificationController:InitListeners()
 	bridge:Connect(function(response)
 		if response[actionIdentifier] == "ShowWarnNotification" then
+			SoundManager:Play("NOTIFICATION_ERROR")
 			NotificationController:ShowNotification("WARN", response.data.Message)
 		end
 
 		if response[actionIdentifier] == "ShowErrorNotification" then
+			SoundManager:Play("NOTIFICATION_ERROR")
+
 			NotificationController:ShowNotification("ERROR", response.data.Message)
 		end
 
 		if response[actionIdentifier] == "ShowSuccessNotificaion" then
+			SoundManager:Play("NOTIFICATION_SUCCESS")
+
 			NotificationController:ShowNotification("SUCCESS", response.data.Message)
 		end
 
 		if response[actionIdentifier] == "ShowStockNotification" then
+			SoundManager:Play("RESTOCK")
+
 			NotificationController:ShowStockNotification()
 		end
 	end)

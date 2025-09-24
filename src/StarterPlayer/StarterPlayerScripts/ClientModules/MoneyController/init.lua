@@ -35,6 +35,7 @@ function MoneyController:InitAttributeListener()
 		if oldMoney and oldMoney > money then
 			local diference = oldMoney - money
 			MoneyController:AddHistory(false, diference)
+			SoundManager:Play("MONEY_COMING_OUT")
 		end
 
 		oldMoney = money

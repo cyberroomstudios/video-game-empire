@@ -6,6 +6,7 @@ local Players = game:GetService("Players")
 local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local Games = require(ReplicatedStorage.Enums.Games)
 local ConfettiController = require(Players.LocalPlayer.PlayerScripts.ClientModules.ConfettiController)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 
 local screen
 local newGameNames = {}
@@ -20,6 +21,7 @@ function NewGameController:CreateReferences()
 end
 
 function NewGameController:Open()
+	SoundManager:Play("COLLECT_NEW_GAME")
 	screen.Visible = true
 	NewGameController:PlayTween()
 end

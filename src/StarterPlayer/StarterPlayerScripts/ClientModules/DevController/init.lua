@@ -8,6 +8,7 @@ local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 local FTUEController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FTUEController)
+local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 local bridge = BridgeNet2.ReferenceBridge("DevService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -131,6 +132,7 @@ function DevController:CreateProximity(devId: number)
 		})
 
 		if result then
+			SoundManager:Play("COLLECT_GAME")
 			for _, value in billboard.Content.Unlocked:GetChildren() do
 				if value:GetAttribute("IS_GAME") then
 					value:Destroy()

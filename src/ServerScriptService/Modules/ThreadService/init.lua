@@ -13,31 +13,46 @@ local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
 
 local playerGames = {}
 
+local animationCache = {} -- cache para evitar recarregar a cada vez
+
 function ThreadService:Init() end
 
 function ThreadService:PlayOrPauseWorkerAnimation(devModel: Model, shouldPlay: boolean)
-	if not devModel then
+	if not devModel or not devModel.Parent then
 		return
 	end
 
-	-- Função auxiliar para obter AnimationTrack
-	local function getAnimationTrack()
+	-- Se não existir no cache, cria o AnimationTrack e guarda
+	if not animationCache[devModel] then
 		local animationController = devModel:FindFirstChild("Rig")
 			and devModel.Rig:FindFirstChild("AnimationController")
-		if not animationController then
-			return nil
-		end
 
-		local animator = animationController:FindFirstChild("Animator")
-		local animation = animator and animator:FindFirstChild("Animation")
-		if animator and animation then
-			return animator:LoadAnimation(animation)
+		if animationController then
+			local animator = animationController:FindFirstChild("Animator")
+			local animation = animator and animator:FindFirstChild("Animation")
+			if animator and animation then
+				local track = animator:LoadAnimation(animation)
+				animationCache[devModel] = track -- salva no cache
+
+				-- Remove do cache quando o modelo for destruído
+				devModel.Destroying:Connect(function()
+					if track.IsPlaying then
+						track:Stop()
+					end
+					animationCache[devModel] = nil
+				end)
+			end
 		end
-		return nil
 	end
 
-	-- Função auxiliar para cores
-	local function startColorLoop(monitor)
+	local animationTrack = animationCache[devModel]
+	local monitor = devModel:FindFirstChild("Monitor")
+
+	-- Função para mudar cores
+	local function startColorLoop()
+		if not monitor then
+			return
+		end
 		local colors = {}
 		for i = 1, 3 do
 			local colorPart = monitor:FindFirstChild("Color" .. i)
@@ -45,34 +60,25 @@ function ThreadService:PlayOrPauseWorkerAnimation(devModel: Model, shouldPlay: b
 				table.insert(colors, colorPart.Value)
 			end
 		end
-
 		if #colors == 0 then
-			return nil
+			return
 		end
 
-		return task.spawn(function()
-			while devModel:GetAttribute("PLAYING_ANIMATION") do
-				local randomColor = colors[math.random(1, #colors)]
-				monitor.Color = randomColor
+		task.spawn(function()
+			while devModel.Parent and devModel:GetAttribute("PLAYING_ANIMATION") do
+				monitor.Color = colors[math.random(1, #colors)]
 				task.wait(1)
 			end
 		end)
 	end
 
-	-- Lógica principal
-	local animationTrack = getAnimationTrack()
-	local monitor = devModel:FindFirstChild("Monitor")
-
+	-- Play/Pause
 	if shouldPlay then
 		if devModel:GetAttribute("PLAYING_ANIMATION") then
 			return
 		end
 		devModel:SetAttribute("PLAYING_ANIMATION", true)
-
-		if monitor then
-			startColorLoop(monitor)
-		end
-
+		startColorLoop()
 		if animationTrack then
 			animationTrack:Play()
 			animationTrack:AdjustSpeed(1)
@@ -80,7 +86,7 @@ function ThreadService:PlayOrPauseWorkerAnimation(devModel: Model, shouldPlay: b
 	else
 		devModel:SetAttribute("PLAYING_ANIMATION", false)
 		if animationTrack then
-			animationTrack:AdjustSpeed(0) -- pausa
+			animationTrack:AdjustSpeed(0)
 		end
 	end
 end

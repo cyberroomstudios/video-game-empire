@@ -42,6 +42,12 @@ function DevService:InitBridgeListener()
 			local devId = data.data.DevId
 			return DevService:GetGamesFromDev(player, devId)
 		end
+
+		if data[actionIdentifier] == "DeleteDev" then
+			local devId = data.data.DevId
+			DevService:DeleteDevInMap(player, devId)
+			DevService:DeleteInDataBase(player, devId)
+		end
 	end
 end
 
@@ -315,6 +321,18 @@ function DevService:BuyDev(player: Player, devName: string)
 	return true
 end
 
+function DevService:DeleteInDataBase(player: Player, devId: number)
+	PlayerDataHandler:Update(player, "workers", function(current)
+		local newDevs = {}
+		for _, value in current do
+			if value.Id == devId then
+				continue
+			end
+			table.insert(newDevs, value)
+		end
+		return newDevs
+	end)
+end
 function DevService:DeleteDevInMap(player: Player, devId: number)
 	for _, value in game.Workspace.Runtime[player.UserId]:GetChildren() do
 		if value:GetAttribute("DEV") and value:GetAttribute("ID") == devId then

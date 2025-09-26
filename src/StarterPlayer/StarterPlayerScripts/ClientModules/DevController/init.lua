@@ -10,6 +10,7 @@ local BridgeNet2 = require(Utility.BridgeNet2)
 local ClientUtil = require(Players.LocalPlayer.PlayerScripts.ClientModules.ClientUtil)
 local FTUEController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FTUEController)
 local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
+local UIReferences = require(Players.LocalPlayer.PlayerScripts.Util.UIReferences)
 local bridge = BridgeNet2.ReferenceBridge("DevService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -18,7 +19,15 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 
 local player = Players.LocalPlayer
 
+local deleteDevFrame
+local deleteDevYesButton
+local deleteDevNoButton
+
+local currentDevId
+
 function DevController:Init()
+	DevController:CreateReferences()
+	DevController:InitButtonListerns()
 	DevController:InitBridgeListener()
 end
 
@@ -34,6 +43,13 @@ function DevController:InitBridgeListener()
 			DevController:InitProgrammerSound(devId)
 		end
 	end)
+end
+
+function DevController:CreateReferences()
+	-- Botões referentes aos Teleports
+	deleteDevFrame = UIReferences:GetReference("DELETE_DEV_FRAME")
+	deleteDevNoButton = UIReferences:GetReference("DELETE_DEV_NO_BUTTON")
+	deleteDevYesButton = UIReferences:GetReference("DELETE_DEV_YES_BUTTON")
 end
 
 function DevController:InitProgrammerSound(devId: number)
@@ -54,6 +70,27 @@ function DevController:InitProgrammerSound(devId: number)
 
 	local indexRandom = math.random(1, 3)
 	SoundManager:PlayProgrammerSound("KEYBOARD_" .. indexRandom, model)
+end
+
+function DevController:InitButtonListerns()
+	deleteDevYesButton.MouseButton1Click:Connect(function()
+		
+		deleteDevFrame.Visible = false
+		local result = bridge:InvokeServerAsync({
+			[actionIdentifier] = "DeleteDev",
+			data = {
+				DevId = currentDevId,
+			},
+		})
+		currentDevId = nil
+	end)
+
+	deleteDevNoButton.MouseButton1Click:Connect(function()
+		
+		deleteDevFrame.Visible = false
+
+		currentDevId = nil
+	end)
 end
 
 function DevController:CreateProximity(devId: number)
@@ -78,7 +115,12 @@ function DevController:CreateProximity(devId: number)
 	billboard.Name = "DEV_PROGRESS_" .. devId
 	billboard.Parent = screenGui
 
-	billboard.Content.Collect.MouseButton1Click:Connect(function()
+	billboard.Content.Buttons.Delete.MouseButton1Click:Connect(function()
+		deleteDevFrame.Visible = true
+		billboard.Enabled = false
+		currentDevId = devId
+	end)
+	billboard.Content.Buttons.Collect.MouseButton1Click:Connect(function()
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "GetGames",
 			data = {
@@ -200,7 +242,7 @@ function DevController:UpdateDevInformations(model: Model)
 		while model:GetAttribute("UPDATE_INFORMATION") do
 			local currentFTUE = FTUEController:GetCurrentState()
 
-			billboard.Content.Collect.FTUE.Visible = currentFTUE and currentFTUE == "COLLECT_GAME"
+			billboard.Content.Buttons.Collect.FTUE.Visible = currentFTUE and currentFTUE == "COLLECT_GAME"
 
 			local developingText = billboard.Content.ProgressBar.Developing.Title.TextLabel
 

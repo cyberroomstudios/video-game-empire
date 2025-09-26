@@ -8,7 +8,7 @@ local MoneyService = require(ServerScriptService.Modules.MoneyService)
 
 CodesFunctions["WELCOME"] = function(player)
 	
-	MoneyService:GiveMoney(player, 10000)
+	MoneyService:GiveMoney(player, 500)
 	return true
 end
 

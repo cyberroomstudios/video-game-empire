@@ -15,12 +15,17 @@ function TeleportController:ToWorkers()
 end
 
 function TeleportController:ToBase()
-	local base = Workspace.Map.BaseMaps[player:GetAttribute("BASE")]
-	base:WaitForChild("Spawn")
-	local character = player.Character
+	local baseId = player:GetAttribute("BASE")
+	if baseId then
+		local base = Workspace.Map.BaseMaps:FindFirstChild(baseId)
+		if base then
+			base:WaitForChild("Spawn")
+			local character = player.Character
 
-	if character and character:FindFirstChild("HumanoidRootPart") then
-		character.HumanoidRootPart.CFrame = base.Spawn.CFrame
+			if character and character:FindFirstChild("HumanoidRootPart") then
+				character.HumanoidRootPart.CFrame = base.Spawn.CFrame
+			end
+		end
 	end
 end
 

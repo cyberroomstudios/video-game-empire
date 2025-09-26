@@ -21,6 +21,7 @@ local screen
 local scrollingGames
 local totalPriceAllGames
 local sellAllGames
+local sum = 0
 
 function SellShopScreenController:Init()
 	SellShopScreenController:CreateReferences()
@@ -40,20 +41,21 @@ function SellShopScreenController:InitButtonListerns()
 	local clicked = false
 	sellAllGames.MouseButton1Click:Connect(function()
 		SoundManager:Play("UI_CLICK")
-
-		if not clicked then
-			clicked = true
-			local result = bridge:InvokeServerAsync({
-				[actionIdentifier] = "SellAll",
-			})
-			for _, value in scrollingGames:GetChildren() do
-				if value:IsA("Frame") and not (value.Name == "Product") then
-					value:Destroy()
+		if sum > 0 then
+			if not clicked then
+				clicked = true
+				local result = bridge:InvokeServerAsync({
+					[actionIdentifier] = "SellAll",
+				})
+				for _, value in scrollingGames:GetChildren() do
+					if value:IsA("Frame") and not (value.Name == "Product") then
+						value:Destroy()
+					end
 				end
-			end
 
-			totalPriceAllGames.Text = ClientUtil:FormatToUSD(0)
-			clicked = false
+				totalPriceAllGames.Text = ClientUtil:FormatToUSD(0)
+				clicked = false
+			end
 		end
 	end)
 end
@@ -87,6 +89,7 @@ function SellShopScreenController:ConfigureProximity()
 end
 
 function SellShopScreenController:BuildScreen()
+	sum = 0
 	local result = bridge:InvokeServerAsync({
 		[actionIdentifier] = "GetGames",
 		data = {},
@@ -98,8 +101,8 @@ function SellShopScreenController:BuildScreen()
 		end
 	end
 
-	local sum = 0
 	for _, value in result do
+		sum = sum + value.Price
 		local newItem = scrollingGames.Product:Clone()
 		newItem.Name = value.GameName
 		newItem.Content.Informations.ProductName.Text = Games[value.GameName].GUI.Name
@@ -132,7 +135,6 @@ function SellShopScreenController:BuildScreen()
 				totalPriceAllGames.Text = ClientUtil:FormatToUSD(sum)
 			end
 		end)
-		sum = sum + value.Price
 	end
 
 	totalPriceAllGames.Text = ClientUtil:FormatToUSD(sum)

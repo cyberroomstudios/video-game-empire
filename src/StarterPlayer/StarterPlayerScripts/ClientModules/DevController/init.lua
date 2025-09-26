@@ -158,7 +158,6 @@ function DevController:CreateProximity(devId: number)
 			},
 		})
 
-		
 		if result and next(result) ~= nil then
 			SoundManager:Play("COLLECT_GAME")
 			for _, value in billboard.Content.Unlocked:GetChildren() do
@@ -166,12 +165,12 @@ function DevController:CreateProximity(devId: number)
 					value:Destroy()
 				end
 			end
-		end
 
-		local currentFTUE = FTUEController:GetCurrentState()
+			local currentFTUE = FTUEController:GetCurrentState()
 
-		if currentFTUE and currentFTUE == "COLLECT_GAME" then
-			FTUEController:SetCurrentSellFTUE()
+			if currentFTUE and currentFTUE == "COLLECT_GAME" then
+				FTUEController:SetCurrentSellFTUE()
+			end
 		end
 	end)
 end

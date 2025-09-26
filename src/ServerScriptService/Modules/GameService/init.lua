@@ -77,8 +77,9 @@ end
 function GameService:GetGamesFromPlayer(player: Player)
 	local games = PlayerDataHandler:Get(player, "games")
 
-	for _, game in games do
-		game["Price"] = GameService:GetGamePrice(game.AmountPlayer)
+	for _, gameInfo in games do
+		local price = GameService:GetGamePrice(gameInfo.AmountPlayer)
+		gameInfo["Price"] = GameService:GetGamePrice(gameInfo.AmountPlayer)
 	end
 
 	return games
@@ -99,7 +100,7 @@ function GameService:ConsumeGame(player: Player, gameName: string)
 end
 
 function GameService:GetGamePrice(amountPlayers: number)
-	return math.floor(amountPlayers * Workspace:GetAttribute("PRICE_PER_CCU"))
+	return math.ceil(amountPlayers * Workspace:GetAttribute("PRICE_PER_CCU"))
 end
 
 function GameService:SellGame(player: Player, gameName: string)

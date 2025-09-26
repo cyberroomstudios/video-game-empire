@@ -42,6 +42,8 @@ function StorageController:InitGUI()
 			billboard.Enabled = false
 			billboard.Parent = screenGui
 
+			billboard:WaitForChild("Content")
+
 			billboard.Content.Collect.MouseButton1Click:Connect(function()
 				local result = bridge:InvokeServerAsync({
 					[actionIdentifier] = "GetStorage",

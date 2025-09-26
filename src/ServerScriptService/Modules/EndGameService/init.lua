@@ -5,10 +5,10 @@ local ServerScriptService = game:GetService("ServerScriptService")
 function EndGameService:Init() end
 
 function EndGameService:Apply(player: Player)
+	EndGameService:ReleaseBase(player)
 	EndGameService:DeleteAllRuntime(player)
 	EndGameService:CleanBaseName(player)
 	EndGameService:CleanCCU(player)
-	EndGameService:ReleaseBase(player)
 end
 
 function EndGameService:DeleteAllRuntime(player: Player)
@@ -38,6 +38,7 @@ function EndGameService:CleanCCU(player: Player)
 end
 
 function EndGameService:ReleaseBase(player: Player)
+	warn("Liberando Base")
 	local base = EndGameService:GetBase(player)
 
 	base:SetAttribute("BUSY", false)

@@ -9,12 +9,14 @@ function TeleportController:Init() end
 function TeleportController:ToWorkers()
 	local character = player.Character
 	if character and character:FindFirstChild("HumanoidRootPart") then
-		character.HumanoidRootPart.CFrame = Workspace.Map.HireAgency.Agency.Spawn.CFrame
+		character.HumanoidRootPart.CFrame =
+			Workspace:WaitForChild("Map"):WaitForChild("HireAgency"):WaitForChild("Agency"):WaitForChild("Spawn").CFrame
 	end
 end
 
 function TeleportController:ToBase()
 	local base = Workspace.Map.BaseMaps[player:GetAttribute("BASE")]
+	base:WaitForChild("Spawn")
 	local character = player.Character
 
 	if character and character:FindFirstChild("HumanoidRootPart") then
@@ -24,8 +26,10 @@ end
 
 function TeleportController:ToSell()
 	local character = player.Character
+
 	if character and character:FindFirstChild("HumanoidRootPart") then
-		character.HumanoidRootPart.CFrame = Workspace.Map.SellShop.SellShop.Spawn.CFrame
+		character.HumanoidRootPart.CFrame =
+			Workspace:WaitForChild("Map"):WaitForChild("SellShop"):WaitForChild("SellShop"):WaitForChild("Spawn").CFrame
 	end
 end
 

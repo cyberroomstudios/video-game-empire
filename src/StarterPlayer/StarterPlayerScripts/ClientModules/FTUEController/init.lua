@@ -43,7 +43,6 @@ function FTUEController:SetFTUE(button, state)
 end
 
 function FTUEController:SetCanProximityWorker(state)
-	
 	canProximityWorkers = state
 end
 
@@ -85,12 +84,14 @@ function FTUEController:InitButtonListerns()
 	backpackButtons["1"].MouseButton1Click:Connect(function()
 		if currentFTUE == "SELECT_ITEM_BACKPACK" then
 			local baseNumber = Players.LocalPlayer:GetAttribute("BASE")
-			local base = Workspace.Map.BaseMaps:FindFirstChild(baseNumber)
+			if baseNumber then
+				local base = Workspace.Map.BaseMaps:FindFirstChild(baseNumber)
 
-			if base then
-				local ftueTarget = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.Ftue.FTUETarget
-				FTUEController:CreateBeam(ftueTarget)
-				currentFTUE = "SET_DEV"
+				if base then
+					local ftueTarget = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.Ftue.FTUETarget
+					FTUEController:CreateBeam(ftueTarget)
+					currentFTUE = "SET_DEV"
+				end
 			end
 		end
 	end)
@@ -100,7 +101,6 @@ function FTUEController:InitButtonListerns()
 
 		if input.KeyCode == inputOne and not gameProcessed then
 			if currentFTUE == "SELECT_ITEM_BACKPACK" then
-				
 				local baseNumber = Players.LocalPlayer:GetAttribute("BASE")
 				local base = Workspace.Map.BaseMaps:FindFirstChild(baseNumber)
 

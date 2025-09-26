@@ -1,6 +1,7 @@
 local StartGameService = {}
 
 -- Services
+local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -36,6 +37,10 @@ local playerInitializer = {}
 
 function StartGameService:Init()
 	StartGameService:InitBridgeListener()
+
+	Players.PlayerRemoving:Connect(function(player)
+		StartGameService:Clear(player)
+	end)
 end
 
 function StartGameService:InitBridgeListener()
@@ -71,8 +76,8 @@ function StartGameService:InitBridgeListener()
 			StartGameService:NotifyLoadingStep(player, "Alocando Player")
 
 			-- Cria outros andares
-			BaseService:InitFloors(player)
-			StartGameService:NotifyLoadingStep(player, "Criando Andares ")
+		--	BaseService:InitFloors(player)
+		--	StartGameService:NotifyLoadingStep(player, "Criando Andares ")
 
 			-- Inicializa os trabalhadores do jogador na base
 			DevService:InitBaseFromPlayer(player)
@@ -112,6 +117,10 @@ function StartGameService:InitBridgeListener()
 			}
 		end
 	end
+end
+
+function StartGameService:Clear(player: Player)
+	playerInitializer[player] = false
 end
 
 function StartGameService:NotifyLoadingStep(player: Player, step: string)

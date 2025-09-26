@@ -25,6 +25,25 @@ function BaseService:Allocate(player: Player)
 		return false
 	end
 
+	local function allModelsComplete()
+		for _, model in ipairs(workspace.Map.BaseMaps:GetChildren()) do
+			if model:IsA("Model") then
+				if not model:FindFirstChild("mapa") or not model:FindFirstChild("Spawn") then
+					return false -- Something is missing
+				end
+			end
+		end
+		return true -- All models are complete
+	end
+
+	local startTime = os.clock()
+	while not allModelsComplete() do
+		task.wait(0.5) -- Check every half second
+	end
+
+	local waitedTime = os.clock() - startTime
+	warn(string.format("All models are complete! Waited %.2f seconds.", waitedTime))
+
 	allocating = true
 
 	-- Obtem todas as places
@@ -51,8 +70,10 @@ function BaseService:Allocate(player: Player)
 	end
 
 	allocating = false
-	BaseService:AddPlayerName(player)
-	BaseService:UpdatePlayerCCU(player)
+	task.spawn(function()
+		BaseService:AddPlayerName(player)
+		BaseService:UpdatePlayerCCU(player)
+	end)
 
 	return true
 end
@@ -103,19 +124,32 @@ function BaseService:GiveMoreFloor(player: Player, amount)
 end
 
 function BaseService:AddPlayerName(player: Player)
-	local base = BaseService:GetBase(player)
-	local billboard = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.OwnerBillboard.NameBillboard
-	billboard.SurfaceGui.PlayerName.Text = player.Name .. "'s Game Studio"
+	task.spawn(function()
+		local base = BaseService:GetBase(player)
+		local map = base:FindFirstChild("mapa")
+		while not map do
+			map = base:FindFirstChild("mapa")
+			task.wait(0.1)
+		end
+		local billboard = map.ModuleBuilding.Mainbuilding.FloorBase.OwnerBillboard.NameBillboard
+		billboard.SurfaceGui.PlayerName.Text = player.Name .. "'s Game Studio"
+	end)
 end
 
 function BaseService:UpdatePlayerCCU(player: Player)
-	local totalCCU = PlayerDataHandler:Get(player, "totalCCU")
-	local base = BaseService:GetBase(player)
-	local billboard = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.CCUBilboard.Billboard
-	billboard.SurfaceGui.PlayerName.Text = UtilService:FormatNumberToSuffixes(totalCCU) .. " CCU"
-	player:SetAttribute("CCU", totalCCU)
+	task.spawn(function()
+		local totalCCU = PlayerDataHandler:Get(player, "totalCCU")
+		local base = BaseService:GetBase(player)
+		local map = base:FindFirstChild("mapa")
+		while not map do
+			map = base:FindFirstChild("mapa")
+			task.wait(0.1)
+		end
+
+		local billboard = map.ModuleBuilding.Mainbuilding.FloorBase.CCUBilboard.Billboard
+		billboard.SurfaceGui.PlayerName.Text = UtilService:FormatNumberToSuffixes(totalCCU) .. " CCU"
+		player:SetAttribute("CCU", totalCCU)
+	end)
 end
-
-
 
 return BaseService

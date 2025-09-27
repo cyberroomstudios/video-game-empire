@@ -99,18 +99,19 @@ function AutoCollectService:ActiveAutoCollectThread(player: Player)
 				local devs = PlayerDataHandler:Get(player, "workers")
 				for _, dev in devs do
 					local games = DevService:GetGamesFromDev(player, dev.Id)
-
-					if games then
+					
+					if games and next(games) ~= nil then
 						collect = true
+						break
 					end
 				end
 
 				if collect then
-					GameNotificationService:SendSuccessNotification(player, "Game Collect")
+					GameNotificationService:SendSuccessNotificationWithoutAudio(player, "Game Collect")
 				end
 			end
 
-			task.wait(3)
+			task.wait(5)
 		end
 	end)
 end

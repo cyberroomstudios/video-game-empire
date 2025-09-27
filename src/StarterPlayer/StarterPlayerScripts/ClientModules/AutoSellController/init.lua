@@ -29,7 +29,7 @@ function AutoSellController:CreateReferences()
 end
 
 function AutoSellController:ActiveOrInactive()
-	if not Players.LocalPlayer:GetAttribute("hasAutoSell") then
+	if not Players.LocalPlayer:GetAttribute("HAS_AUTO_SELL") then
 		GamepassController:OpenPaymentRequestScreen("AUTO_SELL")
 		return
 	end

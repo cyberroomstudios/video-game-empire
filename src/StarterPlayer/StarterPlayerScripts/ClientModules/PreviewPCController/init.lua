@@ -73,7 +73,7 @@ function PreviewPCController:GetModelTouchingParts(part: BasePart)
 	overlapParams.FilterDescendantsInstances = { part } -- evita retornar a própria parte
 
 	-- Retorna as partes encostando ou dentro da "part"
-	
+
 	return workspace:GetPartsInPart(part, overlapParams)
 end
 
@@ -154,44 +154,49 @@ function PreviewPCController:InitPreview(itemName: string, toolType: string)
 
 	-- Atualiza posição a cada frame
 	self.previewConnection = RunService.RenderStepped:Connect(function()
-		if player:GetAttribute("TOOL_IN_HAND") == "" then
-			return
-		end
-
-		local targetPosition = getMousePosition()
-		if targetPosition then
-			local floor = player:GetAttribute("CURRENT_FLOOR") or 0
-			local yAxis = fixedY
-
-			if floor > 0 then
-				yAxis = base.mapa["FLOOR_" .. floor].Floor.Carpet.Part.Position.Y + 3
+		pcall(function()
+			if player:GetAttribute("TOOL_IN_HAND") == "" then
+				return
 			end
 
-			local snappedX = snapToGrid(targetPosition.X, gridSize)
-			local snappedZ = snapToGrid(targetPosition.Z, gridSize)
-			local newPosition = Vector3.new(snappedX, yAxis, snappedZ)
+			local targetPosition = getMousePosition()
+			if targetPosition then
+				local floor = player:GetAttribute("CURRENT_FLOOR") or 0
+				local yAxis = fixedY
 
-			-- Suaviza a transição
-			currentPosition = currentPosition:Lerp(newPosition, smoothFactor)
+				if floor > 0 then
+					yAxis = base.mapa["FLOOR_" .. floor].Floor.Carpet.Part.Position.Y + 3
+				end
 
-			if player:GetAttribute("ROTATE_PREVIEW") then
-				player:SetAttribute("ROTATE_PREVIEW", false)
-				currentRotation += 90
+				local snappedX = snapToGrid(targetPosition.X, gridSize)
+				local snappedZ = snapToGrid(targetPosition.Z, gridSize)
+				local newPosition = Vector3.new(snappedX, yAxis, snappedZ)
+
+				-- Suaviza a transição
+				currentPosition = currentPosition:Lerp(newPosition, smoothFactor)
+
+				if player:GetAttribute("ROTATE_PREVIEW") then
+					player:SetAttribute("ROTATE_PREVIEW", false)
+					currentRotation += 90
+				end
+
+				local rotation = CFrame.Angles(math.rad(90), 0, math.rad(currentRotation))
+				clonedModel:PivotTo(CFrame.new(currentPosition) * rotation)
+
+				-- Verifica colisão
+				local isInsideBase = PreviewPCController:IsPartInside(
+					clonedModel["Primary"],
+					base:WaitForChild("WorkArea"):WaitForChild("WorkArea")
+				)
+				if isInsideBase and #PreviewPCController:GetModelTouchingParts(clonedModel["Primary"]) == 0 then
+					player:SetAttribute("CAN_SET", true)
+					clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanSet.Value
+				else
+					clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanNotSet.Value
+					player:SetAttribute("CAN_SET", false)
+				end
 			end
-
-			local rotation = CFrame.Angles(math.rad(90), 0, math.rad(currentRotation))
-			clonedModel:PivotTo(CFrame.new(currentPosition) * rotation)
-
-			-- Verifica colisão
-			local isInsideBase = PreviewPCController:IsPartInside(clonedModel["Primary"], base.WorkArea.WorkArea)
-			if isInsideBase and #PreviewPCController:GetModelTouchingParts(clonedModel["Primary"]) == 0 then
-				player:SetAttribute("CAN_SET", true)
-				clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanSet.Value
-			else
-				clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanNotSet.Value
-				player:SetAttribute("CAN_SET", false)
-			end
-		end
+		end)
 	end)
 end
 

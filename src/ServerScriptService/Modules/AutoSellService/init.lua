@@ -33,7 +33,7 @@ function AutoSellService:ActiveAutoSell(player: Player)
 		player:SetAttribute("ACTIVE_AUTO_SELL", true)
 		task.spawn(function()
 			while player and player.Parent and player:GetAttribute("ACTIVE_AUTO_SELL") do
-				print("Alto Seel")
+				
 				if not player:GetAttribute("COLLETING") then
 					GameService:SellAllGame(player)
 				end

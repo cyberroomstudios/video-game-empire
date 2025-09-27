@@ -15,6 +15,7 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 
 local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 local FastPlayerController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FastPlayerController)
+local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
 
 function StartGameController:Init(data)
 	local result = bridge:InvokeServerAsync({
@@ -34,6 +35,7 @@ function StartGameController:Init(data)
 
 	if result then
 		StartGameController:FillDailyReward(result)
+		AutoCollectScreenController:InitPlaytime()
 	end
 end
 

@@ -40,6 +40,16 @@ function GameNotificationService:SendSuccessNotification(player: Player, message
 	})
 end
 
+function GameNotificationService:SendSuccessNotificationWithoutAudio(player: Player, message: string)
+	bridge:Fire(player, {
+		[actionIdentifier] = "ShowSuccessNotificaionWithoutAudio",
+		data = {
+			Message = message,
+		},
+	})
+end
+
+
 function GameNotificationService:ShowStockNotification()
 	for _, player in Players:GetPlayers() do
 		bridge:Fire(player, {

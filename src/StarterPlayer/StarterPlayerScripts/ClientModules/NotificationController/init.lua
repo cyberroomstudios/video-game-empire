@@ -60,6 +60,10 @@ function NotificationController:InitListeners()
 
 			NotificationController:ShowStockNotification()
 		end
+
+		if response[actionIdentifier] == "ShowSuccessNotificaionWithoutAudio" then
+			NotificationController:ShowNotification("SUCCESS", response.data.Message)
+		end
 	end)
 end
 

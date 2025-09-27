@@ -55,7 +55,7 @@ function GamepassManager:InitGamePassesFromPlayer(player: Player)
 	local hasAutoSellDataHandler = PlayerDataHandler:Get(player, "hasAutoSell")
 	if hasAutoSell or hasAutoSellDataHandler then
 		PlayerDataHandler:Set(player, "hasAutoSell", true)
-		player:SetAttribute("hasAutoSell", true)
+		player:SetAttribute("HAS_AUTO_SELL", true)
 	end
 end
 return GamepassManager

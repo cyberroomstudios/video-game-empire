@@ -9,7 +9,7 @@ function EndGameService:Apply(userId: number)
 	EndGameService:DeleteAllRuntime(userId)
 	EndGameService:CleanBaseName(userId)
 	EndGameService:CleanCCU(userId)
-	warn("Clean Base")
+	
 end
 
 function EndGameService:DeleteAllRuntime(userId: number)

@@ -141,69 +141,73 @@ function MobileScreenController:InitPreview(itemName: string, toolType: string)
 
 	-- Atualiza posição a cada frame
 	self.previewConnection = RunService.RenderStepped:Connect(function()
-		
-		if player:GetAttribute("TOOL_IN_HAND") == "" then
-			return
-		end
-
-		local cameraCF = camera.CFrame
-		local playerPos = player.Character
-			and player.Character:FindFirstChild("HumanoidRootPart")
-			and player.Character.HumanoidRootPart.Position
-		if not playerPos then
-			return
-		end
-
-		-- Direção da câmera apenas no plano XZ
-		local lookDir = cameraCF.LookVector
-		lookDir = Vector3.new(lookDir.X, 0, lookDir.Z).Unit -- zera Y e normaliza
-
-		-- Origem 15 studs à frente no plano XZ
-		local rayOrigin = playerPos + lookDir * forwardDistance
-		local rayDirection = Vector3.new(lookDir.X, -1, lookDir.Z) * 1000 -- projeta o raio para baixo
-		local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-
-		if raycastResult then
-			local targetPosition = raycastResult.Position
-
-			local floor = player:GetAttribute("CURRENT_FLOOR") or 0
-			local yAxis = fixedY
-
-			if floor > 0 then
-				yAxis = base.mapa["FLOOR_" .. floor].Floor.Carpet.Part.Position.Y + 3
+		pcall(function()
+			if player:GetAttribute("TOOL_IN_HAND") == "" then
+				return
 			end
 
-			local snappedX = snapToGrid(targetPosition.X, gridSize)
-			local snappedZ = snapToGrid(targetPosition.Z, gridSize)
-			local newPosition = Vector3.new(snappedX, yAxis, snappedZ)
-
-			-- Suaviza transição
-			currentPosition = currentPosition:Lerp(newPosition, smoothFactor)
-
-			-- Rotação
-			if player:GetAttribute("ROTATE_LEFT_PREVIEW") then
-				player:SetAttribute("ROTATE_LEFT_PREVIEW", false)
-				currentRotation -= 90
+			local cameraCF = camera.CFrame
+			local playerPos = player.Character
+				and player.Character:FindFirstChild("HumanoidRootPart")
+				and player.Character.HumanoidRootPart.Position
+			if not playerPos then
+				return
 			end
 
-			if player:GetAttribute("ROTATE_RIGHT_PREVIEW") then
-				player:SetAttribute("ROTATE_RIGHT_PREVIEW", false)
-				currentRotation += 90
-			end
+			-- Direção da câmera apenas no plano XZ
+			local lookDir = cameraCF.LookVector
+			lookDir = Vector3.new(lookDir.X, 0, lookDir.Z).Unit -- zera Y e normaliza
 
-			local rotation = CFrame.Angles(math.rad(90), 0, math.rad(currentRotation))
-			clonedModel:PivotTo(CFrame.new(currentPosition) * rotation)
+			-- Origem 15 studs à frente no plano XZ
+			local rayOrigin = playerPos + lookDir * forwardDistance
+			local rayDirection = Vector3.new(lookDir.X, -1, lookDir.Z) * 1000 -- projeta o raio para baixo
+			local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
 
-			-- Verifica colisão
-			local isInsideBase = MobileScreenController:IsPartInside(clonedModel["Primary"], base.WorkArea.WorkArea)
-			if isInsideBase and #MobileScreenController:GetModelTouchingParts(clonedModel["Primary"]) == 0 then
-				player:SetAttribute("CAN_SET", true)
-				clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanSet.Value
-			else
-				clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanNotSet.Value
-				player:SetAttribute("CAN_SET", false)
+			if raycastResult then
+				local targetPosition = raycastResult.Position
+
+				local floor = player:GetAttribute("CURRENT_FLOOR") or 0
+				local yAxis = fixedY
+
+				if floor > 0 then
+					yAxis = base.mapa["FLOOR_" .. floor].Floor.Carpet.Part.Position.Y + 3
+				end
+
+				local snappedX = snapToGrid(targetPosition.X, gridSize)
+				local snappedZ = snapToGrid(targetPosition.Z, gridSize)
+				local newPosition = Vector3.new(snappedX, yAxis, snappedZ)
+
+				-- Suaviza transição
+				currentPosition = currentPosition:Lerp(newPosition, smoothFactor)
+
+				-- Rotação
+				if player:GetAttribute("ROTATE_LEFT_PREVIEW") then
+					player:SetAttribute("ROTATE_LEFT_PREVIEW", false)
+					currentRotation -= 90
+				end
+
+				if player:GetAttribute("ROTATE_RIGHT_PREVIEW") then
+					player:SetAttribute("ROTATE_RIGHT_PREVIEW", false)
+					currentRotation += 90
+				end
+
+				local rotation = CFrame.Angles(math.rad(90), 0, math.rad(currentRotation))
+				clonedModel:PivotTo(CFrame.new(currentPosition) * rotation)
+
+				-- Verifica colisão
+				local isInsideBase = MobileScreenController:IsPartInside(
+					clonedModel["Primary"],
+					base:WaitForChild("WorkArea"):WaitForChild("WorkArea")
+				)
+				if isInsideBase and #MobileScreenController:GetModelTouchingParts(clonedModel["Primary"]) == 0 then
+					player:SetAttribute("CAN_SET", true)
+					clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanSet.Value
+				else
+					clonedModel["bounding_box"].Color = clonedModel["bounding_box"].CanNotSet.Value
+					player:SetAttribute("CAN_SET", false)
+				end
 			end
-		end
+		end)
 	end)
 end
 

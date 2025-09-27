@@ -21,6 +21,11 @@ local mainAutoCollect
 local leftPlaytime
 local autoCollectButton
 local unlockNowButton
+local autoCollectFreeTime
+local autoCollectFreeText
+local autoCollectText
+
+local leftTime
 
 function AutoCollectScreenController:Init()
 	AutoCollectScreenController:CreateReferences()
@@ -34,6 +39,9 @@ function AutoCollectScreenController:CreateReferences()
 	mainAutoCollect = UIReferences:GetReference("MAIN_AUTO_COLLECT")
 	leftPlaytime = UIReferences:GetReference("LEFT_PLAYTIME")
 	unlockNowButton = UIReferences:GetReference("UNLOCK_AUTO_COLLECT_BUTTON")
+	autoCollectFreeText = UIReferences:GetReference("AUTO_COLLECT_FREE_TEXT")
+	autoCollectFreeTime = UIReferences:GetReference("AUTO_COLLECT_FREE_TIME")
+	autoCollectText = UIReferences:GetReference("AUTO_COLLECT_TEXT")
 end
 
 function AutoCollectScreenController:Open()
@@ -41,9 +49,35 @@ function AutoCollectScreenController:Open()
 	AutoCollectScreenController:BuildScreen()
 end
 
+function AutoCollectScreenController:InitPlaytime()
+	if player:GetAttribute("HAS_AUTO_COLLECT") then
+		autoCollectFreeText.Visible = false
+		autoCollectFreeTime.Visible = false
+		return
+	end
+	autoCollectText.TextColor3 = Color3.new(144 / 255, 144 / 255, 144 / 255)
+
+	local result = bridge:InvokeServerAsync({
+		[actionIdentifier] = "GetPlaytime",
+	})
+
+	local leftTime = result
+
+	while leftTime >= 0 do
+		local minutes = math.floor(leftTime / 60)
+		local secs = leftTime % 60
+
+		autoCollectFreeTime.Text = string.format("%02d:%02d", minutes, secs)
+		leftTime = leftTime - 1
+		task.wait(1)
+	end
+
+	autoCollectText.TextColor3 = Color3.new(255, 255, 255)
+end
+
 function AutoCollectScreenController:InitButtonListerns()
 	unlockNowButton.MouseButton1Click:Connect(function()
-						SoundManager:Play("UI_CLICK")
+		SoundManager:Play("UI_CLICK")
 
 		autoCollectScreen.Visible = false
 		DeveloperProductController:OpenPaymentRequestScreen("UNLOCK_AUTO_COLLECT")
@@ -87,6 +121,9 @@ function AutoCollectScreenController:BuildScreen()
 		end
 	end
 
+	autoCollectFreeText.Visible = false
+	autoCollectFreeTime.Visible = false
+
 	autoCollectButton.Info.BackgroundColor3 = autoCollectButton.Info.ActiveColor.Value
 
 	autoCollectScreen.Visible = false
@@ -108,6 +145,9 @@ end
 function AutoCollectScreenController:InitAttributeListener()
 	player:GetAttributeChangedSignal("ACTIVED_AUTO_COLLECT"):Connect(function()
 		local activedAutoCollect = player:GetAttribute("ACTIVED_AUTO_COLLECT")
+		autoCollectFreeText.Visible = false
+		autoCollectFreeTime.Visible = false
+		autoCollectText.TextColor3 = Color3.new(255, 255, 255)
 
 		if activedAutoCollect then
 			autoCollectButton.Info.BackgroundColor3 = autoCollectButton.Info.ActiveColor.Value

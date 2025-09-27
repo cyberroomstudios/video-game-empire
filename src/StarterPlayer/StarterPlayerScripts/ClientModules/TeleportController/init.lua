@@ -7,34 +7,38 @@ local player = Players.LocalPlayer
 function TeleportController:Init() end
 
 function TeleportController:ToWorkers()
-	local character = player.Character
-	if character and character:FindFirstChild("HumanoidRootPart") then
-		character.HumanoidRootPart.CFrame =
-			Workspace:WaitForChild("Map"):WaitForChild("HireAgency"):WaitForChild("Agency"):WaitForChild("Spawn").CFrame
+	local spawnCFrame = player:GetAttribute("HIRE_AGENCY_CFRAME")
+
+	if spawnCFrame then
+		local character = player.Character
+
+		if character and character:FindFirstChild("HumanoidRootPart") then
+			character.HumanoidRootPart.CFrame = spawnCFrame
+		end
 	end
 end
 
 function TeleportController:ToBase()
-	local baseId = player:GetAttribute("BASE")
-	if baseId then
-		local base = Workspace.Map.BaseMaps:FindFirstChild(baseId)
-		if base then
-			base:WaitForChild("Spawn")
-			local character = player.Character
+	local spawnCFrame = player:GetAttribute("SPAWN_CFRAME")
 
-			if character and character:FindFirstChild("HumanoidRootPart") then
-				character.HumanoidRootPart.CFrame = base.Spawn.CFrame
-			end
+	if spawnCFrame then
+		local character = player.Character
+
+		if character and character:FindFirstChild("HumanoidRootPart") then
+			character.HumanoidRootPart.CFrame = spawnCFrame
 		end
 	end
 end
 
 function TeleportController:ToSell()
-	local character = player.Character
+	local spawnCFrame = player:GetAttribute("SELL_CFRAME")
 
-	if character and character:FindFirstChild("HumanoidRootPart") then
-		character.HumanoidRootPart.CFrame =
-			Workspace:WaitForChild("Map"):WaitForChild("SellShop"):WaitForChild("SellShop"):WaitForChild("Spawn").CFrame
+	if spawnCFrame then
+		local character = player.Character
+
+		if character and character:FindFirstChild("HumanoidRootPart") then
+			character.HumanoidRootPart.CFrame = spawnCFrame
+		end
 	end
 end
 

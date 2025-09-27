@@ -64,7 +64,27 @@ function BaseService:Allocate(player: Player)
 
 			player:SetAttribute("BASE", place.Name)
 			player:SetAttribute("FLOOR", 1)
+			player:SetAttribute("")
 			BaseService:MoveToBase(player, place.Spawn)
+
+			task.spawn(function()
+				local sellCFrame = workspace
+					:WaitForChild("Map")
+					:WaitForChild("SellShop")
+					:WaitForChild("SellShop")
+					:WaitForChild("Spawn")
+
+				local hireAgency = workspace
+					:WaitForChild("Map")
+					:WaitForChild("HireAgency")
+					:WaitForChild("Agency")
+					:WaitForChild("Spawn")
+
+				player:SetAttribute("SPAWN_CFRAME", place.Spawn.CFrame)
+				player:SetAttribute("SELL_CFRAME", sellCFrame.CFrame)
+				player:SetAttribute("HIRE_AGENCY_CFRAME", hireAgency.CFrame)
+			end)
+
 			break
 		end
 	end

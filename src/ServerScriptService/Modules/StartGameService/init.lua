@@ -108,7 +108,6 @@ function StartGameService:InitBridgeListener()
 			GamepassManager:InitGamePassesFromPlayer(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando GamePasses")
 
-			GamepassManager:InitGamePassesFromPlayer(player)
 
 			return {
 				DailyReward = PlayerDataHandler:Get(player, "dailyReward"),

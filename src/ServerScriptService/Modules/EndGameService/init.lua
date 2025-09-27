@@ -4,23 +4,24 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 function EndGameService:Init() end
 
-function EndGameService:Apply(player: Player)
-	EndGameService:ReleaseBase(player)
-	EndGameService:DeleteAllRuntime(player)
-	EndGameService:CleanBaseName(player)
-	EndGameService:CleanCCU(player)
+function EndGameService:Apply(userId: number)
+	EndGameService:ReleaseBase(userId)
+	EndGameService:DeleteAllRuntime(userId)
+	EndGameService:CleanBaseName(userId)
+	EndGameService:CleanCCU(userId)
+	warn("Clean Base")
 end
 
-function EndGameService:DeleteAllRuntime(player: Player)
-	local folder = workspace.Runtime:FindFirstChild(player.UserId)
+function EndGameService:DeleteAllRuntime(userId: number)
+	local folder = workspace.Runtime:FindFirstChild(userId)
 
 	if folder then
 		folder:Destroy()
 	end
 end
 
-function EndGameService:CleanBaseName(player: Player)
-	local base = EndGameService:GetBase(player)
+function EndGameService:CleanBaseName(userId: number)
+	local base = EndGameService:GetBase(userId)
 
 	if base then
 		local billboard = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.OwnerBillboard.NameBillboard
@@ -28,8 +29,8 @@ function EndGameService:CleanBaseName(player: Player)
 	end
 end
 
-function EndGameService:CleanCCU(player: Player)
-	local base = EndGameService:GetBase(player)
+function EndGameService:CleanCCU(userId: number)
+	local base = EndGameService:GetBase(userId)
 
 	if base then
 		local billboard = base.mapa.ModuleBuilding.Mainbuilding.FloorBase.CCUBilboard.Billboard
@@ -37,19 +38,21 @@ function EndGameService:CleanCCU(player: Player)
 	end
 end
 
-function EndGameService:ReleaseBase(player: Player)
-	warn("Liberando Base")
-	local base = EndGameService:GetBase(player)
-
+function EndGameService:ReleaseBase(userId: number)
+	local base = EndGameService:GetBase(userId)
+	if not base then
+		warn("Base not foun d in Release")
+		return
+	end
 	base:SetAttribute("BUSY", false)
 	base:SetAttribute("OWNER", "")
 end
 
-function EndGameService:GetBase(player: Player)
+function EndGameService:GetBase(userId: number)
 	local places = workspace.Map.BaseMaps:GetChildren()
 
 	for _, value in places do
-		if value.Name == player:GetAttribute("BASE") then
+		if value:GetAttribute("OWNER") and value:GetAttribute("OWNER") == userId then
 			return value
 		end
 	end

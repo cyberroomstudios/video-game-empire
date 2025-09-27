@@ -13,80 +13,84 @@ local LeadStatsService = require(ServerScriptService.Modules.LeadStatsService)
 
 local playerGames = {}
 
-local animationCache = {} -- cache para evitar recarregar a cada vez
+local animationCache = setmetatable({}, { __mode = "k" }) -- weak table, libera memória automaticamente
+local activeModels = setmetatable({}, { __mode = "k" })
 
-function ThreadService:Init() end
+function ThreadService:Init()
+	task.spawn(function()
+		while true do
+			if next(activeModels) ~= nil then -- só roda se tiver algo
+				for model, data in pairs(activeModels) do
+					if model.Parent and data.colors then
+						data.monitor.Color = data.colors[math.random(1, #data.colors)]
+					else
+						activeModels[model] = nil
+					end
+				end
+			end
+			task.wait(1)
+		end
+	end)
+end
 
 function ThreadService:PlayOrPauseWorkerAnimation(devModel: Model, shouldPlay: boolean)
 	if not devModel or not devModel.Parent then
 		return
 	end
 
-	-- Se não existir no cache, cria o AnimationTrack e guarda
+	-- Cache de animação (só cria uma vez)
 	if not animationCache[devModel] then
-		local animationController = devModel:FindFirstChild("Rig")
-			and devModel.Rig:FindFirstChild("AnimationController")
+		local rig = devModel:FindFirstChild("Rig")
+		local animator = rig
+			and rig:FindFirstChild("AnimationController")
+			and rig.AnimationController:FindFirstChild("Animator")
+		local animation = animator and animator:FindFirstChild("Animation")
 
-		if animationController then
-			local animator = animationController:FindFirstChild("Animator")
-			local animation = animator and animator:FindFirstChild("Animation")
-			if animator and animation then
-				local track = animator:LoadAnimation(animation)
-				animationCache[devModel] = track -- salva no cache
+		if animator and animation then
+			local track = animator:LoadAnimation(animation)
+			animationCache[devModel] = track
 
-				-- Remove do cache quando o modelo for destruído
-				devModel.Destroying:Connect(function()
-					if track.IsPlaying then
-						track:Stop()
-					end
-					animationCache[devModel] = nil
-				end)
-			end
+			-- Destruir limpa cache automaticamente
+			devModel.Destroying:Once(function()
+				if track.IsPlaying then
+					track:Stop()
+				end
+				animationCache[devModel] = nil
+				activeModels[devModel] = nil
+			end)
 		end
 	end
 
 	local animationTrack = animationCache[devModel]
 	local monitor = devModel:FindFirstChild("Monitor")
 
-	-- Função para mudar cores
-	local function startColorLoop()
-		if not monitor then
-			return
-		end
-		local colors = {}
-		for i = 1, 3 do
-			local colorPart = monitor:FindFirstChild("Color" .. i)
-			if colorPart then
-				table.insert(colors, colorPart.Value)
-			end
-		end
-		if #colors == 0 then
-			return
-		end
-
-		task.spawn(function()
-			while devModel.Parent and devModel:GetAttribute("PLAYING_ANIMATION") do
-				monitor.Color = colors[math.random(1, #colors)]
-				task.wait(1)
-			end
-		end)
-	end
-
-	-- Play/Pause
 	if shouldPlay then
 		if devModel:GetAttribute("PLAYING_ANIMATION") then
 			return
 		end
 		devModel:SetAttribute("PLAYING_ANIMATION", true)
-		startColorLoop()
+
+		-- Só cria tabela de cores uma vez
+		if monitor and not activeModels[devModel] then
+			local colors = {}
+			for i = 1, 3 do
+				local colorPart = monitor:FindFirstChild("Color" .. i)
+				if colorPart then
+					colors[#colors + 1] = colorPart.Value
+				end
+			end
+			activeModels[devModel] = { monitor = monitor, colors = colors }
+		end
+
 		if animationTrack then
 			animationTrack:Play()
 			animationTrack:AdjustSpeed(1)
 		end
 	else
 		devModel:SetAttribute("PLAYING_ANIMATION", false)
+		activeModels[devModel] = nil
 		if animationTrack then
-			animationTrack:AdjustSpeed(0)
+			animationTrack:Stop()
 		end
 	end
 end

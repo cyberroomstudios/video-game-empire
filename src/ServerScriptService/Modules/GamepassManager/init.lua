@@ -51,18 +51,11 @@ function GamepassManager:HasGamePass(player, gamepassId)
 end
 
 function GamepassManager:InitGamePassesFromPlayer(player: Player)
-	-- Verificando sem tem VIP
-	local hasVip = GamepassManager:HasGamePass(player, Gamepass.ENUM.VIP)
-
-	if hasVip then
-		PlayerDataHandler:Set(player, "hasAutoSell", true)
-	end
-
 	local hasAutoSell = GamepassManager:HasGamePass(player, Gamepass.ENUM.AUTO_SELL)
-
-	if hasAutoSell then
+	local hasAutoSellDataHandler = PlayerDataHandler:Get(player, "hasAutoSell")
+	if hasAutoSell or hasAutoSellDataHandler then
 		PlayerDataHandler:Set(player, "hasAutoSell", true)
-		player:SetAttribute("HAS_AUTO_SELL", true)
+		player:SetAttribute("hasAutoSell", true)
 	end
 end
 return GamepassManager

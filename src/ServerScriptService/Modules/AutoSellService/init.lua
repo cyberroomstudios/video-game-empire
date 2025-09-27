@@ -32,7 +32,8 @@ function AutoSellService:ActiveAutoSell(player: Player)
 	if PlayerDataHandler:Get(player, "hasAutoSell") then
 		player:SetAttribute("ACTIVE_AUTO_SELL", true)
 		task.spawn(function()
-			while player and player.Parent and player:GetAttribute("ACTIVE_AUTO_COLLECT") do
+			while player and player.Parent and player:GetAttribute("ACTIVE_AUTO_SELL") do
+				print("Alto Seel")
 				if not player:GetAttribute("COLLETING") then
 					GameService:SellAllGame(player)
 				end
@@ -47,7 +48,7 @@ function AutoSellService:InactiveAutoSell(player: Player)
 	player:SetAttribute("ACTIVE_AUTO_SELL", false)
 end
 
-function AutoSellService:BuyAutoCollect(player: Player)
+function AutoSellService:BuyAutoSell(player: Player)
 	PlayerDataHandler:Update(player, "hasAutoSell", function(current)
 		return true
 	end)

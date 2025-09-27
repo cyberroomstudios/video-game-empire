@@ -179,6 +179,9 @@ function PlayerDataHandler:Init()
 	end)
 
 	Players.PlayerRemoving:Connect(function(player)
+		local userId = player.UserId
+		EndGameService:Apply(userId)
+
 		local joinTimestamp = cachedJoinTimestamps[player]
 		local leaveTimestamp = os.time()
 		local playtime = leaveTimestamp - joinTimestamp
@@ -187,8 +190,6 @@ function PlayerDataHandler:Init()
 			local totalPlaytime = currentPlaytime + playtime
 			return totalPlaytime
 		end)
-
-		EndGameService:Apply(player)
 
 		-- Guarda quanto Resta de Robux Luck
 		PlayerDataHandler:Set(player, "limitDateRobuxLuck", player:GetAttribute("LIMIT_DATE_ROBUX_LUCK") or 0)

@@ -24,7 +24,7 @@ function MapService:InitBridgeListener()
 			local dev = data.data.Dev
 			local floor = data.data.Floor
 
-			if floor > player:GetAttribute("FLOOR") then
+			if floor and (floor > player:GetAttribute("FLOOR")) then
 				return false
 			end
 

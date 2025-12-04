@@ -5,6 +5,7 @@ local Players = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
 
 -- Modules
 local BaseService = require(ServerScriptService.Modules.BaseService)
@@ -14,8 +15,6 @@ local PlayerDataHandler = require(ServerScriptService.Modules.Player.PlayerDataH
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local DevService = require(ServerScriptService.Modules.DevService)
-local ThreadService = require(ServerScriptService.Modules.ThreadService)
-local StockService = require(ServerScriptService.Modules.StockService)
 local ToolService = require(ServerScriptService.Modules.ToolService)
 local AutoCollectService = require(ServerScriptService.Modules.AutoCollectService)
 local StorageService = require(ServerScriptService.Modules.StorageService)
@@ -26,6 +25,8 @@ local DailyRewardService = require(ServerScriptService.Modules.DailyRewardServic
 local OfflineGameService = require(ServerScriptService.Modules.OfflineGameService)
 local GamepassManager = require(ServerScriptService.Modules.GamepassManager)
 local SettingsService = require(ServerScriptService.Modules.SettingsService)
+local ThreadService = require(ServerScriptService.Modules.ThreadService)
+local BeltService = require(ServerScriptService.Modules.BeltService)
 
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
@@ -76,19 +77,17 @@ function StartGameService:InitBridgeListener()
 			StartGameService:NotifyLoadingStep(player, "Alocando Player")
 
 			-- Cria outros andares
-		--	BaseService:InitFloors(player)
-		--	StartGameService:NotifyLoadingStep(player, "Criando Andares ")
+			--	BaseService:InitFloors(player)
+			--	StartGameService:NotifyLoadingStep(player, "Criando Andares ")
 
 			-- Inicializa os trabalhadores do jogador na base
 			DevService:InitBaseFromPlayer(player)
 			StartGameService:NotifyLoadingStep(player, "Criando Programadores do jogador")
 
 			-- Inicializa a Thread dos jogadores
-			ThreadService:CreateDevThread(player)
-			StartGameService:NotifyLoadingStep(player, "Inicializando programadores do jogador")
 
-			StockService:AddPlayerStock(player)
-			StartGameService:NotifyLoadingStep(player, "Inicializando o Stock do Jogador")
+			ThreadService:StartDev(player)
+			StartGameService:NotifyLoadingStep(player, "Inicializando programadores do jogador")
 
 			StartGameService:InitBackpackFromPlayer(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando o Backpack")
@@ -99,7 +98,6 @@ function StartGameService:InitBridgeListener()
 			StorageService:InitStorage(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando Storage")
 
-			OfflineGameService:Generate(player)
 			StartGameService:NotifyLoadingStep(player, "Obtendo Trabalho Offline")
 
 			LeadStatsService:InitPlayer(player)
@@ -108,7 +106,10 @@ function StartGameService:InitBridgeListener()
 			GamepassManager:InitGamePassesFromPlayer(player)
 			StartGameService:NotifyLoadingStep(player, "Inicializando GamePasses")
 
+			BeltService:Start(player)
 
+			ThreadService:StartHatchingPlace(player)
+			StorageService:InitAntAFK(player)
 			return {
 				DailyReward = PlayerDataHandler:Get(player, "dailyReward"),
 				DaysWithRigthPrize = PlayerDataHandler:Get(player, "daysWithRigthPrize"),
@@ -130,6 +131,15 @@ end
 function StartGameService:CreatePlayerFolder(player)
 	local folder = Instance.new("Folder", workspace.Runtime)
 	folder.Name = player.UserId
+
+	local devs = Instance.new("Folder", folder)
+	devs.Name = "Devs"
+
+	local crates = Instance.new("Folder", folder)
+	crates.Name = "Crates"
+
+	local hatching = Instance.new("Folder", folder)
+	hatching.Name = "Hatching"
 end
 
 function StartGameService:InitBackpackFromPlayer(player: Player)
@@ -139,10 +149,12 @@ function StartGameService:InitBackpackFromPlayer(player: Player)
 		ToolService:GiveDevTool(player, dev)
 	end
 
-	-- Inicializando os Games
-	local games = PlayerDataHandler:Get(player, "games")
-	for _, game in games do
-		ToolService:GiveGameTool(player, game.GameName, game.AmountPlayer)
+	-- Incializando as Crates
+	local crates = PlayerDataHandler:Get(player, "cratesInBackpack")
+
+	for _, value in crates do
+		local crateName = value.Name
+		ToolService:GiveCrateTool(player, crateName, value.Id)
 	end
 end
 
@@ -166,6 +178,17 @@ function StartGameService:InitPlayerAtributes(player: Player)
 
 	local x2OfflineCollect = PlayerDataHandler:Get(player, "x2OfflineCollect")
 	player:SetAttribute("2X_OFFLINE_COLLECT", x2OfflineCollect)
+end
+
+function StorageService:InitAntAFK(player: Player)
+	-- Caio
+	if player.UserId == 6449479 or player.UserId == 95234395 or player.UserId == 4855409226 then
+		task.delay(60 * 5, function()
+			if player.Parent then
+				TeleportService:Teleport(game.PlaceId, player)
+			end
+		end)
+	end
 end
 
 return StartGameService

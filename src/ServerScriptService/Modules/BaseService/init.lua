@@ -18,6 +18,8 @@ local positionYFloor = 26
 
 local allocating = false
 
+local slotAttachemntsCache = {}
+
 function BaseService:Init() end
 
 function BaseService:Allocate(player: Player)
@@ -114,6 +116,65 @@ function BaseService:GetBase(player: Player)
 			return value
 		end
 	end
+end
+
+function BaseService:GetAttachmentSlotsBeld(player: Player)
+
+	if slotAttachemntsCache[player] then
+		return slotAttachemntsCache[player] 
+	end
+	
+	local base = BaseService:GetBase(player)
+	local attachments = {}
+
+	while not next(attachments) do
+		if not player.Parent then
+			return
+		end
+
+		for _, value in base:GetDescendants() do
+			if value:GetAttribute("ATTACHMENT_TYPE") and value:GetAttribute("ATTACHMENT_TYPE") == "SLOT" then
+				table.insert(attachments, value)
+			end
+		end
+		
+		task.wait(1)
+	end
+
+	slotAttachemntsCache[player] = attachments
+	return attachments
+end
+
+
+function BaseService:GetAttachmentsBeld(player: Player)
+	local base = BaseService:GetBase(player)
+	local startAttachment
+	local endAttachment
+
+	while not startAttachment and not endAttachment do
+		if not player.Parent then
+			return
+		end
+
+		for _, value in base:GetDescendants() do
+			if value:GetAttribute("ATTACHMENT_BELT") then
+				if value:GetAttribute("ATTACHMENT_TYPE") == "START" then
+					startAttachment = value
+				end
+
+				if value:GetAttribute("ATTACHMENT_TYPE") == "END" then
+					endAttachment = value
+				end
+			end
+		end
+	
+		task.wait(1)
+	end
+
+	return {
+		Start = startAttachment,
+		End = endAttachment,
+	}
 end
 
 function BaseService:InitFloors(player: Player)

@@ -50,6 +50,7 @@ local function ConfigureViewPort()
 	end
 end
 
+
 local function ConfigureMaxCCU()
 	for _, gameInfo in Games do
 		local min = gameInfo.Players.Min
@@ -64,9 +65,38 @@ local function ConfigureReplicatedStorage()
 	local developerFolder: Folder = workspace.Developer
 	local modelFolder = developerFolder.Models
 	local devsFolder = modelFolder.Devs
+	local crateFolder = modelFolder.Crates
 
 	for _, value in devsFolder:GetChildren() do
+		local devEnum = Devs[value.Name]
+		if not devEnum then
+			warn("DevEnum not found:" .. value.Name)
+			continue
+		end
+
+		if not value:FindFirstChild("Primary") then
+			warn("Primary not found:" .. value.Name)
+			continue
+		end
+
+		if not value:FindFirstChild("Primary"):FindFirstChild("BillboardGui") then
+			warn("BillboardGui not found:" .. value.Name)
+			continue
+		end
+
+		local devName = devEnum.GUI.Label
+		local moneyPerSecound = devEnum.MoneyPerSecond
+
+		value.Primary.BillboardGui.Frame.DevName.Text = devEnum.GUI.Label
+		value.Primary.BillboardGui.Frame.MoneyPerSecond.Text = "$" .. devEnum.MoneyPerSecond .. "/s"
+
 		value.Parent = ReplicatedStorage.Model.Devs
+	end
+
+	for _, value in crateFolder:GetChildren() do
+		value.Parent = ReplicatedStorage.Model.Crates
+
+		
 	end
 end
 

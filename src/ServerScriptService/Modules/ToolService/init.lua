@@ -21,6 +21,8 @@ local minSizeTool = 1
 local maxSizeTool = 50
 local maxPlayerGame = 100000
 
+local toolIdFromPlayer = {}
+
 function ToolService:Init()
 	ToolService:GetMaxPlayerFromGames()
 end
@@ -45,6 +47,18 @@ function ToolService:GetScaleTool(amountPlayer: number)
 		local proporcao = (amountPlayer - 10) / (maxPlayerGame - 10)
 		return minSizeTool + proporcao * (maxSizeTool - minSizeTool)
 	end
+end
+
+function ToolService:GiveCrateTool(player: Player, toolName: string, toolId: number)
+	local newToll = Instance.new("Tool")
+	newToll:SetAttribute("ORIGINAL_NAME", toolName)
+	newToll:SetAttribute("AMOUNT", 1)
+	newToll:SetAttribute("TOOL_TYPE", "CRATE")
+	newToll:SetAttribute("ID", toolId)
+
+	newToll.Name = toolName
+	newToll.Parent = player.Backpack
+	ToolService:UpdateBackpack(player)
 end
 
 -- Da uma nova tool de Desenvolvedor ao jogador
@@ -136,6 +150,27 @@ function ToolService:GiveGameTool(player: Player, gameName: string, amountPlayer
 	tool.Name = UtilService:formatCamelCase(gameName) .. " " .. (playerAmountTool + (amountPlayer or 0))
 	tool:ScaleTo(ToolService:GetScaleTool(playerAmountTool + amountPlayer))
 	ToolService:UpdateBackpack(player)
+end
+
+function ToolService:ConsumeCrateTool(player: Player, toolId: number)
+	for _, item in player:FindFirstChildOfClass("Backpack"):GetChildren() do
+		if item:IsA("Tool") and item:GetAttribute("TOOL_TYPE") == "CRATE" and item:GetAttribute("ID") == toolId then
+			item:Destroy()
+			ToolService:UpdateBackpack(player)
+			return
+		end
+	end
+
+	local character = player.Character
+	if character then
+		for _, item in ipairs(character:GetChildren()) do
+			if item:IsA("Tool") and item:GetAttribute("TOOL_TYPE") == "CRATE" and item:GetAttribute("ID") == toolId then
+				item:Destroy()
+				ToolService:UpdateBackpack(player)
+				return
+			end
+		end
+	end
 end
 
 function ToolService:ConsumeDevTool(player: Player, toolName: string)

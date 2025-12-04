@@ -21,21 +21,5 @@ local function VerifyAllGameTools()
 end
 
 -- Verifica se todos os jogos produzidos por um programador estão definidas também no doc de game
-local function VerifyAllDevGame()
-	local success = true
 
-	for _, value in Devs do
-		local games = value.Games
-		for gameName, _ in games do
-			if not Games[gameName] then
-				warn("[HEALTH CHECK] Dev Game Doc Not Found:" .. gameName)
-				success = false
-			end
-		end
-	end
-	if success then
-		warn("[HEALTH CHECK] Dev Game Doc Sucess")
-	end
-end
 VerifyAllGameTools()
-VerifyAllDevGame()

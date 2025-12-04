@@ -5,7 +5,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
-local HireAgencyScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.HireAgencyScreenController)
 local DailyRewardController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DailyRewardController)
 local bridge = BridgeNet2.ReferenceBridge("StartGameService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
@@ -16,6 +15,8 @@ local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 local SoundManager = require(Players.LocalPlayer.PlayerScripts.ClientModules.SoundManager)
 local FastPlayerController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FastPlayerController)
 local AutoCollectScreenController = require(Players.LocalPlayer.PlayerScripts.ClientModules.AutoCollectScreenController)
+local DevController = require(Players.LocalPlayer.PlayerScripts.ClientModules.DevController)
+local HatchingPlaceController = require(Players.LocalPlayer.PlayerScripts.ClientModules.HatchingPlaceController)
 
 function StartGameController:Init(data)
 	local result = bridge:InvokeServerAsync({
@@ -30,9 +31,10 @@ function StartGameController:Init(data)
 	local screenGui = playerGui:WaitForChild("LoadingScreen")
 
 	screenGui.Enabled = false
-	HireAgencyScreenController:CreateDevItems()
-	FastPlayerController:InitPartVerify()
 
+	FastPlayerController:InitPartVerify()
+	DevController:CreateAllProximityDev()
+	HatchingPlaceController:ConfigureProximities()
 	if result then
 		StartGameController:FillDailyReward(result)
 		AutoCollectScreenController:InitPlaytime()

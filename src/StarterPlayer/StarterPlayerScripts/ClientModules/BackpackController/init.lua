@@ -10,6 +10,8 @@ local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
 local messageIdentifier = BridgeNet2.ReferenceIdentifier("message")
 -- End Bridg Net
 
+local HttpService = game:GetService("HttpService")
+
 local Devs = require(ReplicatedStorage.Enums.Devs)
 local Games = require(ReplicatedStorage.Enums.Games)
 
@@ -198,14 +200,40 @@ function BackpackController:UpdateGrid(gridLayout, maxItemsPerRow, padding, minC
 	gridLayout.CellPadding = UDim2.new(0, padding, 0, padding)
 end
 
+function BackpackController:Clean()
+	for i = 1, MAX_SLOTS - 1 do
+		backpackButtons[i]:SetAttribute("BUSY", false)
+		local content = backpackButtons[i].Content
+		local viewPort = content:FindFirstChild("ViewPort")
+
+		if viewPort then
+			viewPort:Destroy()
+		end
+	end
+
+	for _, value in gamesFrame.ScrollingFrame:GetChildren() do
+		if value:GetAttribute("DELETED") then
+			value:Destroy()
+		end
+	end
+
+	for _, value in workersFrame.ScrollingFrame:GetChildren() do
+		if value:GetAttribute("DELETED") then
+			value:Destroy()
+		end
+	end
+end
+
 function BackpackController:UpdateBackpack()
 	while updating do
 		task.wait()
 	end
 	updating = true
+
 	local toolsNames = {}
 	local allItems = {}
 	local character = player.Character
+
 	if character then
 		for _, item in ipairs(character:GetChildren()) do
 			if item:IsA("Tool") then
@@ -220,39 +248,22 @@ function BackpackController:UpdateBackpack()
 		table.insert(allItems, tool)
 	end
 
+	local currentExpandedTool = 0
+
+	BackpackController:Clean()
+
 	for index, tool in allItems do
 		local toolName = tool:GetAttribute("ORIGINAL_NAME")
 		local toolType = tool:GetAttribute("TOOL_TYPE")
 
-		toolsNames[toolName] = true
-
-		-- Tenta Atualizar
-		local slot = BackpackController:GetSlotFromNameTool(toolName, toolType)
-
-		if slot then
-			slot:SetAttribute("ORIGINAL_NAME", toolName)
-			if toolType == "DEV" then
-				slot.Amount.Visible = true
-				slot.Amount.Text = "X" .. tool:GetAttribute("AMOUNT")
-			end
-
-			if toolType == "GAME" then
-				slot.Amount.Visible = true
-				slot.Amount.Text = ClientUtil:FormatNumberToSuffixes(tool:GetAttribute("PLAYER_AMOUNT"))
-			end
-			tools[tonumber(slot.Name)] = tool
-			continue
-		end
-
 		currentExpandedTool = currentExpandedTool + 1
 
-		-- Se não encontrou nenhum, cria um novo
 		local nextSlot = BackpackController:GetNextSlotTool(toolType, currentExpandedTool)
 
 		if nextSlot then
 			nextSlot:SetAttribute("ORIGINAL_NAME", toolName)
-
 			nextSlot:SetAttribute("BUSY", true)
+
 			if toolType == "DEV" then
 				local devsFolder = ReplicatedStorage.GUI.ViewPorts.Devs
 				local viewPort = devsFolder:FindFirstChild(toolName)
@@ -262,62 +273,24 @@ function BackpackController:UpdateBackpack()
 				newViewPort.Name = "ViewPort"
 				newViewPort:SetAttribute("VIEW_PORT", true)
 				newViewPort.Size = UDim2.fromScale(1, 1)
-				nextSlot.Amount.Visible = true
-				nextSlot.Amount.Text = "X" .. tool:GetAttribute("AMOUNT")
 				nextSlot:SetAttribute("BUSY", true)
 			end
 
-			if toolType == "GAME" then
-				local gamesFolder = ReplicatedStorage.GUI.ViewPorts.Games
-				local viewPort = gamesFolder:FindFirstChild(tool:GetAttribute("ORIGINAL_NAME") or "")
-
+			if toolType == "CRATE" then
+				local cratesFolder = ReplicatedStorage.GUI.ViewPorts.Crates
+				local viewPort = cratesFolder:FindFirstChild(toolName)
 				local newViewPort = viewPort:Clone()
-				newViewPort:SetAttribute("VIEW_PORT", true)
-				newViewPort.Size = UDim2.fromScale(0.7, 0.7)
+
 				newViewPort.Parent = nextSlot.Content
 				newViewPort.Name = "ViewPort"
+				newViewPort:SetAttribute("VIEW_PORT", true)
 				newViewPort.Size = UDim2.fromScale(1, 1)
-
-				nextSlot.Amount.Visible = true
-				nextSlot.Amount.Text = ClientUtil:FormatNumberToSuffixes(tool:GetAttribute("PLAYER_AMOUNT"))
-
 				nextSlot:SetAttribute("BUSY", true)
 			end
-			tools[tonumber(nextSlot.Name)] = tool
-
-			continue
 		end
 	end
 
-	BackpackController:DeleteSlots(toolsNames)
 	updating = false
-end
-
-function BackpackController:GetSlotFromNameTool(toolName: string, toolType: string)
-	for i = 1, MAX_SLOTS - 1 do
-		local slot = backpackButtons[i]
-		if slot:GetAttribute("ORIGINAL_NAME") == toolName then
-			return slot
-		end
-	end
-
-	if toolType == "DEV" then
-		local scrollingFrame = workersFrame.ScrollingFrame
-		for _, slot in scrollingFrame:GetChildren() do
-			if slot:GetAttribute("ORIGINAL_NAME") == toolName then
-				return slot
-			end
-		end
-	end
-
-	if toolType == "GAME" then
-		local scrollingFrame = gamesFrame.ScrollingFrame
-		for _, slot in scrollingFrame:GetChildren() do
-			if slot:GetAttribute("ORIGINAL_NAME") == toolName then
-				return slot
-			end
-		end
-	end
 end
 
 function BackpackController:GetNextSlotTool(toolType: string, toolIndex: number)
@@ -338,16 +311,19 @@ function BackpackController:GetNextSlotTool(toolType: string, toolIndex: number)
 
 	local scrolling = {
 		["DEV"] = workersFrame.ScrollingFrame,
-		["GAME"] = gamesFrame.ScrollingFrame,
+		["CRATE"] = gamesFrame.ScrollingFrame,
 	}
+
 	for i = 1, MAX_SLOTS - 1 do
 		if not backpackButtons[i]:GetAttribute("BUSY") then
+			
 			return backpackButtons[i]
 		end
 	end
 
 	local item = ReplicatedStorage.GUI.Backpack.ExpandedItem:Clone()
 	item.Name = toolIndex
+	item:SetAttribute("DELETED", true)
 	item.Parent = scrolling[toolType]
 
 	item.MouseButton1Click:Connect(function()
@@ -362,52 +338,6 @@ function BackpackController:GetNextSlotTool(toolType: string, toolIndex: number)
 	updateGrid(scrolling[toolType].UIGridLayout, scrolling[toolType], 6)
 
 	return item
-end
-
-function BackpackController:DeleteSlots(toolNameList)
-	for i = 1, MAX_SLOTS - 1 do
-		local slot = backpackButtons[i]
-
-		local slotName = slot:GetAttribute("ORIGINAL_NAME")
-		-- VERIFICAR SE O NOME NÃO ESTÁ NA LISTA
-		if not toolNameList[slotName] then
-			slot:SetAttribute("BUSY", false)
-			slot:SetAttribute("ORIGINAL_NAME", "")
-			local viewPortDev = slot:FindFirstChild("ViewPort")
-
-			if viewPortDev then
-				viewPortDev:Destroy()
-			end
-
-			local viewPortGame = slot.Content:FindFirstChild("ViewPort")
-
-			if viewPortGame then
-				viewPortGame:Destroy()
-			end
-
-			slot.Amount.Visible = false
-
-			tools[tonumber(slot.Name)] = nil
-		end
-	end
-
-	for _, value in workersFrame.ScrollingFrame:GetChildren() do
-		if not value:IsA("UIGridLayout") then
-			local originalName = value:GetAttribute("ORIGINAL_NAME")
-			if not toolNameList[originalName] then
-				value:Destroy()
-			end
-		end
-	end
-
-	for _, value in gamesFrame.ScrollingFrame:GetChildren() do
-		if not value:IsA("UIGridLayout") then
-			local originalName = value:GetAttribute("ORIGINAL_NAME")
-			if not toolNameList[originalName] then
-				value:Destroy()
-			end
-		end
-	end
 end
 
 function BackpackController:Open()

@@ -57,7 +57,6 @@ function UIStateManager:LoadModules()
 		loadedModules = true
 		local clientModules = Players.LocalPlayer.PlayerScripts.ClientModules
 
-		local HireAgencyScreenController = require(clientModules.HireAgencyScreenController)
 		local IndexController = require(clientModules.IndexController)
 		local SellShopScreenController = require(clientModules.SellShopScreenController)
 		local RebirthController = require(clientModules.RebirthController)
@@ -66,7 +65,6 @@ function UIStateManager:LoadModules()
 		local FeedbackController = require(Players.LocalPlayer.PlayerScripts.ClientModules.FeedbackController)
 
 		screens = {
-			["WORKERS"] = HireAgencyScreenController,
 			["SELL"] = SellShopScreenController,
 			["INDEX"] = IndexController,
 			["REBIRTH"] = RebirthController,

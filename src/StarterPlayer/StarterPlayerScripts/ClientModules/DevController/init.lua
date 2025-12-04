@@ -33,11 +33,6 @@ end
 
 function DevController:InitBridgeListener()
 	bridge:Connect(function(response)
-		if response[actionIdentifier] == "CreateProximity" then
-			local devId = response.data.DevId
-			DevController:CreateProximity(devId)
-		end
-
 		if response[actionIdentifier] == "StartDevSound" then
 			local devId = response.data.DevId
 			DevController:InitProgrammerSound(devId)
@@ -45,6 +40,13 @@ function DevController:InitBridgeListener()
 	end)
 end
 
+function DevController:CreateAllProximityDev()
+	local playerFolder = workspace.Runtime:FindFirstChild(player.UserId)
+
+	for _, value in playerFolder.Devs:GetChildren() do
+		DevController:CreateProximity(value)
+	end
+end
 function DevController:CreateReferences()
 	-- Botões referentes aos Teleports
 	deleteDevFrame = UIReferences:GetReference("DELETE_DEV_FRAME")
@@ -74,7 +76,6 @@ end
 
 function DevController:InitButtonListerns()
 	deleteDevYesButton.MouseButton1Click:Connect(function()
-		
 		deleteDevFrame.Visible = false
 		local result = bridge:InvokeServerAsync({
 			[actionIdentifier] = "DeleteDev",
@@ -86,139 +87,77 @@ function DevController:InitButtonListerns()
 	end)
 
 	deleteDevNoButton.MouseButton1Click:Connect(function()
-		
 		deleteDevFrame.Visible = false
 
 		currentDevId = nil
 	end)
 end
 
-function DevController:CreateProximity(devId: number)
-	local playerGui = player:WaitForChild("PlayerGui")
-	local screenGui = playerGui:WaitForChild("Main")
+function DevController:EnableGetMoneyEffect(model: Model)
+	-- Ativa um Highliter
+	local effectsFolder = model:FindFirstChild("Effects")
+	if effectsFolder then
+		local hightlight = effectsFolder:FindFirstChild("HighlightGetMoney")
+		local moneyParticleAttachment = effectsFolder:FindFirstChild("MoneyParticleAttachment")
 
+		if moneyParticleAttachment then
+			local moneyParticleEmitter = moneyParticleAttachment:FindFirstChild("MoneyParticleEmitter")
+
+			if moneyParticleEmitter then
+				moneyParticleEmitter:Emit(40)
+			end
+		end
+
+		if hightlight then
+			hightlight.Enabled = true
+			task.delay(0.1, function()
+				hightlight.Enabled = false
+			end)
+		end
+	end
+end
+
+function DevController:CreateProximity(model: Model)
 	local playerFolder = workspace.Runtime[player.UserId]
+	local primary = ClientUtil:WaitForDescendants(model, "Primary")
 
-	local model = DevController:GetDevModel(playerFolder, devId)
-	local prompt = model.Rig:WaitForChild("Head").ProximityPrompt
-	prompt.HoldDuration = 0 -- 0 = clique instantâneo
-	prompt.MaxActivationDistance = 8
-	prompt.RequiresLineOfSight = false
-	prompt.UIOffset = Vector2.new(20, 0)
-	prompt.Parent = model
-	prompt.Style = Enum.ProximityPromptStyle.Custom
+	if not primary then
+		warn("Primary not found in Dev Model")
+		return
+	end
 
-	local billboard = ReplicatedStorage.GUI.DevProgress.BillboardGui:Clone()
-	billboard.Adornee = model.Rig.BillboardAdornee
+	local getMoneyProximityPrompt = primary:FindFirstChild("GetMoneyProximityPrompt")
 
-	billboard.Enabled = false
-	billboard.Name = "DEV_PROGRESS_" .. devId
-	billboard.Parent = screenGui
+	if not getMoneyProximityPrompt then
+		warn("Get Money Proximity Prompt not found in Dev Model")
+		return
+	end
 
-	billboard.Content.Buttons.Delete.MouseButton1Click:Connect(function()
-		deleteDevFrame.Visible = true
-		billboard.Enabled = false
-		currentDevId = devId
-	end)
-	billboard.Content.Buttons.Collect.MouseButton1Click:Connect(function()
-		local result = bridge:InvokeServerAsync({
-			[actionIdentifier] = "GetGames",
-			data = {
-				DevId = devId,
-			},
-		})
+	local getMoneyBillboardGui = primary:FindFirstChild("GetMoneyBillboardGui")
 
-		if result and next(result) ~= nil then
-			SoundManager:Play("COLLECT_GAME")
-			for _, value in billboard.Content.Unlocked:GetChildren() do
-				if value:GetAttribute("IS_GAME") then
-					value:Destroy()
-				end
-			end
+	getMoneyProximityPrompt.PromptShown:Connect(function()
+		local oldMoney = model:GetAttribute("TOTAL_MONEY") or 0
 
-			local currentFTUE = FTUEController:GetCurrentState()
-
-			if currentFTUE and currentFTUE == "COLLECT_GAME" then
-				FTUEController:SetCurrentSellFTUE()
-			end
+		if oldMoney > 0 then
+			DevController:EnableGetMoneyEffect(model)
+			local result = bridge:InvokeServerAsync({
+				[actionIdentifier] = "GetMoney",
+				data = {
+					DevId = model:GetAttribute("ID"),
+				},
+			})
 		end
+
+		
 	end)
 
-	prompt.PromptShown:Connect(function()
-		model:SetAttribute("UPDATE_INFORMATION", true)
-		DevController:UpdateDevInformations(model)
-		billboard.Enabled = true
-
-		billboard.Content.AnchorPoint = Vector2.new(0.5, 0.5) -- deixa o ponto de ancoragem no centro
-		billboard.Content.Position = UDim2.fromScale(0.5, 0.5) -- centraliza na tela
-		billboard.Content.Size = UDim2.fromScale(0, 0) -- começa invisível
-
-		-- Configuração do tween
-		local tweenInfo = TweenInfo.new(
-			0.1, -- duração (meio segundo)
-			Enum.EasingStyle.Back, -- estilo com "esticadinha" no final
-			Enum.EasingDirection.Out
-		)
-
-		local goal = {}
-		goal.Size = UDim2.fromScale(1, 1) -- tamanho final do frame
-
-		-- Criar e executar o tween
-		local tween = TweenService:Create(billboard.Content, tweenInfo, goal)
-		tween:Play()
-	end)
-
-	prompt.PromptHidden:Connect(function()
-		model:SetAttribute("UPDATE_INFORMATION", false)
-		billboard.Content.AnchorPoint = Vector2.new(0.5, 0.5) -- deixa o ponto de ancoragem no centro
-		billboard.Content.Position = UDim2.fromScale(0.5, 0.5) -- centraliza na tela
-
-		-- Configuração do tween
-		local tweenInfo = TweenInfo.new(
-			0.1, -- duração (meio segundo)
-			Enum.EasingStyle.Back, -- estilo com "esticadinha" no final
-			Enum.EasingDirection.In
-		)
-
-		local goal = {}
-		goal.Size = UDim2.fromScale(0, 0) -- tamanho final do frame
-
-		-- Criar e executar o tween
-		local tween = TweenService:Create(billboard.Content, tweenInfo, goal)
-		tween:Play()
-
-		tween.Completed:Connect(function()
-			billboard.Enabled = false
-		end)
-	end)
-
-	prompt.Triggered:Connect(function(playerTriggered)
-		local result = bridge:InvokeServerAsync({
-			[actionIdentifier] = "GetGames",
-			data = {
-				DevId = devId,
-			},
-		})
-
-		if result and next(result) ~= nil then
-			SoundManager:Play("COLLECT_GAME")
-			for _, value in billboard.Content.Unlocked:GetChildren() do
-				if value:GetAttribute("IS_GAME") then
-					value:Destroy()
-				end
-			end
-
-			local currentFTUE = FTUEController:GetCurrentState()
-
-			if currentFTUE and currentFTUE == "COLLECT_GAME" then
-				FTUEController:SetCurrentSellFTUE()
-			end
-		end
+	getMoneyProximityPrompt.PromptHidden:Connect(function()
+		getMoneyBillboardGui.Enabled = false
 	end)
 end
 
 function DevController:GetDevModel(playerFolder: Folder, devId: number)
-	for _, value in playerFolder:GetChildren() do
+	for _, value in playerFolder.Devs:GetChildren() do
 		if value:GetAttribute("DEV") and value:GetAttribute("ID") == devId then
 			return value
 		end

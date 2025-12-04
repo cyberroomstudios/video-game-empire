@@ -71,4 +71,36 @@ function UtilService:FormatNumberToSuffixes(n)
 	return formatted .. suffixes[i]
 end
 
+function UtilService:FormatToUSD(number)
+	-- Se for inteiro, formata sem casas decimais
+	local formatted
+	if number % 1 == 0 then
+		formatted = string.format("%d", number)
+	else
+		formatted = string.format("%.2f", number)
+	end
+
+	local beforeDecimal, afterDecimal = formatted:match("^(%-?%d+)%.*(%d*)$")
+	beforeDecimal = beforeDecimal:reverse():gsub("(%d%d%d)", "%1,"):reverse()
+	if beforeDecimal:sub(1, 1) == "," then
+		beforeDecimal = beforeDecimal:sub(2)
+	end
+
+	if afterDecimal ~= "" then
+		return "$" .. beforeDecimal .. "." .. afterDecimal
+	else
+		return "$" .. beforeDecimal
+	end
+end
+
+function UtilService:FormatTime(seconds)
+	seconds = math.floor(seconds)
+
+	local hours = math.floor(seconds / 3600)
+	local minutes = math.floor((seconds % 3600) / 60)
+	local secs = seconds % 60
+
+	return string.format("%02d:%02d:%02d", hours, minutes, secs)
+end
+
 return UtilService

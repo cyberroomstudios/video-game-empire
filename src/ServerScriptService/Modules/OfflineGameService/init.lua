@@ -12,7 +12,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
 local Devs = require(ReplicatedStorage.Enums.Devs)
-local ThreadService = require(ServerScriptService.Modules.ThreadService)
 local bridge = BridgeNet2.ReferenceBridge("OfflineGrowthService")
 local actionIdentifier = BridgeNet2.ReferenceIdentifier("action")
 local statusIdentifier = BridgeNet2.ReferenceIdentifier("status")
@@ -52,55 +51,6 @@ function OfflineGameService:GetOfflineGames(player: Player)
 	end
 end
 
-function OfflineGameService:Generate(player: Player)
-	local timeLeftGame = PlayerDataHandler:Get(player, "timeLeftGame")
-
-	if timeLeftGame > 0 then
-		local now = os.time()
-		local secondsPassed = now - timeLeftGame
-
-		local workers = PlayerDataHandler:Get(player, "workers")
-		local allGames = {}
-
-		for _, dev in workers do
-			local devEnum = Devs[dev.Name]
-			local amountGames = math.floor(secondsPassed / devEnum.TimeToProduceGame)
-			-- Limita pela capacidade máxima do desenvolvedor
-			local totalProduced = 0
-			for i = 1, amountGames do
-				if totalProduced >= devEnum.CapacityOfGamesProduced then
-					break
-				end
-
-				local gameName, playerAmount = ThreadService:CreateGame(player, dev.Name)
-
-				-- Verifica espaço do dev + espaço no armazenamento offline
-				local canProduce = (totalProduced + playerAmount <= devEnum.CapacityOfGamesProduced)
-					and OfflineGameService:HasOfflineStorageSpace(player, playerAmount)
-
-				if canProduce then
-					OfflineGameService:AddOfflineGameInStorage(player, playerAmount)
-					table.insert(allGames, {
-						Name = gameName,
-						PlayerAmount = playerAmount,
-					})
-					totalProduced = totalProduced + playerAmount
-				end
-			end
-		end
-		
-		offlineGamesPlayer[player.UserId] = allGames
-
-		if #allGames > 0 then
-			bridge:Fire(player, {
-				[actionIdentifier] = "ShowOffilineGames",
-				data = {
-					OfflineGmes = offlineGamesPlayer[player.UserId],
-				},
-			})
-		end
-	end
-end
 
 function OfflineGameService:HasOfflineStorageSpace(player: Player, playerAmount: number)
 	if not player:GetAttribute("LIMIT_OFFLINE_STORAGE") then

@@ -12,9 +12,7 @@ local Games = require(ReplicatedStorage.Enums.Games)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Utility = ReplicatedStorage.Utility
 local BridgeNet2 = require(Utility.BridgeNet2)
-local StockService = require(ServerScriptService.Modules.StockService)
 local ToolService = require(ServerScriptService.Modules.ToolService)
-local ThreadService = require(ServerScriptService.Modules.ThreadService)
 local MoneyService = require(ServerScriptService.Modules.MoneyService)
 
 local GameService = require(ServerScriptService.Modules.GameService)
@@ -38,11 +36,10 @@ function DevService:InitBridgeListener()
 			DevService:BuyDev(player, devName)
 		end
 
-		if data[actionIdentifier] == "GetGames" then
+		if data[actionIdentifier] == "GetMoney" then
 			local devId = data.data.DevId
-			return DevService:GetGamesFromDev(player, devId)
+			DevService:GetMoney(player, devId)
 		end
-
 		if data[actionIdentifier] == "DeleteDev" then
 			local devId = data.data.DevId
 			DevService:DeleteDevInMap(player, devId)
@@ -113,6 +110,21 @@ function DevService:SaveDevInDataHandler(player: Player, devName: string, cFrame
 	return devId
 end
 
+function DevService:GetMoney(player: Player, devId: number)
+	local playerFolder = workspace.Runtime:FindFirstChild(player.UserId)
+	local devFolder = playerFolder.Devs
+	for _, value in devFolder:GetChildren() do
+		if value:GetAttribute("ID") == devId then
+			local money = value:GetAttribute("TOTAL_MONEY") or 0
+
+			if money > 0 then
+				MoneyService:GiveMoney(player, money)
+				value:SetAttribute("TOTAL_MONEY", 0)
+			end
+		end
+	end
+end
+
 function DevService:InitBaseFromPlayer(player: Player)
 	local devs = PlayerDataHandler:Get(player, "workers")
 
@@ -175,16 +187,13 @@ function DevService:SetDevInMap(player: Player, devId: number, devName: string, 
 		model:SetAttribute("CAPACITY_OF_GAMES_PRODUCED", devEnum.CapacityOfGamesProduced)
 
 		model:SetPrimaryPartCFrame(newCFrame)
-		model.Parent = workspace.Runtime[player.UserId]
+		model.Parent = workspace.Runtime[player.UserId].Devs
 
 		task.delay(0.2, function()
 			if model:FindFirstChild("Highlight") then
 				model.Highlight:Destroy()
 			end
 		end)
-
-		-- Cria o Proximity
-		DevService:CreateDevProximityPrompt(player, devId)
 
 		-- Cria o Som
 		DevService:StartDevSound(player, devId)
@@ -194,13 +203,13 @@ function DevService:SetDevInMap(player: Player, devId: number, devName: string, 
 	warn("Dev not found")
 end
 
-function DevService:CreateDevProximityPrompt(player: Player, devId: number)
-	bridge:Fire(player, {
-		[actionIdentifier] = "CreateProximity",
-		data = {
-			DevId = devId,
-		},
-	})
+function DevService:GetMoneyFromDev(player: Player, model: Model)
+	local money = model:GetAttribute("TOTAL_MONEY") or 0
+	if money > 0 then
+		DevService:EnableGetMoneyEffect(model)
+		model:SetAttribute("TOTAL_MONEY", 0)
+		MoneyService:GiveMoney(player, money)
+	end
 end
 
 function DevService:StartDevSound(player: Player, devId: number)
@@ -227,24 +236,12 @@ function DevService:GiveDevFromRobux(player: Player, devName: string)
 	ToolService:GiveDevTool(player, devName)
 end
 
-function DevService:GetGamesFromDev(player: Player, devId: number)
-	local games = ThreadService:GetGameFromPlayerAndDev(player, devId)
+function DevService:GiveDevFromCrate(player: Player, devName: string)
+	-- Salva no banco de dados
+	DevService:GiveDev(player, devName)
 
-	if games then
-		player:SetAttribute("COLLETING", true)
-		DevService:VerifyNewGames(player, games)
-
-		local model = DevService:GetModel(player, devId)
-
-		for gameName, amount in games do
-			GameService:GiveGame(player, gameName, amount)
-			model:SetAttribute("STORED_GAME_" .. gameName, 0)
-		end
-		model:SetAttribute("NUMBER_OF_GAMES_STORED", 0)
-
-		player:SetAttribute("COLLETING", false)
-		return games
-	end
+	-- Da uma tool ao jogador
+	ToolService:GiveDevTool(player, devName)
 end
 
 function DevService:VerifyNewGames(player: Player, collectGames)
@@ -277,48 +274,13 @@ end
 function DevService:GetModel(player: Player, devId: number)
 	local runtimeFolder = workspace.Runtime
 	local playerFolder = runtimeFolder[player.UserId]
+	local devFolder = playerFolder:FindFirstChild("Dev")
 
-	for _, value in playerFolder:GetChildren() do
+	for _, value in devFolder:GetChildren() do
 		if value:GetAttribute("DEV") and value:GetAttribute("ID") == devId then
 			return value
 		end
 	end
-end
-
-function DevService:BuyDev(player: Player, devName: string)
-	local devEnum = Devs[devName]
-
-	if not devEnum then
-		warn("Dev Enum not found")
-		return
-	end
-
-	-- Verifica se existe o item no stock do jogador
-	local hasStock = StockService:HasStock(player, devName)
-
-	if not hasStock then
-		GameNotificationService:SendErrorNotification(player, "No Stock!")
-		return false
-	end
-
-	-- Verifica se tem Dinheiro
-	if not MoneyService:HasMoney(player, devEnum.Price) then
-		GameNotificationService:SendErrorNotification(player, "Not Enough Money!")
-		return false
-	end
-
-	-- Consume o Dinheiro
-	MoneyService:ConsumeMoney(player, devEnum.Price)
-	-- Consume o Stock
-	StockService:ConsumeStock(player, devName)
-
-	-- Salva no banco de dados
-	DevService:GiveDev(player, devName)
-
-	-- Da uma tool ao jogador
-	ToolService:GiveDevTool(player, devName)
-
-	return true
 end
 
 function DevService:DeleteInDataBase(player: Player, devId: number)
@@ -333,12 +295,68 @@ function DevService:DeleteInDataBase(player: Player, devId: number)
 		return newDevs
 	end)
 end
+
 function DevService:DeleteDevInMap(player: Player, devId: number)
-	for _, value in game.Workspace.Runtime[player.UserId]:GetChildren() do
+	for _, value in game.Workspace.Runtime.Devs[player.UserId]:GetChildren() do
 		if value:GetAttribute("DEV") and value:GetAttribute("ID") == devId then
 			value:Destroy()
 		end
 	end
+end
+
+function DevService:DrawDevFromRarity(player: Player, rarity: string)
+	local devs = Devs
+	local devsFromRarity = {}
+
+	for _, value in devs do
+		if value.Rarity == rarity then
+			table.insert(devsFromRarity, value)
+		end
+	end
+
+	-- Caso não exista nenhum dev dessa raridade
+	if #devsFromRarity == 0 then
+		warn("Nenhum Dev encontrado com a raridade:", rarity)
+		return nil
+	end
+
+	-- Sorteia 1 entre os filtrados
+	local randomIndex = Random.new():NextInteger(1, #devsFromRarity)
+	local selectedDev = devsFromRarity[randomIndex]
+
+	return selectedDev.Name
+end
+
+function DevService:GetRandomDev(player: Player, amount: number)
+	local devs = Devs
+	local total = #devs
+
+	-- Faz uma cópia da lista
+	local devsCopy = table.clone(devs)
+
+	-- Embaralhar usando Fisher–Yates
+	for i = #devsCopy, 2, -1 do
+		local j = math.random(1, i)
+		devsCopy[i], devsCopy[j] = devsCopy[j], devsCopy[i]
+	end
+
+	-- Se pedirem mais do que existe, retorna todos os Names embaralhados
+	if amount >= total then
+		local names = {}
+		for i, dev in devsCopy do
+			names[i] = dev.Name
+		end
+		return names
+	end
+
+	-- Pegar apenas os X primeiros e retornar somente o Name
+	local result = {}
+
+	for i = 1, amount do
+		result[i] = devsCopy[i].Name
+	end
+
+	return result
 end
 
 return DevService
